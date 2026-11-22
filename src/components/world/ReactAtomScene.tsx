@@ -29,12 +29,18 @@ function AtomMesh() {
             <meshBasicMaterial
               color={WORLD.colors.cyan}
               transparent
-              opacity={0.8}
+              opacity={ATMOSPHERE.atom.opacity}
             />
           </mesh>
         ))}
         <mesh>
-          <sphereGeometry args={[ATMOSPHERE.atom.core, 24, 24]} />
+          <sphereGeometry
+            args={[
+              ATMOSPHERE.atom.core,
+              ATMOSPHERE.atom.segments,
+              ATMOSPHERE.atom.segments,
+            ]}
+          />
           <meshBasicMaterial color={WORLD.colors.cyan} />
         </mesh>
       </group>

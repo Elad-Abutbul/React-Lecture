@@ -92,6 +92,7 @@ export function useWorldCamera({
     const request = useWorldStore.getState()
     const index = Math.max(0, route.indexOf(request.requestedId))
     traveling = true
+    element.setAttribute('data-camera-busy', 'true')
     window.scrollTo({ top: index * WORLD.scrollStep, behavior: 'instant' })
     const target = worldCameraTarget(
       route[index],
@@ -107,6 +108,7 @@ export function useWorldCamera({
       onUpdate: apply,
       onComplete: () => {
         traveling = false
+        element.setAttribute('data-camera-busy', 'false')
       },
     })
     apply()

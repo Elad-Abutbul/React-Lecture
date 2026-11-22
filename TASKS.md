@@ -298,9 +298,11 @@
 - **אימות ביצוע:** feat: add layered atmosphere lazy 3D atom and accessible spring cursor; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### IM05 — אימות עולם, נגישות וביצועים בדפדפן
-- [ ] **תלויות:** IM04.
+- [x] **תלויות:** IM04.
 - **לבצע:** לבדוק מצלמה, בחירה ישירה, scroll, מקלדת, מובייל, reduced motion, מניעת nested scrolling ו־overflow; לתקן לפני מיזוג.
 - **קבלה:** lint/test/build ובדיקת דפדפן עוברים; צילום ותיעוד מוכיחים שינוי נקודת מבט.
+
+- **אימות ביצוע:** test: validate immersive navigation across desktop mobile and reduced motion; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### T24C — נגישות, מובייל ואימות עץ מרחבי
 - [ ] **תלויות:** IM05.

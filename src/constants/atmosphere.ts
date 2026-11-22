@@ -21,6 +21,8 @@ export const ATMOSPHERE = {
     radial: 6,
     angles: [0, Math.PI / 3, -Math.PI / 3],
     core: 0.16,
+    opacity: 0.8,
+    segments: 24,
     rotation: 0.09,
     floatSpeed: 0.55,
     floatIntensity: 0.3,
