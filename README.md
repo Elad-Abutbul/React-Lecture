@@ -69,3 +69,9 @@ generated separately with the official `react-ts` template, then copied here
 without its demo, styles, or assets. Styling, fonts, layout components, the Hero,
 and journey features belong to later tasks. T03 (Tailwind and design tokens) has
 not been started.
+
+Native browser scrolling is retained. Lenis was omitted because anchors, touch,
+keyboard scrolling, and reduced motion work without an additional scrolling layer.
+Focus moves only after explicit journey actions, never on hydration or passive scrolling.
+The tracked specifications mirror the originals in the parent directory; task progress
+is updated in both copies after validation.

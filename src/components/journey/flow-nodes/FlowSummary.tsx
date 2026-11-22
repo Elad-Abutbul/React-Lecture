@@ -1,3 +1,4 @@
+import { focusJourneyNode } from '@/lib/journey-focus'
 import { Handle, Position, type NodeProps } from '@xyflow/react'
 import { CheckCircle2, Circle } from 'lucide-react'
 import type { FlowNode } from '@/lib/flow-layout'
@@ -11,7 +12,10 @@ export function FlowSummary({ data }: NodeProps<FlowNode>) {
       <button
         className={`flow-node nodrag ${data.active ? 'flow-node-active' : ''}`}
         aria-pressed={data.active}
-        onClick={() => backTo(data.journeyId)}
+        onClick={() => {
+          backTo(data.journeyId)
+          focusJourneyNode(data.journeyId)
+        }}
       >
         <Icon
           className={data.done ? 'text-success' : 'text-react'}

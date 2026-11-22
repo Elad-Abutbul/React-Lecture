@@ -1,3 +1,4 @@
+import { focusJourneyNode } from '@/lib/journey-focus'
 import { useState } from 'react'
 import { RotateCcw } from 'lucide-react'
 import { Section } from '@/components/layout/Section'
@@ -27,7 +28,10 @@ export function JourneySection() {
         onOpenChange={setResetOpen}
         title={JOURNEY_COPY.resetTitle}
         description={JOURNEY_COPY.resetDescription}
-        onConfirm={reset}
+        onConfirm={() => {
+          reset()
+          focusJourneyNode(useJourneyStore.getState().currentNodeId)
+        }}
       />
     </Section>
   )

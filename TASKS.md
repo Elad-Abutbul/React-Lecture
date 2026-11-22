@@ -188,7 +188,7 @@
 - **אימות ביצוע:** feat: add completed-step progress and observed section navigation; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### T20 — ליטוש גלילה ובחירה
-- [ ] **תלויות:** T19.
+- [x] **תלויות:** T19.
 - **לבצע:** `scroll-margin`, גלילה מרוסנת רק לאחר פעולה מפורשת, focus נכון בפתיחת ענף, מניעת layout shift. לבדוק אם Lenis בכלל נחוץ; אם לא — להשאיר גלילה native.
 - **קבצים:** `src/components/journey/*`, `src/styles/globals.css`.
 - **קבלה:** גלילה רגילה עם עכבר, touch ומקלדת; אין scroll-jacking; reduced motion נשמר.
@@ -196,6 +196,8 @@
 ---
 
 ## שלב ד — תוכן לימודי המבוסס על המצגת
+
+- **אימות ביצוע:** fix: preserve native scrolling and focus newly selected journey steps; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### T21 — ״למה React?״ ומחשבה הצהרתית
 - [ ] **תלויות:** T05.
