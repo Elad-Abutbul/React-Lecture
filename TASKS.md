@@ -44,25 +44,31 @@
 - **תוצאות בדיקה:** `pnpm lint` עבר ללא אזהרות; `pnpm test` עבר עם **בדיקה אחת וקובץ בדיקות אחד**; `pnpm build`, `pnpm format:check`, `pnpm install --frozen-lockfile --strict-peer-dependencies` ו־`git diff --check` עברו. T03 לא החלה.
 
 ### T03 — Tailwind ו־design tokens
-- [ ] **תלויות:** T02.
+- [x] **תלויות:** T02.
 - **לבצע:** להתקין Tailwind v4 דרך Vite, להגדיר theme/colors/radii/shadows לפי `DESIGN.md`, reset וגוף האתר. ללא צבעים קשיחים בקומפוננטות.
 - **קבצים:** `src/styles/globals.css`, `vite.config.ts`, `src/constants/theme.ts` רק לערכים הנדרשים ב־TS.
 - **קבלה:** צבעי React מופיעים; אין שגיאות CSS/Build.
 
+- **אימות ביצוע:** feat: add Tailwind v4 and shared design tokens; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
+
 ### T04 — רכיבי UI, אייקונים ופונטים
-- [ ] **תלויות:** T03.
+- [x] **תלויות:** T03.
 - **לבצע:** להגדיר shadcn/ui + Radix, רכיבי Button/Card/Badge/Tooltip/Progress הנחוצים; Lucide; פונטים מקומיים IBM Plex Sans Hebrew ו־JetBrains Mono ממקור עם רישיון מתאים ו־`font-display: swap`.
 - **קבצים:** `src/components/ui/*`, `src/assets/fonts/*`, `src/styles/globals.css`.
 - **קבלה:** רכיב דמו מעוצב וטקסט עברי/קוד נראים תקין גם ללא טעינת פונט מרשת חיצונית.
 
+- **אימות ביצוע:** feat: add shadcn primitives and licensed local typography; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
+
 ### T05 — מעטפת RTL ומבנה עמוד
-- [ ] **תלויות:** T04.
+- [x] **תלויות:** T04.
 - **לבצע:** להגדיר `lang="he" dir="rtl"` במסמך; ליצור `AppShell`, `Header`, `Footer`, מכולות sections עם עוגנים ומסגרת רספונסיבית. הטקסטים ומזהי הסעיפים ב־`constants/navigation.ts`.
 - **קבצים:** `index.html`, `src/components/layout/*`, `src/constants/navigation.ts`, `src/app/App.tsx`.
 - **קבלה:** יש כותרת + אזורי עמוד בטוחים לגלילה; אין overflow אופקי ברוחב מובייל; קוד באנגלית יוגדר LTR ברכיב ייעודי בהמשך.
 
+- **אימות ביצוע:** feat: build responsive Hebrew RTL application shell; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
+
 ### T06 — Hero אינטראקטיבי ראשון
-- [ ] **תלויות:** T05.
+- [x] **תלויות:** T05.
 - **לבצע:** Hero עם כותרת, תיאור, אטום React דקורטיבי בסגנון SVG/CSS, וכפתור ״מתחילים״ שגולל לעץ ההתקנה. להגדיר טקסט ב־`src/content/hero.ts`.
 - **קבצים:** `src/components/layout/Hero.tsx`, `src/content/hero.ts`.
 - **קבלה:** הכפתור באמת גולל לעוגן; האטום אינו חוסם אינטראקציה והעיצוב עובד במובייל.
@@ -70,6 +76,8 @@
 ---
 
 ## שלב ב — מודל נתונים והתקנת React (ללא אנימציה מורכבת)
+
+- **אימות ביצוע:** feat: create responsive React hero with working journey anchor; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### T07 — טיפוסים, פקודות וקישורים
 - [ ] **תלויות:** T02.

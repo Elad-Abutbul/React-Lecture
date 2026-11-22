@@ -1,10 +1,14 @@
-import { APP_CONTENT } from '@/content/app'
-
+import { AppShell } from '@/components/layout/AppShell'
+import { Hero } from '@/components/layout/Hero'
+import { Section } from '@/components/layout/Section'
+import { HERO } from '@/content/hero'
 export default function App() {
   return (
-    <main>
-      <h1>{APP_CONTENT.title}</h1>
-      <p>{APP_CONTENT.description}</p>
-    </main>
+    <AppShell>
+      <Hero />
+      <Section id="journey">
+        <p className="text-xl text-muted">{HERO.setup}</p>
+      </Section>
+    </AppShell>
   )
 }
