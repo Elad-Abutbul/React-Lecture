@@ -128,10 +128,12 @@
 - **אימות ביצוע:** feat: add precise copy-only command cards and manual confirmation; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### T13 — בדיקת סביבה ופתרון תקלות
-- [ ] **תלויות:** T12.
+- [x] **תלויות:** T12.
 - **לבצע:** להציג מסלולי Windows/macOS להתקנת Node, הוראות `node -v`, `npm -v`, אישור הצלחה או שגיאה, סיבות נפוצות (פקודה לא מוכרת, גרסה לא תואמת, פורט תפוס, שגיאת npm), וחזרה לשלב בדיקה.
 - **קבצים:** `src/components/journey/CheckpointNode.tsx`, `ErrorHelpNode.tsx`, `src/content/troubleshooting.ts`.
 - **קבלה:** כל תרחיש מאפשר למשתמש להמשיך; האתר לא מתיימר לבדוק מערכת הפעלה/תוכנה בפועל.
+
+- **אימות ביצוע:** feat: implement manual environment checks and actionable recovery help; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### T14 — מסלול התקנה מלא בפורמט אנכי
 - [ ] **תלויות:** T11–T13.
