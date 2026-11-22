@@ -255,9 +255,11 @@
 - **אימות ביצוע:** docs: define full-viewport immersive world and approved GitHub workflow; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### IM02 — אב־טיפוס מצלמה אנכית ואז אלכסונית
-- [ ] **תלויות:** IM01.
+- [x] **תלויות:** IM01.
 - **לבצע:** להחליף AppShell בקנבס עולם מלא, GSAP/ScrollTrigger ומסלול כניסה → החלטה → שני ענפים אלכסוניים; בחירה ישירה וגלילה טבעית יחידה.
 - **קבלה:** גלילה משנה את transform המרחב בפועל; בחירה מזיזה x וגם y; אין חלונית תרשים מוטמעת.
+
+- **אימות ביצוע:** feat: replace the page layout with a full-viewport scroll camera prototype; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### IM03 — הרחבת העולם לכל תוכן ההתקנה והלימוד
 - [ ] **תלויות:** IM02.

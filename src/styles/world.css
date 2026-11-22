@@ -1,0 +1,138 @@
+.world-viewport {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  isolation: isolate;
+  background: var(--color-bg);
+}
+.world-scroll-space {
+  width: 1px;
+  pointer-events: none;
+}
+.world-stage {
+  position: absolute;
+  inset: 0;
+  transform-origin: 0 0;
+  will-change: transform;
+  --world-progress: 0;
+}
+.world-scene {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 1.5rem;
+  border: 1px solid transparent;
+  border-radius: 2rem;
+}
+.world-scene h1,
+.world-scene h2 {
+  font-size: clamp(2.5rem, 6.2vw, 6rem);
+  font-weight: 600;
+  letter-spacing: -0.045em;
+  line-height: 1.15;
+  max-width: 16ch;
+}
+.world-description {
+  font-size: clamp(1rem, 1.7vw, 1.35rem);
+  color: var(--color-muted);
+  max-width: 42rem;
+  margin-block: 1.75rem 2.25rem;
+}
+.world-intro {
+  position: relative;
+  max-width: 55rem;
+}
+.world-content {
+  max-width: 50rem;
+}
+.world-chrome {
+  position: absolute;
+  inset: 0 0 auto;
+  z-index: 30;
+  padding: 1.5rem 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  background: linear-gradient(var(--color-bg), transparent);
+}
+.world-footer {
+  position: absolute;
+  inset: auto 0 0;
+  z-index: 30;
+  padding: 1.25rem 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  font-size: 0.875rem;
+  background: linear-gradient(transparent, var(--color-bg));
+}
+.world-portal {
+  height: 100%;
+  width: 100%;
+  padding: 3rem;
+  text-align: start;
+  border-radius: 2rem;
+  border: 1px solid color-mix(in srgb, var(--color-react) 40%, transparent);
+  background: radial-gradient(
+    ellipse at top right,
+    color-mix(in srgb, var(--color-react) 15%, transparent),
+    var(--color-surface)
+  );
+  box-shadow: 0 0 80px color-mix(in srgb, var(--color-react) 8%, transparent);
+  transition:
+    border-color 0.3s,
+    box-shadow 0.3s;
+}
+.world-portal:hover,
+.world-portal:focus-visible {
+  border-color: var(--color-violet);
+  box-shadow: 0 0 120px color-mix(in srgb, var(--color-violet) 20%, transparent);
+}
+.world-portal-label {
+  display: inline-block;
+  margin-top: 3rem;
+  color: var(--color-react);
+  font-size: 1.5rem;
+}
+.world-aura {
+  position: absolute;
+  inset: -25%;
+  pointer-events: none;
+  opacity: 0.85;
+  background:
+    radial-gradient(
+      ellipse at 20% 40%,
+      color-mix(in srgb, var(--color-react) 14%, transparent),
+      transparent 40%
+    ),
+    radial-gradient(
+      ellipse at 80% 65%,
+      color-mix(in srgb, var(--color-violet) 12%, transparent),
+      transparent 40%
+    );
+}
+@media (max-width: 640px) {
+  .world-chrome,
+  .world-footer {
+    padding: 1rem;
+  }
+  .world-chrome .brand {
+    font-size: 1rem;
+  }
+  .world-scene {
+    padding: 0.5rem;
+  }
+  .world-scene h1,
+  .world-scene h2 {
+    font-size: 2.75rem;
+  }
+  .world-portal {
+    padding: 1.5rem;
+  }
+  .world-description {
+    margin-block: 1rem 1.5rem;
+  }
+}
