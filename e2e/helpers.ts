@@ -32,18 +32,19 @@ export async function roll(page: Page, direction = 1) {
 }
 export async function seedVisited(page: Page, ids: string[]) {
   await page.addInitScript((visited) => {
-    localStorage.setItem(
-      'react-world-navigation',
-      JSON.stringify({
-        version: 1,
-        state: {
-          route: ['node'],
-          cursor: 0,
-          choices: {},
-          visited: ['node', ...visited],
-        },
-      }),
-    )
+    if (!localStorage.getItem('react-world-navigation'))
+      localStorage.setItem(
+        'react-world-navigation',
+        JSON.stringify({
+          version: 1,
+          state: {
+            route: ['node'],
+            cursor: 0,
+            choices: {},
+            visited: ['node', ...visited],
+          },
+        }),
+      )
   }, ids)
 }
 export async function revisit(page: Page, idTitle: string) {
@@ -57,4 +58,21 @@ export async function revisit(page: Page, idTitle: string) {
     .getByRole('button', { name: idTitle, exact: true })
     .click()
   await settled(page)
+}
+export async function advance(page: Page, id: string) {
+  for (let attempt = 0; attempt < 4; attempt++) {
+    const current = await page
+      .locator('.world-stage')
+      .getAttribute('data-active-scene')
+    await roll(page)
+    await page.waitForTimeout(80) // Give the wheel event a rendering frame before checking its reading boundary.
+    if (
+      (await page.locator('.world-stage').getAttribute('data-active-scene')) !==
+      current
+    ) {
+      await at(page, id)
+      return
+    }
+  }
+  await at(page, id)
 }

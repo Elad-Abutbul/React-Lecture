@@ -15,7 +15,8 @@
     "format:check": "prettier . --check",
     "test": "vitest run",
     "test:watch": "vitest",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test:workshop": "node scripts/validate-workshop.mjs"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.9",

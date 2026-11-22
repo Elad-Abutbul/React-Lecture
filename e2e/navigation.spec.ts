@@ -45,7 +45,7 @@ test('mouse-wheel-only Windows installation reaches commands and learning withou
   await expect(page.locator('[data-command="CREATE_REACT"] code')).toHaveText(
     'npm create vite@latest my-app -- --template react-ts',
   )
-  await roll(page)
+  await branch(page, 'installation')
   await at(page, 'create-result')
   await branch(page, 'done')
   await at(page, 'enter')

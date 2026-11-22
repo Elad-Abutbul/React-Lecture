@@ -1284,3 +1284,113 @@ body:has(.unified-world) {
   margin-block: 1rem;
   font-size: 0.85rem;
 }
+.hands-on-entry {
+  padding: 0.75rem 1rem;
+  border-inline-start: 3px solid var(--color-violet);
+  background: linear-gradient(90deg, #a78bfa10, #61dafb0a);
+  border-radius: 0.75rem;
+}
+.hands-on-entry h2 {
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: var(--color-react);
+}
+.workshop-meta {
+  font-size: 0.75rem;
+  color: var(--color-violet);
+  line-height: 1.7;
+}
+.workshop-exercise {
+  display: grid;
+  gap: 0.75rem;
+  font-size: 0.95rem;
+}
+.workshop-tools {
+  display: flex;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 0.5rem;
+}
+.workshop-code pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  overflow: visible;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: var(--color-react);
+  margin-block: 0.75rem;
+}
+.workshop-code {
+  min-width: 0;
+  border-inline-start: 2px solid #61dafb50;
+  padding-inline: 0.75rem;
+}
+.workshop-instructor {
+  border-top: 1px solid var(--color-border);
+  padding-top: 0.5rem;
+  font-size: 0.85rem;
+}
+.workshop-instructor summary {
+  color: var(--color-muted);
+  cursor: pointer;
+  min-height: 2rem;
+}
+.workshop-exercise.is-instructor {
+  font-size: 1.1rem;
+}
+.is-instructor .workshop-code pre {
+  font-size: 1rem;
+}
+@media (max-width: 640px) {
+  .workshop-exercise {
+    font-size: 0.875rem;
+    gap: 0.6rem;
+  }
+  .workshop-tools button {
+    padding-inline: 0.6rem;
+    font-size: 0.75rem;
+  }
+  .workshop-code pre {
+    font-size: 0.7rem;
+  }
+}
+.graph-node .code-block,
+.workshop-code pre {
+  font-size: clamp(0.85rem, 1.2vw, 1rem);
+}
+.workshop-tools button,
+.workshop-code button {
+  min-height: 2.75rem;
+}
+/* Keep the reading frame below the trail; projected branch strokes never fill. */
+.graph-node-active.graph-decision .graph-reading {
+  max-height: calc(50dvh - 7rem);
+}
+.branch-line {
+  fill: none;
+  stroke: var(--color-react);
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke;
+  opacity: 0.6;
+  stroke-dasharray: 0.035 0.012;
+  animation: branch-flow 18s linear infinite;
+}
+.branch-line-left {
+  stroke: var(--color-violet);
+}
+@keyframes branch-flow {
+  to {
+    stroke-dashoffset: -1;
+  }
+}
+@media (max-width: 640px) {
+  .graph-node-active.graph-decision .graph-reading {
+    max-height: calc(50dvh - 6.5rem);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .branch-line {
+    animation: none;
+  }
+}

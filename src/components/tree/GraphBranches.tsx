@@ -16,6 +16,7 @@ export function GraphBranches({ node }: { node: WorldNode }) {
         {edges.map((edge, i) => (
           <path
             key={edge.id}
+            fill="none"
             d={`M 500 110 C 500 250 ${(1000 * (i + 0.5)) / edges.length} 320 ${(1000 * (i + 0.5)) / edges.length} 500`}
             className={`branch-line branch-line-${edge.direction}`}
             pathLength="1"
