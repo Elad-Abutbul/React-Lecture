@@ -298,3 +298,22 @@ src/
 - סדנת Hands-on משתמשת באותו canvas ובאותו renderer router, עם state מתמיד נפרד. המיקומים והקשרים שלה נובעים מ־`constants/handsOn.ts`; התוכן והפתרונות מ־`content/handsOn.ts` ו־`content/handsOnSolutions.ts`.
 - רכיבי הסדנה: EntryCard, ExerciseNode, CodeSnippet, HintStepper, CheckpointQuestion, WorkshopProgress ו־InstructorMode. אין router נוסף, ספריות state/animation כפולות או API מדומה.
 - עבור דוגמאות H08–H11 נדרשת בדיקת TypeScript/production build של קובצי הפתרון בפועל, בנוסף לבדיקות האתר. קוד מוצג כתוכן, ללא eval.
+
+## 16. Immersive World — ארכיטקטורה מחליפה
+
+עדכון זה גובר על ה־AppShell וה־FlowCanvas המוטמעים ועל פריסה של עמוד כרטיסים. קוד ותוכן לימודי קיימים נשמרים אך מורכבים כסצנות במסך מלא.
+
+- `ImmersiveWorld`: viewport קבוע; `world-stage` יחיד עם transform מצלמה, סצנות במיקומים מ־constants וקשרי SVG. גלילת document טבעית אחת מזינה ScrollTrigger; אין scroll containers פנימיים.
+- `useWorldCamera`: GSAP camera object/quick setters, מיפוי scroll אל קואורדינטות x/y/zoom, מעבר אלכסוני בבחירה, zoom-out להסתעפות, cleanup מלא ותגובה לשינוי רוחב. לא מבצעים setState בכל פיקסל.
+- `constants/world.ts`: הגדרות סצנות, מידות, מסלולים, offsets, camera presets, parallax ו־cursor spring. תוכן נשאר ב־content. renderer מתחלף לפי סוג סצנה, ללא שכפול מנוע המסלול.
+- החלטות ופקודות אינן מושלמות בגלילה. כניסה לנתיב היא לחיצה על סצנת ענף; כל אישור ביצוע הוא ידני. מקלדת, touch ו־reduced motion מציעים את אותם נתיבים עם תנועה מינימלית.
+- `Atmosphere` / `ReactAtom`: שכבות קלות ועצלות, DPR מוגבל, fallbacks ללא WebGL. אין תלות ב־3D לשום משימה. סמן העכבר אינו מוסתר כשהדבר פוגע בשימושיות.
+- התקנה, לימוד וסדנה משתמשים באותו עולם; משימות סדנה מורכבות בתצוגות משימה/קוד/רמזים/בדיקה בתוך הסצנה. עותק מלא של קובץ ארוך זמין להעתקה/הורדה ללא גלילה מקוננת.
+
+## 17. מרכז החלטה ומנוע מחוות
+
+- `constants/gestures.ts`: ספים, מרווח איפוס מחווה, מיפוי כיוון פיזי לכל choice, שמות כיוונים והנחיות. `gesture-engine.ts` בודק intent באופן טהור; hook מקומי ל־wheel/keydown/touch מנקה listeners ו־cooldown.
+- צומת השורש התצוגתי והלוגי הוא Node.js; צמתי פתיחה ישנים יכולים להישאר כתוכן היסטורי, ללא כפיית מסך פתיחה. migrate של persist משמר בחירות והשלמות משמעותיות.
+- קנבס עולם fixed ממלא viewport. שאלת הסצנה הפעילה מרוכזת בלוח פוקוס מלא־מסך; חיבורים וציוני מרחב מאחוריו נעים באמת ב־x/y דרך GSAP/ScrollTrigger. אין קלפים רחוקים או מסגור תרשים.
+- horizontal intent בוחר רק בצומתי שאלה. שדות, קוד, Dialog ו־Tabs אינם מאבדים את מקשי החצים שלהם. Wheel אנכי רגיל נשאר native. במגע נדרשת החלקה אופקית מכוונת.
+- reduced motion שומר את אותם כיוונים ופקדים ללא טיסת מצלמה; סמן React אינו מסתיר את הסמן הנגיש. בדיקות browser בודקות deltaX קטן/גדול, diagonal, מקלדת וחזרה לצומת משותף.

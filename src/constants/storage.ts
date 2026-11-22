@@ -1,4 +1,4 @@
 export const JOURNEY_STORAGE = {
   key: 'react-journey-progress',
-  version: 1,
+  version: 2,
 } as const

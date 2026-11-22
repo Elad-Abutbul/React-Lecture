@@ -47,22 +47,20 @@ test('only prunes downstream choices when switching an OS', () => {
     { ...newProject, node: 'no', os: 'mac', windows: 'done' },
     Object.keys(newProject),
   )
-  expect(result.choices).toEqual({ start: 'yes', node: 'no', os: 'mac' })
-  expect(result.completedNodeIds).toEqual(['start', 'node'])
+  expect(result.choices).toEqual({ node: 'no', os: 'mac' })
+  expect(result.completedNodeIds).toEqual(['node'])
 })
 test('stops at an unanswered node', () =>
-  expect(getActivePath({ start: 'yes' }).map((n) => n.id)).toEqual([
-    'start',
-    'node',
-  ]))
+  expect(getActivePath({ start: 'yes' }).map((n) => n.id)).toEqual(['node']))
 test('does not advance for an invalid choice', () =>
   expect(getNextNode(JOURNEY_NODES[0], { start: 'missing' })).toBeUndefined())
 test('accepts explicit recovery edges but bounds a traversal', () => {
   expect(validateJourneyGraph(JOURNEY_NODES)).toEqual([])
-  expect(getActivePath({ start: 'no', why: 'done' }).map((n) => n.id)).toEqual([
-    'start',
-    'why',
-  ])
+  expect(
+    getActivePath({ start: 'no', why: 'done' }, JOURNEY_NODES, 'start').map(
+      (n) => n.id,
+    ),
+  ).toEqual(['start', 'why'])
 })
 test('rejects cycles, missing targets, duplicates and missing roots', () => {
   const node: JourneyNode = {
@@ -83,7 +81,7 @@ test('rejects cycles, missing targets, duplicates and missing roots', () => {
     ]),
   )
   expect(validateJourneyGraph([])).toContain('missing start')
-  expect(getActivePath({ start: 'loop' }, [node])).toHaveLength(1)
+  expect(getActivePath({ start: 'loop' }, [node], 'start')).toHaveLength(1)
 })
 test('failed checkpoints are not completed', () =>
   expect(
@@ -91,4 +89,4 @@ test('failed checkpoints are not completed', () =>
       'start',
       'verify',
     ]).completedNodeIds,
-  ).toEqual(['start']))
+  ).toEqual([]))
