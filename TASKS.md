@@ -305,9 +305,11 @@
 - **אימות ביצוע:** test: validate immersive navigation across desktop mobile and reduced motion; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### T24C — נגישות, מובייל ואימות עץ מרחבי
-- [ ] **תלויות:** IM05.
+- [x] **תלויות:** IM05.
 - **לבצע:** תצוגת עץ רספונסיבית, בחירה במקלדת, ללא overflow; אימות מסלולים, בחירה ושינוי ענף בדפדפן.
 - **קבלה:** lint/test/build ובדיקת דפדפן של ההסתעפות, האיחודים והמצלמה עוברים.
+
+- **אימות ביצוע:** test: verify responsive spatial branch merges and accessible world camera; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### T25 — Props (הורה → ילד)
 - [ ] **תלויות:** T24.
