@@ -240,9 +240,11 @@
 - **אימות ביצוע:** feat: define spatial branch positions and clickable merged graph nodes; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### T24B — מצלמת גלילה והסתעפות
-- [ ] **תלויות:** T24A.
+- [x] **תלויות:** T24A.
 - **לבצע:** stage דביק, גלילה אנכית לאורך המסלול, zoom-out בהחלטה, תנועה אלכסונית בבחירה, קווי SVG מתקדמים; מצב pan/zoom אופציונלי.
 - **קבלה:** גלילה אינה בוחרת תשובות או מאשרת פקודות; reduced motion ללא תנועה מורכבת; הגדרות מצלמה ב־constants.
+
+- **אימות ביצוע:** feat: animate a scroll-driven spatial tree camera with decision zoom; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### T24C — נגישות, מובייל ואימות עץ מרחבי
 - [ ] **תלויות:** T24B.

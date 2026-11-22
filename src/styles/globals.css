@@ -551,3 +551,75 @@ html {
   border-color: var(--color-violet);
   box-shadow: 0 0 20px color-mix(in srgb, var(--color-violet) 15%, transparent);
 }
+.tree-scroll-track {
+  position: relative;
+}
+.tree-stage {
+  position: sticky;
+  top: 5.5rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+  align-items: start;
+  gap: 1.5rem;
+  padding-bottom: 2rem;
+}
+.tree-canvas {
+  height: 65vh;
+  min-height: 24rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  direction: ltr;
+  background: var(--color-bg);
+  --tree-progress: 1;
+}
+.tree-details {
+  max-height: 73vh;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-muted) transparent;
+  padding: 0.25rem;
+}
+.spatial-edge {
+  stroke: var(--color-muted);
+  stroke-width: 2;
+  opacity: 0.16;
+}
+.spatial-edge-active {
+  opacity: 1;
+  stroke: var(--color-react);
+  stroke-dasharray: 1;
+  stroke-dashoffset: calc(1 - var(--tree-progress));
+}
+.spatial-edge-available {
+  opacity: 0.8;
+  stroke: var(--color-violet);
+}
+@media (max-width: 1023px) {
+  .tree-stage {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    top: 6.5rem;
+  }
+  .tree-canvas {
+    height: 32vh;
+    min-height: 12rem;
+  }
+  .tree-details {
+    max-height: 40vh;
+  }
+  .tree-stage .node-card {
+    padding: 1.25rem;
+  }
+  .tree-scroll-track {
+    min-height: 80vh !important;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .spatial-edge-active {
+    stroke-dashoffset: 0;
+  }
+  .tree-scroll-track {
+    min-height: 80vh !important;
+  }
+}
