@@ -52,10 +52,12 @@
 - **אימות ביצוע:** feat: add Tailwind v4 and shared design tokens; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### T04 — רכיבי UI, אייקונים ופונטים
-- [ ] **תלויות:** T03.
+- [x] **תלויות:** T03.
 - **לבצע:** להגדיר shadcn/ui + Radix, רכיבי Button/Card/Badge/Tooltip/Progress הנחוצים; Lucide; פונטים מקומיים IBM Plex Sans Hebrew ו־JetBrains Mono ממקור עם רישיון מתאים ו־`font-display: swap`.
 - **קבצים:** `src/components/ui/*`, `src/assets/fonts/*`, `src/styles/globals.css`.
 - **קבלה:** רכיב דמו מעוצב וטקסט עברי/קוד נראים תקין גם ללא טעינת פונט מרשת חיצונית.
+
+- **אימות ביצוע:** feat: add shadcn primitives and licensed local typography; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### T05 — מעטפת RTL ומבנה עמוד
 - [ ] **תלויות:** T04.
