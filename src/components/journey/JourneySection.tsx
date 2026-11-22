@@ -1,3 +1,4 @@
+import { focusJourneyNode } from '@/lib/journey-focus'
 import { useState } from 'react'
 import { RotateCcw } from 'lucide-react'
 import { Section } from '@/components/layout/Section'
@@ -5,8 +6,11 @@ import { Button } from '@/components/ui/button'
 import { ConfirmationDialog } from '@/components/ui/ConfirmationDialog'
 import { JOURNEY_COPY } from '@/content/journey'
 import { useJourneyStore } from '@/store/journey-store'
+import FlowCanvas from './FlowCanvas'
 import { MobileJourney } from './MobileJourney'
+import { useWideLayout } from '@/hooks/useWideLayout'
 export function JourneySection() {
+  const wide = useWideLayout()
   const [resetOpen, setResetOpen] = useState(false)
   const reset = useJourneyStore((s) => s.reset)
   return (
@@ -18,13 +22,16 @@ export function JourneySection() {
           {JOURNEY_COPY.reset}
         </Button>
       </div>
-      <MobileJourney />
+      {wide ? <FlowCanvas /> : <MobileJourney />}
       <ConfirmationDialog
         open={resetOpen}
         onOpenChange={setResetOpen}
         title={JOURNEY_COPY.resetTitle}
         description={JOURNEY_COPY.resetDescription}
-        onConfirm={reset}
+        onConfirm={() => {
+          reset()
+          focusJourneyNode(useJourneyStore.getState().currentNodeId)
+        }}
       />
     </Section>
   )

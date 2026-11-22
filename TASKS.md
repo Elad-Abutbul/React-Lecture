@@ -148,37 +148,47 @@
 - **אימות ביצוע:** feat: connect the complete vertical installation journey; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### T15 — מפת זרימה בדסקטופ
-- [ ] **תלויות:** T14.
+- [x] **תלויות:** T14.
 - **לבצע:** להשתמש ב־`@xyflow/react` להצגת הצמתים והקשרים בדסקטופ עם custom nodes. לעצב כמפת מסלול *קריאה*; לשמור את כל תוכן ההחלטות וקבלת ההחלטות במנוע הקיים.
 - **קבצים:** `src/components/journey/FlowCanvas.tsx`, `src/lib/flow-layout.ts`, `src/components/journey/flow-nodes/*`.
 - **קבלה:** נתיב נבחר מודגש; כל תשובה עובדת; אין גלילה שנלכדת במפת העץ; אינטראקציה נשמרת גם בתצוגה האנכית.
 
+- **אימות ביצוע:** feat: add custom React Flow route map with shared node details; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
+
 ### T16 — מעבר רספונסיבי בין תצוגות
-- [ ] **תלויות:** T15.
+- [x] **תלויות:** T15.
 - **לבצע:** דסקטופ: מפה + חלונית פרטים; מובייל: מסלול אנכי; טאבלט: פריסה פשוטה. שני הממשקים חולקים store ואינם כפולים למשתמש בו־זמנית.
 - **קבצים:** `src/components/journey/JourneySection.tsx`, `FlowCanvas.tsx`, `MobileJourney.tsx`.
 - **קבלה:** החלפת רוחב לא מאפסת מסלול; אין גלילה אופקית או כפתורים בלתי נגישים.
 
+- **אימות ביצוע:** feat: share journey state across responsive map and vertical views; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
+
 ### T17 — Motion ומערכת אנימציות
-- [ ] **תלויות:** T06, T16.
+- [x] **תלויות:** T06, T16.
 - **לבצע:** להוסיף Motion, presets מאוחדים (reveal, branch, node-focus) ותמיכה ב־`prefers-reduced-motion`. אנימציות רק של opacity/transform ככל האפשר.
 - **קבצים:** `src/constants/animation.ts`, `src/components/motion/Reveal.tsx`, `src/hooks/useReducedMotion.ts`.
 - **קבלה:** הופעת מקטעים מתונה; בהפחתת תנועה כל המידע זמין ללא המתנה לאנימציה.
 
+- **אימות ביצוע:** feat: add restrained reveal and branch animations with reduced motion; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
+
 ### T18 — קווי נתיב שמגיבים לגלילה
-- [ ] **תלויות:** T17.
+- [x] **תלויות:** T17.
 - **לבצע:** `DrawPath` עם SVG + `useScroll`/`useTransform`, highlight לצומת פעיל ולענף שנבחר, בלי להזיז viewport בכוח. לקשור למקטע המתאים, לא לגלילת כל העמוד באופן שרירותי.
 - **קבצים:** `src/components/motion/DrawPath.tsx`, `src/components/journey/DecisionEdge.tsx`.
 - **קבלה:** הקו מתגלה בהדרגה בזמן גלילה; אין קפיצות layout או התרסקות בצומת משתנה.
 
+- **אימות ביצוע:** feat: draw scroll-linked journey paths and selected flow edges; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
+
 ### T19 — ProgressRail וניווט מקטעים
-- [ ] **תלויות:** T18.
+- [x] **תלויות:** T18.
 - **לבצע:** מד התקדמות דביק לפי שלבים **שהושלמו** (לא אחוזי scroll), ניווט למקטעים, הדגשת המקטע הנצפה באמצעות observer. אפשר לחזור לכל שלב.
 - **קבצים:** `src/components/layout/ProgressRail.tsx`, `src/hooks/useActiveSection.ts`.
 - **קבלה:** התקדמות נכונה אחרי שינוי ענף; הדגשת מקטע משתנה עם גלילה; ניווט מקלדת תקין.
 
+- **אימות ביצוע:** feat: add completed-step progress and observed section navigation; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
+
 ### T20 — ליטוש גלילה ובחירה
-- [ ] **תלויות:** T19.
+- [x] **תלויות:** T19.
 - **לבצע:** `scroll-margin`, גלילה מרוסנת רק לאחר פעולה מפורשת, focus נכון בפתיחת ענף, מניעת layout shift. לבדוק אם Lenis בכלל נחוץ; אם לא — להשאיר גלילה native.
 - **קבצים:** `src/components/journey/*`, `src/styles/globals.css`.
 - **קבלה:** גלילה רגילה עם עכבר, touch ומקלדת; אין scroll-jacking; reduced motion נשמר.
@@ -186,6 +196,8 @@
 ---
 
 ## שלב ד — תוכן לימודי המבוסס על המצגת
+
+- **אימות ביצוע:** fix: preserve native scrolling and focus newly selected journey steps; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### T21 — ״למה React?״ ומחשבה הצהרתית
 - [ ] **תלויות:** T05.

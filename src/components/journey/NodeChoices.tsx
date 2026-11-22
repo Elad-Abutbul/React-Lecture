@@ -1,3 +1,4 @@
+import { focusJourneyNode } from '@/lib/journey-focus'
 import { useState } from 'react'
 import type { JourneyNode } from '@/types/journey'
 import { useJourneyStore } from '@/store/journey-store'
@@ -10,6 +11,10 @@ export function NodeChoices({ node }: { node: JourneyNode }) {
   const completed = useJourneyStore((s) => s.completedNodeIds)
   const choose = useJourneyStore((s) => s.choose)
   const [pending, setPending] = useState<string | null>(null)
+  function apply(id: string) {
+    choose(node.id, id)
+    focusJourneyNode(useJourneyStore.getState().currentNodeId)
+  }
   function select(id: string) {
     const path = getActivePath(choices)
     const index = path.findIndex((n) => n.id === node.id)
@@ -19,7 +24,7 @@ export function NodeChoices({ node }: { node: JourneyNode }) {
       path.slice(index + 1).some((n) => completed.includes(n.id))
     )
       setPending(id)
-    else choose(node.id, id)
+    else apply(id)
   }
   return (
     <>
@@ -45,7 +50,7 @@ export function NodeChoices({ node }: { node: JourneyNode }) {
         title={JOURNEY_COPY.changeTitle}
         description={JOURNEY_COPY.changeDescription}
         onConfirm={() => {
-          if (pending) choose(node.id, pending)
+          if (pending) apply(pending)
         }}
       />
     </>
