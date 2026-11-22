@@ -1,81 +1,152 @@
-# React-Lecture
+# React Lecture
 
-React Journey is a Hebrew learning experience based on the React workshop presentation.
-This repository currently contains **T01–T02**: a minimal React + TypeScript + Vite
-application with code-quality tooling and one application smoke test. The
-specification and task plan are in the parent directory:
-`../REQUIREMENTS.md`, `../DESIGN.md`, and `../TASKS.md`.
+A Hebrew RTL React learning world. Installation instructions, troubleshooting,
+presentation lessons, code, live experiments, quizzes, and the hands-on workshop
+share one spatial graph and one guided camera.
 
-## Run locally
+## Run
 
-Use a Node.js version satisfying `engines.node` in `package.json`; this range
-accounts for Vite and the development/test tools. The pnpm version is also recorded
-in `package.json`. Run these commands from this directory:
+Use the Node and pnpm versions specified in `package.json`.
 
 ```sh
 pnpm install --frozen-lockfile
 pnpm dev
 ```
 
-Open the local URL printed by Vite. To build and preview the production application:
+Open the local URL printed by Vite. For a production preview:
 
 ```sh
 pnpm build
 pnpm preview
 ```
 
-## Checks
+## Navigation
 
-```sh
-pnpm lint
-pnpm format:check
-pnpm test
-pnpm build
-```
+- A deliberate downward wheel gesture advances one logical stop. Upward gestures
+  return one stop. Camera travel and a quiet interval suppress repeated transitions
+  from a single gesture or its momentum.
+- At a decision, a horizontal or diagonal trackpad gesture chooses the physical
+  left or right branch. Mouse-wheel users can place the pointer over a branch
+  region and scroll down. Clicking the region is optional.
+- Arrow keys and Enter/Space on a focused branch offer keyboard alternatives.
+  Up/Down and PageUp/PageDown support reading and movement. Touch supports swipes
+  and branch taps.
+- Long content has one focusable reading surface. Scroll through it first; a new
+  deliberate gesture at its boundary changes the stop. The document itself does
+  not compete for scrolling.
+- The compact trail identifies the current path. The searchable map can revisit
+  older explored branches. Choices change freely without confirmation dialogs.
+- The bottom bar measures camera position in the exposed path. Visits and
+  scrolling do **not** certify that commands or exercises worked on another computer.
 
-- `lint` uses ESLint with the recommended JavaScript, TypeScript, React Hooks, and
-  Vite Fast Refresh rules. Warnings fail the check. Oxlint has been removed.
-- `format:check` verifies Prettier formatting; `pnpm format` applies it. Generated
-  output and the package-manager lockfile are excluded.
-- `test` runs Vitest once in jsdom with React Testing Library and jest-dom
-  matchers. The smoke test checks that the application renders its Hebrew title
-  and introduction inside the main landmark. `pnpm test:watch` starts watch mode.
-- `build` checks the application and Vite configuration with TypeScript strict
-  mode before generating the production bundle. Test/setup files are type-checked
-  but are not part of the browser entry point or its production bundle.
+## Hands-on workshop
 
-The `@/` import alias resolves to `src/` in TypeScript, Vite, and Vitest. Test
-cleanup runs after each case. TypeScript uses the latest stable release within
-the installed typescript-eslint version's
-[supported range](https://typescript-eslint.io/users/dependency-versions/).
+At **“יוצרים את הפרויקט”**, below the Vite command, the left branch opens the
+workshop; the right branch continues installation. The workshop stays in the same
+world and rejoins the shared learning path.
 
-## Structure and scope
+The 120-minute plan has H01–H11 and two class pauses: 13 units. The 90-minute plan
+uses H01–H08, skips the first pause, budgets H06 at 12 minutes and H08 at 13 minutes,
+and ends with a five-minute class check: 85 + 5 = 90. Snapshot, Effect, and the final
+challenge remain available as bonuses and are never automatically completed.
+
+Each station has a goal, mission, starter snippet or command, expected result,
+question, two progressive hints, and a hidden solution. Complete code remains readable within its stop; copying and downloading preserve
+the exact file. The H04–H11
+solutions build one consistent task application. H10 loads validated saved tasks
+before synchronizing changes, and its timer cleanup demonstration is separate.
+
+Optional personal checks, skipped flags, hint levels, the time plan, and instructor
+preferences persist independently of navigation. Instructor tools include larger
+code, a manual timer, station selection, questions, and solutions. Class checks
+ask participants to show screens or raise hands. There is no class-monitoring API.
+
+## Architecture
 
 ```text
-index.html           Hebrew RTL document and React mount point
-src/main.tsx         React entry point with StrictMode
-src/app/App.tsx      Minimal application component
-src/app/App.test.tsx  Application smoke test
-src/content/app.ts   Centralized application copy
-src/test/setup.ts    DOM matchers and test cleanup
-vite.config.ts       React plugin, source alias, and Vitest configuration
-tsconfig*.json       Strict TypeScript configuration
-eslint.config.js    ESLint rules and Prettier compatibility
-.prettierrc.json     Shared formatting conventions
+src/app/App.tsx                   Mounts the immersive world
+src/content/worldGraph.ts         Canonical graph, composed from educational data
+src/content/handsOnGraph.ts       Workshop nodes, branches, and merge points
+src/constants/graphNavigation.ts  Coordinates, gesture thresholds, camera settings
+src/lib/graph-navigation.ts       Path expansion, reachability, wheel normalization
+src/store/graph-store.ts          Authoritative route, cursor, visits, traversed edges
+src/hooks/useGraphGesture.ts      One gesture interpreter for navigation and reading
+src/hooks/useGraphCamera.ts       GSAP camera targets and continuous path progress
+src/components/tree/              World-space paths, content, branches, trail, map
+src/components/hands-on/          Exercises, source utilities, live task board, timer
+src/content/handsOnSolutions.ts   Complete learner project snapshots
+src/store/hands-on-store.ts       Separate versioned personal practice state
+src/constants/atmosphere.ts       Nebulae, particles, orbitals, cursor, 3D budget
+src/content/                     Presentation copy, commands, files, questions, hints
 ```
 
-The existing repository and its original title were retained. The scaffold was
-generated separately with the official `react-ts` template, then copied here
-without its demo, styles, or assets. Styling, fonts, layout components, the Hero,
-and journey features belong to later tasks. T03 (Tailwind and design tokens) has
-not been started.
+Nodes and SVG connections use the same world coordinates. Single-edge chains open
+up to the next decision; returning troubleshooting branches rejoin their original
+command. An active branch change replaces the current suffix while retaining an
+archive of visited nodes and actual traversed connections. Retry history is
+compacted when it rejoins an earlier node, preventing unbounded loops.
 
-Native browser scrolling is retained. Lenis was omitted because anchors, touch,
-keyboard scrolling, and reduced motion work without an additional scrolling layer.
-Focus moves only after explicit journey actions, never on hydration or passive scrolling.
-The tracked specifications mirror the originals in the parent directory; task progress
-is updated in both copies after validation.
+Only the active node mounts its full interactive content. Surrounding nodes remain
+as smaller landmarks; SVG connections remain mounted throughout camera travel.
+Camera and progress updates write transforms and CSS values without React state
+updates on every animation frame. Arrival animations reveal stable text after
+landing. The active application uses guided GSAP targets, not competing native
+scroll or ScrollTrigger handlers. Historical renderers remain for reference and
+legacy component tests; they are not mounted by `App`.
 
-The local-variable half of CounterDemo deliberately reproduces the workshop
-anti-pattern. Only its immutability lint rule is disabled, with an inline rationale;
-tests verify that this value does not refresh the UI while the State counter does.
+Motion drives the desktop atom cursor while retaining the normal cursor. The
+optional lazy React Three Fiber/Drei atmosphere limits DPR and frame frequency,
+pauses rendering when hidden, and falls back to SVG on touch, reduced motion,
+unsupported WebGL, or software rendering. CSS nebulae and orbital layers provide
+the remaining atmosphere. Fonts are local, with licenses under `src/assets/fonts`.
+
+## Persistence and scope
+
+Navigation uses versioned `react-world-navigation` storage and migrates meaningful
+legacy installation progress. Practice uses `react-hands-on-progress`; the live task
+board uses `react-workshop-demo-tasks`. Malformed values are sanitized. The live
+board can keep working in memory if storage is unavailable. No backend, login,
+telemetry, arbitrary-code execution, or fake classroom statistics are involved.
+
+Commands are copied exactly and run only in the learner's terminal. The website
+does not install Node, inspect local files, execute commands, or validate external
+work. Optional self-checks are explicit personal statements.
+
+## Validation
+
+```sh
+pnpm format:check
+pnpm lint
+pnpm test
+pnpm build
+pnpm test:workshop
+pnpm exec playwright test
+```
+
+The production build includes strict TypeScript checks. Vitest covers graph
+transitions, retries, storage, commands, lesson experiments, cleanup, hints, timers,
+and task persistence. The workshop check creates isolated temporary projects from
+each complete H04–H11 snapshot and runs strict TypeScript plus a Vite production
+build for each.
+
+Playwright uses a production preview on port 5176 with desktop, mobile, and reduced
+motion Chromium profiles. It checks wheel-only installation, diagonal gestures,
+momentum, backward navigation, branch switching, commands, existing projects,
+workshop entry, source copying, persistence, long reading, SVG alignment, resizing,
+keyboard focus, RTL overflow, and automated WCAG checks through axe.
+
+Set `SCREENSHOT_DIR` when running Playwright to export the verified desktop and
+mobile decision views. Browser tests create their own isolated storage; they do not
+reset the user's development preview.
+
+## Specifications and workflow
+
+`REQUIREMENTS.md`, `DESIGN.md`, `TASKS.md`, and `HANDS_ON.md` are tracked here, with
+mirrored copies in the parent workspace. Later navigation amendments override the
+historical manual-confirmation and linear-layout requirements. `TASKS.md` records
+validation evidence and preserves the original task history.
+
+Use a dedicated feature branch for each phase and Conventional Commits. Validate
+before merging locally into `main`, then push the validated merge to `origin` as
+authorized. Fetch remote changes first and preserve history; never force push or
+commit secrets.
