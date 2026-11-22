@@ -200,10 +200,12 @@
 - **אימות ביצוע:** fix: preserve native scrolling and focus newly selected journey steps; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### T21 — ״למה React?״ ומחשבה הצהרתית
-- [ ] **תלויות:** T05.
+- [x] **תלויות:** T05.
 - **לבצע:** להשוות בצורה חיה בין עדכון DOM ידני לבין React; להבהיר שבקוד קטן Vanilla JS מתאים, ו־React הוא ספרייה ולא שפה/שרת. להציג ״מה״ לעומת ״איך״.
 - **קבצים:** `src/content/lessons.ts`, `src/components/lessons/WhyReactSection.tsx`, `src/components/demos/ImperativeVsDeclarative.tsx`.
 - **קבלה:** לחיצה משנה מונה ונותנת השוואה מוחשית; לא רק שתי תמונות קוד.
+
+- **אימות ביצוע:** feat: teach declarative UI with live manual DOM and React counters; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### T22 — React לעומת Vite
 - [ ] **תלויות:** T21.
