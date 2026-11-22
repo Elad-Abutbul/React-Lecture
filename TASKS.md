@@ -60,10 +60,12 @@
 - **אימות ביצוע:** feat: add shadcn primitives and licensed local typography; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### T05 — מעטפת RTL ומבנה עמוד
-- [ ] **תלויות:** T04.
+- [x] **תלויות:** T04.
 - **לבצע:** להגדיר `lang="he" dir="rtl"` במסמך; ליצור `AppShell`, `Header`, `Footer`, מכולות sections עם עוגנים ומסגרת רספונסיבית. הטקסטים ומזהי הסעיפים ב־`constants/navigation.ts`.
 - **קבצים:** `index.html`, `src/components/layout/*`, `src/constants/navigation.ts`, `src/app/App.tsx`.
 - **קבלה:** יש כותרת + אזורי עמוד בטוחים לגלילה; אין overflow אופקי ברוחב מובייל; קוד באנגלית יוגדר LTR ברכיב ייעודי בהמשך.
+
+- **אימות ביצוע:** feat: build responsive Hebrew RTL application shell; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### T06 — Hero אינטראקטיבי ראשון
 - [ ] **תלויות:** T05.
