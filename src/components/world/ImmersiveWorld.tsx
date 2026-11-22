@@ -1,5 +1,11 @@
+import { Atmosphere } from './Atmosphere'
+import { ReactCursor } from './ReactCursor'
+import { Progress } from '@/components/ui/progress'
+import { WorldLearningScene } from './WorldLearningScene'
+import { WorldMenu } from './WorldMenu'
+import { LEARNING_SCENES } from '@/content/learningScenes'
 import { useRef, useState, useCallback, useMemo } from 'react'
-import { Atom, RotateCcw } from 'lucide-react'
+import { Atom, RotateCcw, Compass } from 'lucide-react'
 import { JOURNEY_NODES, JOURNEY_COPY } from '@/content/journey'
 import { WORLD, WORLD_COPY } from '@/constants/world'
 import {
@@ -7,7 +13,7 @@ import {
   GESTURE_COPY,
   type BranchDirection,
 } from '@/constants/gestures'
-import { getActivePath } from '@/lib/journey-engine'
+import { getActivePath, getJourneyProgress } from '@/lib/journey-engine'
 import { useJourneyStore } from '@/store/journey-store'
 import { useWorldStore } from '@/store/world-store'
 import { useWorldViewport } from '@/hooks/useWorldViewport'
@@ -19,6 +25,8 @@ import { WorldJourneyScene } from './WorldJourneyScene'
 import { WorldPaths } from './WorldPaths'
 import { DirectionGuide } from './DirectionGuide'
 export function ImmersiveWorld() {
+  const mode = useWorldStore((s) => s.mode)
+  const [menuOpen, setMenuOpen] = useState(false)
   const choices = useJourneyStore((s) => s.choices)
   const completed = useJourneyStore((s) => s.completedNodeIds)
   const [active, setActive] = useState('node')
@@ -32,8 +40,11 @@ export function ImmersiveWorld() {
   const space = useRef<HTMLDivElement>(null)
   const viewport = useWorldViewport()
   const route = useMemo(
-    () => getActivePath(choices).map((n) => n.id),
-    [choices],
+    () =>
+      mode === 'learning'
+        ? LEARNING_SCENES.map((s) => s.id)
+        : getActivePath(choices).map((n) => n.id),
+    [choices, mode],
   )
   const changeScene = useCallback((id: string) => setActive(id), [])
   const changeReveal = useCallback(() => undefined, [])
@@ -77,7 +88,12 @@ export function ImmersiveWorld() {
     },
     [node.id, select],
   )
-  useBranchGesture(node.kind === 'question', node.id, direction)
+  useBranchGesture(
+    mode === 'journey' && node.kind === 'question',
+    node.id,
+    direction,
+  )
+  const progress = getJourneyProgress(choices, completed)
   return (
     <>
       <div
@@ -90,18 +106,27 @@ export function ImmersiveWorld() {
       />
       <main
         id="main"
-        className={`world-viewport scene-${node.kind}`}
+        className={`world-viewport scene-${mode === 'learning' ? 'learning' : node.kind}`}
         aria-label={WORLD_COPY.world}
       >
-        <div className="world-aura" />
+        <Atmosphere />
+        <ReactCursor />
         <header className="world-chrome">
           <span className="brand" dir="ltr">
             <Atom className="text-react" aria-hidden="true" />
             {WORLD_COPY.brand}
           </span>
           <div className="flex items-center gap-3">
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label={WORLD_COPY.map}
+              onClick={() => setMenuOpen(true)}
+            >
+              <Compass aria-hidden="true" />
+            </Button>
             <span className="font-mono text-sm text-react" dir="ltr">
-              {completed.length}
+              {progress.percent}%
             </span>
             <Button
               variant="ghost"
@@ -113,28 +138,42 @@ export function ImmersiveWorld() {
             </Button>
           </div>
         </header>
+        <Progress
+          className="world-progress"
+          value={progress.percent}
+          aria-label={JOURNEY_COPY.progress}
+        />
         <div ref={stage} className="world-stage">
           <WorldPaths route={route} active={active} />
         </div>
-        <div className="world-focus" data-active-scene={node.id}>
-          <WorldJourneyScene
-            key={node.id}
-            node={node}
-            onChoose={(choiceId) => select(node.id, choiceId)}
-          />
-          {node.kind === 'question' && <DirectionGuide node={node} />}
+        <div className="world-focus" data-active-scene={active}>
+          {mode === 'learning' ? (
+            <WorldLearningScene key={active} id={active} />
+          ) : (
+            <WorldJourneyScene
+              key={node.id}
+              node={node}
+              onChoose={(choiceId) => select(node.id, choiceId)}
+            />
+          )}
+          {mode === 'journey' && node.kind === 'question' && (
+            <DirectionGuide node={node} />
+          )}
         </div>
         <footer className="world-footer">
           <span>
-            {node.kind === 'question' ? GESTURE_COPY.wheel : WORLD_COPY.scroll}
+            {mode === 'journey' && node.kind === 'question'
+              ? GESTURE_COPY.wheel
+              : WORLD_COPY.scroll}
           </span>
           <span className="font-mono text-xs text-muted" dir="ltr">
-            {node.id}
+            {active}
           </span>
         </footer>
         <p className="sr-only" role="status">
           {announcement}
         </p>
+        <WorldMenu open={menuOpen} onOpenChange={setMenuOpen} />
         <ConfirmationDialog
           open={pending !== null}
           onOpenChange={(open) => {

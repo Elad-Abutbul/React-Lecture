@@ -25,9 +25,9 @@ export function useBranchGesture(
     if (!enabled) return
     const ignored = (target: EventTarget | null) =>
       target instanceof Element && !!target.closest(GESTURE.ignoreSelector)
-    const select = (direction: BranchDirection) => {
+    const select = (direction: BranchDirection, deliberate = false) => {
       const now = performance.now()
-      if (now - lastSelected.current < GESTURE.cooldown) return
+      if (!deliberate && now - lastSelected.current < GESTURE.cooldown) return
       lastSelected.current = now
       intent.current = { sum: 0, lastAt: now }
       needsQuiet.current = true
@@ -73,7 +73,7 @@ export function useBranchGesture(
       const direction = KEY_DIRECTIONS[event.key]
       if (direction) {
         event.preventDefault()
-        select(direction)
+        select(direction, true)
       }
     }
     function start(event: TouchEvent) {

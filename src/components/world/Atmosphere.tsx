@@ -1,0 +1,77 @@
+import {
+  lazy,
+  Suspense,
+  useEffect,
+  useState,
+  Component,
+  type ReactNode,
+} from 'react'
+import { ATMOSPHERE } from '@/constants/atmosphere'
+import { useFinePointer } from '@/hooks/useFinePointer'
+import { useReducedMotion } from '@/hooks/useReducedMotion'
+import { AtomGlyph } from './AtomGlyph'
+const ReactAtomScene = lazy(() => import('./ReactAtomScene'))
+class VisualFallback extends Component<
+  { children: ReactNode },
+  { failed: boolean }
+> {
+  state = { failed: false }
+  static getDerivedStateFromError() {
+    return { failed: true }
+  }
+  render() {
+    return this.state.failed ? <AtomGlyph /> : this.props.children
+  }
+}
+export function Atmosphere() {
+  const fine = useFinePointer()
+  const reduced = useReducedMotion()
+  const [supported, setSupported] = useState(false)
+  useEffect(() => {
+    if (!fine || reduced) return
+    const frame = requestAnimationFrame(() => {
+      try {
+        const canvas = document.createElement('canvas')
+        const context = canvas.getContext('webgl2')
+        setSupported(!!context)
+        context?.getExtension('WEBGL_lose_context')?.loseContext()
+      } catch {
+        setSupported(false)
+      }
+    })
+    return () => cancelAnimationFrame(frame)
+  }, [fine, reduced])
+  return (
+    <div className="world-atmosphere" aria-hidden="true">
+      <div className="world-aura" />
+      <div className="world-grid" />
+      <div className="atmosphere-atom">
+        {fine && !reduced && supported ? (
+          <VisualFallback>
+            <Suspense fallback={<AtomGlyph />}>
+              <ReactAtomScene />
+            </Suspense>
+          </VisualFallback>
+        ) : (
+          <AtomGlyph />
+        )}
+      </div>
+      <div className="world-particles">
+        {ATMOSPHERE.particles.map((p) => (
+          <span
+            key={p.id}
+            className="world-particle"
+            style={{
+              left: `${p.x}%`,
+              top: `${p.y}%`,
+              width: p.size,
+              height: p.size,
+              animationDuration: `${p.duration}s`,
+              animationDelay: `${p.delay}s`,
+            }}
+          />
+        ))}
+      </div>
+    </div>
+  )
+}

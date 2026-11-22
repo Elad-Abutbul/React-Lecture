@@ -83,3 +83,25 @@ export function validateJourneyGraph(
   for (const n of nodes) visit(n.id)
   return errors
 }
+export function getJourneyProgress(
+  choices: Choices,
+  completed: readonly string[],
+) {
+  const path = getActivePath(choices)
+  const count = path.filter((n) => completed.includes(n.id)).length
+  function depth(node: JourneyNode, seen: Set<string>): number {
+    if (seen.has(node.id)) return 0
+    const nextSeen = new Set([...seen, node.id])
+    const children = node.choices
+      .filter((c) => !c.retry && c.complete !== false)
+      .map((c) => JOURNEY_NODES.find((n) => n.id === c.nextNodeId))
+      .filter((n): n is JourneyNode => !!n)
+    return 1 + Math.max(0, ...children.map((n) => depth(n, nextSeen)))
+  }
+  const total = path.length - 1 + depth(path.at(-1)!, new Set())
+  return {
+    count,
+    total,
+    percent: Math.round((count / Math.max(1, total)) * 100),
+  }
+}

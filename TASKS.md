@@ -284,24 +284,32 @@
 - **אימות ביצוע:** feat: center full-screen decisions and replace yes-no clicks with guarded gestures; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### IM03 — הרחבת העולם לכל תוכן ההתקנה והלימוד
-- [ ] **תלויות:** GX03.
+- [x] **תלויות:** GX03.
 - **לבצע:** renderer סצנות וקשרים לגרף הקיים, איחודים, פרטי פקודות, checkpoints, progress ו־persist; להכין חיבור למסלול Hands-on בלי לאבד התקנה רגילה.
 - **קבלה:** מסלולי התקנה קיימים עובדים בסצנות מלאות; מאשרים ידנית בלבד; אין תוכן JSX קשיח.
 
+- **אימות ביצוע:** feat: reconnect installation and learning content as full-screen world scenes; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
+
 ### IM04 — אווירה, אטום תלת־ממדי וסמן spring
-- [ ] **תלויות:** IM03.
+- [x] **תלויות:** IM03.
 - **לבצע:** רקעי סצנות דינמיים, עומק, חלקיקים, paths זוהרים, פרלקסה; R3F/Drei עם fallback; אטום עוקב עכבר ושביל עדין.
 - **קבלה:** אין אפקט סמן במגע/reduced motion; 3D אינו חוסם אינטראקציה; אין טעינות WebGL מיותרות במצב מופחת.
 
+- **אימות ביצוע:** feat: add layered atmosphere lazy 3D atom and accessible spring cursor; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
+
 ### IM05 — אימות עולם, נגישות וביצועים בדפדפן
-- [ ] **תלויות:** IM04.
+- [x] **תלויות:** IM04.
 - **לבצע:** לבדוק מצלמה, בחירה ישירה, scroll, מקלדת, מובייל, reduced motion, מניעת nested scrolling ו־overflow; לתקן לפני מיזוג.
 - **קבלה:** lint/test/build ובדיקת דפדפן עוברים; צילום ותיעוד מוכיחים שינוי נקודת מבט.
 
+- **אימות ביצוע:** test: validate immersive navigation across desktop mobile and reduced motion; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
+
 ### T24C — נגישות, מובייל ואימות עץ מרחבי
-- [ ] **תלויות:** IM05.
+- [x] **תלויות:** IM05.
 - **לבצע:** תצוגת עץ רספונסיבית, בחירה במקלדת, ללא overflow; אימות מסלולים, בחירה ושינוי ענף בדפדפן.
 - **קבלה:** lint/test/build ובדיקת דפדפן של ההסתעפות, האיחודים והמצלמה עוברים.
+
+- **אימות ביצוע:** test: verify responsive spatial branch merges and accessible world camera; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### T25 — Props (הורה → ילד)
 - [ ] **תלויות:** T24.
