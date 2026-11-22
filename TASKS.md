@@ -336,10 +336,12 @@
 - **אימות ביצוע:** feat: demonstrate render snapshots queued updates and commit-paint phases; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### T28 — useEffect ותלויות
-- [ ] **תלויות:** T27.
+- [x] **תלויות:** T27.
 - **לבצע:** דמו שמסנכרן `document.title` עם מונה; להסביר למה Effect מיועד לסנכרון חיצוני ולא לחישוב רגיל בתוך render; להמחיש הבדלים בין `[]`, `[x]` וללא מערך.
 - **קבצים:** `src/components/demos/EffectDemo.tsx`, `src/components/lessons/EffectSection.tsx`.
 - **קבלה:** הכותרת משתנה בהתאם לערך; לא נוצרה לולאת effect.
+
+- **אימות ביצוע:** feat: demonstrate external title synchronization and effect dependencies; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### T29 — Cleanup וטיימר
 - [ ] **תלויות:** T28.

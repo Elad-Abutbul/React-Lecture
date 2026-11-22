@@ -180,3 +180,38 @@ export const RENDER_PHASES = [
     body: 'הדפדפן מציג את התוצאה. Render ו־Paint הם תהליכים שונים.',
   },
 ] as const
+export const EFFECT: Lesson = {
+  id: 'effect',
+  title: 'מדברים עם העולם שבחוץ.',
+  body: 'Effect מסנכרן את React עם מערכת חיצונית אחרי ה־Commit: כותרת לשונית, טיימר או מאזין. ערך שאפשר לחשב בזמן render אינו צריך Effect.',
+  code: "useEffect(() => {\n  const previousTitle = document.title\n  document.title = 'Likes: ' + count\n  return () => { document.title = previousTitle }\n}, [count])",
+  check: {
+    prompt: 'מתי Effect מתאים?',
+    options: ['לחישוב count * 2', 'לסנכרון כותרת הלשונית עם count'],
+    answer: 1,
+    explanation:
+      'כותרת הדפדפן היא מערכת חיצונית ל־React. הכפלה של ערך אפשר לחשב ישירות בזמן render.',
+  },
+}
+export const EFFECT_UI = {
+  prefix: 'React Journey · Likes: ',
+  increment: 'עדכון המונה והכותרת',
+  title: 'כותרת הלשונית כעת',
+  dependencies: 'מתי ה־Effect רץ?',
+} as const
+export const EFFECT_MODES = [
+  {
+    code: 'useEffect(fn)',
+    description: 'אחרי כל Commit רלוונטי של הקומפוננטה.',
+  },
+  {
+    code: 'useEffect(fn, [])',
+    description:
+      'בהתקנה, עם Cleanup בהסרה. ב־StrictMode בפיתוח יש בדיקת הפעלה וניקוי נוספת.',
+  },
+  {
+    code: 'useEffect(fn, [x])',
+    description:
+      'בהתקנה ושוב כש־x משתנה. הניקוי הקודם מתבצע לפני הסנכרון החדש.',
+  },
+] as const

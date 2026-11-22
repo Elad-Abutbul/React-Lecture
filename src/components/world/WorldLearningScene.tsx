@@ -1,3 +1,4 @@
+import { EffectSection } from '@/components/lessons/EffectSection'
 import { RenderSection } from '@/components/lessons/RenderSection'
 import { StateSection } from '@/components/lessons/StateSection'
 import { PropsSection } from '@/components/lessons/PropsSection'
@@ -49,6 +50,7 @@ function ToolRoles() {
   )
 }
 const DEMOS: Record<string, () => React.ReactNode> = {
+  effect: EffectSection,
   snapshot: RenderSection,
   state: StateSection,
   props: PropsSection,
