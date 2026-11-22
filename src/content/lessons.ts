@@ -102,3 +102,24 @@ export const COMPONENT_UI = {
     'ביטויים דינמיים נכנסים בתוך {}.',
   ],
 } as const
+export const PROPS: Lesson = {
+  id: 'props',
+  title: 'ההורה שולח. הילד מציג.',
+  body: 'Props הם קלט לקריאה בלבד, מהורה לילד. אותו רכיב יכול להופיע עם ערכים שונים, בלי לשנות את הקוד שלו. משנים את השם בהורה ורואים את הילד מתעדכן.',
+  code: 'type GreetingProps = { readonly name: string }\nfunction Greeting({ name }: GreetingProps) {\n  return <h3>Hello {name}!</h3>\n}\n\nfunction Parent() {\n  return <>\n    <Greeting name="Dana" />\n    <Greeting name="Yuval" />\n  </>\n}',
+  check: {
+    prompt: 'באיזה כיוון עוברים Props?',
+    options: ['מהורה לילד', 'מילד להורה'],
+    answer: 0,
+    explanation:
+      'ההורה קובע את הקלט. הילד קורא ומציג אותו; הוא אינו משנה את ה־Props.',
+  },
+}
+export const PROPS_UI = {
+  label: 'השם שההורה שולח',
+  initial: 'דנה',
+  second: 'יובל',
+  greeting: 'שלום, ',
+  parent: 'הורה',
+  child: 'שני מופעים של אותו ילד',
+} as const

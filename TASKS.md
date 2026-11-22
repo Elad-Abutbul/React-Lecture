@@ -312,10 +312,12 @@
 - **אימות ביצוע:** test: verify responsive spatial branch merges and accessible world camera; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### T25 — Props (הורה → ילד)
-- [ ] **תלויות:** T24.
+- [x] **תלויות:** T24.
 - **לבצע:** רכיב הורה בוחר שם והילד מציג אותו; להציג שני מופעים עם אותו רכיב; להדגיש props לקריאה בלבד.
 - **קבצים:** `src/components/demos/PropsDemo.tsx`, `src/components/lessons/PropsSection.tsx`.
 - **קבלה:** שינוי השם בהורה משנה את הטקסט בילד בלי שינוי קוד הילד.
+
+- **אימות ביצוע:** feat: demonstrate readonly parent-to-child props with live input; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### T26 — State ו־useState
 - [ ] **תלויות:** T25.

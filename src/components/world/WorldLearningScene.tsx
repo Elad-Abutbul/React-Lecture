@@ -1,3 +1,4 @@
+import { PropsSection } from '@/components/lessons/PropsSection'
 import { useState, useId } from 'react'
 import { Tabs } from 'radix-ui'
 import { LEARNING_SCENES } from '@/content/learningScenes'
@@ -46,6 +47,7 @@ function ToolRoles() {
   )
 }
 const DEMOS: Record<string, () => React.ReactNode> = {
+  props: PropsSection,
   declarative: ImperativeVsDeclarative,
   'react-vite': ToolRoles,
   components: ComponentsDemo,
