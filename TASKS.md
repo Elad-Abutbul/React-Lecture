@@ -96,10 +96,12 @@
 - **אימות ביצוע:** feat: model every setup branch and recovery route as content; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### T09 — מנוע מסלול טהור
-- [ ] **תלויות:** T08.
+- [x] **תלויות:** T08.
 - **לבצע:** ליצור פונקציות טהורות `getActivePath`, `getNextNode`, `reconcileChoices`, `validateJourneyGraph`, עם הגנה ממחזורים ויעדים לא קיימים. שינוי בחירה מוחק רק בחירות/השלמות שכבר אינן במסלול התקף.
 - **קבצים:** `src/lib/journey-engine.ts`, `src/lib/journey-engine.test.ts`.
 - **קבלה:** בדיקות למסלול Windows, macOS, Node קיים, פרויקט קיים, שגיאה, שינוי בחירה וגרף פגום עוברות.
+
+- **אימות ביצוע:** feat: implement pure route reconciliation and graph validation; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### T10 — Zustand ושמירה מקומית
 - [ ] **תלויות:** T09.
