@@ -15,8 +15,13 @@ export function useGraphCamera(
     revision = useGraphStore((s) => s.revision)
   const reduced = useReducedMotion(),
     camera = useRef({ ...GRAPH_NAV.origin, index: 0 })
+  const previous = useRef({ cursor, revision })
   useLayoutEffect(() => {
     if (!stage.current) return
+    const shouldFocus =
+      previous.current.cursor !== cursor ||
+      previous.current.revision !== revision
+    previous.current = { cursor, revision }
     const element = stage.current,
       target = GRAPH_BY_ID[route[cursor]].position
     function apply() {
@@ -43,11 +48,17 @@ export function useGraphCamera(
       const main = element.closest<HTMLElement>('main')
       main?.style.setProperty(
         '--camera-x',
-        String((c.x - GRAPH_NAV.origin.x) * GRAPH_NAV.parallax.x),
+        String(
+          Math.sin((c.x - GRAPH_NAV.origin.x) / GRAPH_NAV.parallax.period) *
+            GRAPH_NAV.parallax.x,
+        ),
       )
       main?.style.setProperty(
         '--camera-y',
-        String((c.y - GRAPH_NAV.origin.y) * GRAPH_NAV.parallax.y),
+        String(
+          Math.sin((c.y - GRAPH_NAV.origin.y) / GRAPH_NAV.parallax.period) *
+            GRAPH_NAV.parallax.y,
+        ),
       )
     }
     element.setAttribute('data-camera-busy', 'true')
@@ -61,6 +72,10 @@ export function useGraphCamera(
       onComplete: () => {
         element.setAttribute('data-camera-busy', 'false')
         useGraphStore.getState().arrive()
+        if (shouldFocus)
+          element
+            .querySelector<HTMLElement>('.graph-node-active .graph-reading')
+            ?.focus({ preventScroll: true })
       },
     })
     apply()

@@ -5,7 +5,15 @@ import { useHandsOnStore } from '@/store/hands-on-store'
 import { useGraphStore } from '@/store/graph-store'
 import { plannedMinutes } from '@/lib/hands-on'
 import { Button } from '../ui/button'
-export function InstructorMode({ id }: { id: string }) {
+export function InstructorMode({
+  id,
+  onSolution,
+  onQuestion,
+}: {
+  id: string
+  onSolution?: () => void
+  onQuestion?: () => void
+}) {
   const plan = useHandsOnStore((s) => s.plan),
     instructor = useHandsOnStore((s) => s.instructor)
   const duration = plannedMinutes(id, plan) * HANDS_ON.secondsPerMinute
@@ -32,6 +40,20 @@ export function InstructorMode({ id }: { id: string }) {
         />
         {COPY.instructor}
       </label>
+      {instructor && (
+        <div className="my-2 flex flex-wrap gap-2">
+          {onSolution && (
+            <Button size="sm" variant="outline" onClick={onSolution}>
+              {COPY.instructorSolution}
+            </Button>
+          )}
+          {onQuestion && (
+            <Button size="sm" variant="outline" onClick={onQuestion}>
+              {COPY.instructorQuestion}
+            </Button>
+          )}
+        </div>
+      )}
       <label>
         {COPY.station}
         <select
@@ -49,7 +71,8 @@ export function InstructorMode({ id }: { id: string }) {
       <p className="my-2">
         {COPY.timer}:{' '}
         <time dir="ltr">
-          {Math.floor(remaining / 60)}:{String(remaining % 60).padStart(2, '0')}
+          {Math.floor(remaining / HANDS_ON.secondsPerMinute)}:
+          {String(remaining % HANDS_ON.secondsPerMinute).padStart(2, '0')}
         </time>
       </p>
       <div className="flex flex-wrap gap-2">
@@ -73,7 +96,10 @@ export function InstructorMode({ id }: { id: string }) {
         <Button
           size="sm"
           variant="ghost"
-          onClick={() => useHandsOnStore.getState().reset()}
+          onClick={() => {
+            useHandsOnStore.getState().reset()
+            useHandsOnStore.getState().visit(id)
+          }}
         >
           {COPY.reset}
         </Button>

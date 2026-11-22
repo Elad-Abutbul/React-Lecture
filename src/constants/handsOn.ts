@@ -1,7 +1,6 @@
 export const HANDS_ON = {
   storage: { key: 'react-hands-on-progress', version: 1 },
   demoKey: 'react-workshop-demo-tasks',
-  previewLines: 10,
   timerTick: 1000,
   secondsPerMinute: 60,
   plans: {
@@ -53,6 +52,8 @@ export const HANDS_ON_COPY = {
   excerpt: 'תצוגה מקוצרת; הקובץ המלא זמין להעתקה ולהורדה',
   source: 'קובצי הפתרון',
   instructor: 'מצב מרצה',
+  instructorSolution: 'הצג פתרון למרצה',
+  instructorQuestion: 'הצג שאלת בדיקה',
   timer: 'טיימר ידני לתחנה',
   start: 'הפעלת טיימר',
   stop: 'עצירת הטיימר',
@@ -85,3 +86,30 @@ export const HANDS_ON_COPY = {
   done: 'הושלם',
   pending: 'בתהליך',
 } as const
+
+export const HANDS_ON_POSITIONS: Record<string, { x: number; y: number }> = {
+  'workshop-plan': { x: -1200, y: 5350 },
+  'workshop-90': { x: -2100, y: 5800 },
+  'workshop-120': { x: -300, y: 5800 },
+  H01: { x: -1500, y: 6400 },
+  H02: { x: -2300, y: 6800 },
+  'H02-enter': { x: -1500, y: 7100 },
+  'H02-install': { x: -700, y: 7400 },
+  H03: { x: -1500, y: 7700 },
+  'H03-html': { x: -2300, y: 8000 },
+  'H03-main': { x: -1500, y: 8300 },
+  'H03-app': { x: -700, y: 8600 },
+  H04: { x: -1500, y: 8900 },
+  H05: { x: -2300, y: 9200 },
+  'pause-1': { x: -1450, y: 9500 },
+  H06: { x: -3100, y: 9800 },
+  H07: { x: -2300, y: 10100 },
+  H08: { x: -1500, y: 10400 },
+  'pause-2': { x: -2300, y: 10700 },
+  H09: { x: -1450, y: 11000 },
+  H10: { x: -650, y: 11300 },
+  'H10-cleanup': { x: -1450, y: 11600 },
+  H11: { x: -2250, y: 11900 },
+  'workshop-summary-90': { x: -3150, y: 11500 },
+  'workshop-summary-120': { x: -1450, y: 12300 },
+}

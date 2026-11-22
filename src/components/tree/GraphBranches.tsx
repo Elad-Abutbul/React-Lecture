@@ -1,8 +1,10 @@
 import type { WorldNode } from '@/types/worldGraph'
-import { GRAPH_COPY } from '@/constants/graphNavigation'
+import { GRAPH_COPY, GRAPH_NAV } from '@/constants/graphNavigation'
 import { GRAPH_BY_ID } from '@/content/worldGraph'
 import { useGraphStore } from '@/store/graph-store'
 export function GraphBranches({ node }: { node: WorldNode }) {
+  const projection = GRAPH_NAV.projection
+  const busy = useGraphStore((state) => state.transitioning)
   if (node.edges.length < 2) return null
   const edges = [...node.edges].sort((a, b) =>
     a.direction === b.direction ? 0 : a.direction === 'left' ? -1 : 1,
@@ -11,13 +13,18 @@ export function GraphBranches({ node }: { node: WorldNode }) {
     <aside
       className={`graph-branches graph-branches-${edges.length}`}
       aria-label={GRAPH_COPY.branches}
+      aria-hidden={busy}
     >
-      <svg viewBox="0 0 1000 600" preserveAspectRatio="none" aria-hidden="true">
+      <svg
+        viewBox={`0 0 ${projection.width} ${projection.height}`}
+        preserveAspectRatio="none"
+        aria-hidden="true"
+      >
         {edges.map((edge, i) => (
           <path
             key={edge.id}
             fill="none"
-            d={`M 500 110 C 500 250 ${(1000 * (i + 0.5)) / edges.length} 320 ${(1000 * (i + 0.5)) / edges.length} 500`}
+            d={`M ${projection.startX} ${projection.startY} C ${projection.startX} ${projection.curveY} ${(projection.width * (i + 0.5)) / edges.length} ${projection.approachY} ${(projection.width * (i + 0.5)) / edges.length} ${projection.endY}`}
             className={`branch-line branch-line-${edge.direction}`}
             pathLength="1"
           />
@@ -27,11 +34,11 @@ export function GraphBranches({ node }: { node: WorldNode }) {
         {edges.map((edge) => (
           <button
             type="button"
+            disabled={busy}
             key={edge.id}
             data-edge-id={edge.id}
             className={`graph-branch branch-${edge.direction}`}
             onClick={() => useGraphStore.getState().select(edge.id)}
-            aria-label={edge.label}
           >
             <span className="graph-branch-label">
               <span aria-hidden="true" dir="ltr">

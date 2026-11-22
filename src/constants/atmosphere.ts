@@ -1,5 +1,16 @@
 export const ATMOSPHERE = {
   frameMs: 50,
+  topicHue: {
+    props: 8,
+    state: -15,
+    effect: 24,
+    cleanup: 36,
+    declarative: -8,
+    H04: 8,
+    H06: 18,
+    H08: -12,
+    H10: 30,
+  } as Record<string, number>,
   particles: Array.from({ length: 64 }, (_, index) => ({
     id: index,
     x: (index * 47 + 11) % 100,
