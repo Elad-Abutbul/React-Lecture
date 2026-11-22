@@ -88,10 +88,12 @@
 - **אימות ביצוע:** feat: define journey types and verified installation commands; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### T08 — תוכן עץ ההחלטות
-- [ ] **תלויות:** T07.
+- [x] **תלויות:** T07.
 - **לבצע:** ליצור את כל הצמתים והמעברים מ־`REQUIREMENTS.md`: התחלה → Node מותקן? → Windows/macOS → בדיקה → פרויקט קיים/חדש → 4 פקודות → דפדפן עובד? → קבצים. לכלול ענף ״לא רוצה כרגע״, עזרה בשגיאה ואופציות Git/VS Code לא מחייבות.
 - **קבצים:** `src/content/journey.ts`.
 - **קבלה:** לכל תשובה יש `nextNodeId` קיים; תוכן ההתקנה נשלף מה־constants ולא משוכפל.
+
+- **אימות ביצוע:** feat: model every setup branch and recovery route as content; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### T09 — מנוע מסלול טהור
 - [ ] **תלויות:** T08.
