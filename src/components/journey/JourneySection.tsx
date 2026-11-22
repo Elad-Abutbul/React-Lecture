@@ -6,7 +6,10 @@ import { ConfirmationDialog } from '@/components/ui/ConfirmationDialog'
 import { JOURNEY_COPY } from '@/content/journey'
 import { useJourneyStore } from '@/store/journey-store'
 import FlowCanvas from './FlowCanvas'
+import { MobileJourney } from './MobileJourney'
+import { useWideLayout } from '@/hooks/useWideLayout'
 export function JourneySection() {
+  const wide = useWideLayout()
   const [resetOpen, setResetOpen] = useState(false)
   const reset = useJourneyStore((s) => s.reset)
   return (
@@ -18,7 +21,7 @@ export function JourneySection() {
           {JOURNEY_COPY.reset}
         </Button>
       </div>
-      <FlowCanvas />
+      {wide ? <FlowCanvas /> : <MobileJourney />}
       <ConfirmationDialog
         open={resetOpen}
         onOpenChange={setResetOpen}

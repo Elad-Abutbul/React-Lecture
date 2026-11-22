@@ -156,10 +156,12 @@
 - **אימות ביצוע:** feat: add custom React Flow route map with shared node details; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### T16 — מעבר רספונסיבי בין תצוגות
-- [ ] **תלויות:** T15.
+- [x] **תלויות:** T15.
 - **לבצע:** דסקטופ: מפה + חלונית פרטים; מובייל: מסלול אנכי; טאבלט: פריסה פשוטה. שני הממשקים חולקים store ואינם כפולים למשתמש בו־זמנית.
 - **קבצים:** `src/components/journey/JourneySection.tsx`, `FlowCanvas.tsx`, `MobileJourney.tsx`.
 - **קבלה:** החלפת רוחב לא מאפסת מסלול; אין גלילה אופקית או כפתורים בלתי נגישים.
+
+- **אימות ביצוע:** feat: share journey state across responsive map and vertical views; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### T17 — Motion ומערכת אנימציות
 - [ ] **תלויות:** T06, T16.
