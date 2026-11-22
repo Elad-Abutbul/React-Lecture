@@ -8,3 +8,5 @@ export const LINKS = {
   vscode: 'https://code.visualstudio.com/',
   git: 'https://git-scm.com/downloads',
 } as const
+
+export const TOOL_NAMES = { vscode: 'VS Code', git: 'Git' } as const

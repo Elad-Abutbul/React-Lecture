@@ -112,10 +112,12 @@
 - **אימות ביצוע:** feat: persist reconciled journey progress with Zustand; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### T11 — QuestionNode ו־ExplanationNode
-- [ ] **תלויות:** T08, T10.
+- [x] **תלויות:** T08, T10.
 - **לבצע:** לבנות כרטיס שאלה ובחירות נגישות, כרטיס הסבר, סטטוסים נבחר/הושלם/ממתין והודעת אזהרה אם החלפת בחירה מוחקת התקדמות.
 - **קבצים:** `src/components/journey/QuestionNode.tsx`, `ExplanationNode.tsx`, `NodeStatus.tsx`.
 - **קבלה:** אפשר לבחור, לשנות, לחזור; התשובות מגיעות מנתונים; מקלדת ו־focus עובדים.
+
+- **אימות ביצוע:** feat: add accessible decision cards and branch-change confirmation; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### T12 — CommandCard
 - [ ] **תלויות:** T07, T11.
