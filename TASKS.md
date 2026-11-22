@@ -44,10 +44,12 @@
 - **תוצאות בדיקה:** `pnpm lint` עבר ללא אזהרות; `pnpm test` עבר עם **בדיקה אחת וקובץ בדיקות אחד**; `pnpm build`, `pnpm format:check`, `pnpm install --frozen-lockfile --strict-peer-dependencies` ו־`git diff --check` עברו. T03 לא החלה.
 
 ### T03 — Tailwind ו־design tokens
-- [ ] **תלויות:** T02.
+- [x] **תלויות:** T02.
 - **לבצע:** להתקין Tailwind v4 דרך Vite, להגדיר theme/colors/radii/shadows לפי `DESIGN.md`, reset וגוף האתר. ללא צבעים קשיחים בקומפוננטות.
 - **קבצים:** `src/styles/globals.css`, `vite.config.ts`, `src/constants/theme.ts` רק לערכים הנדרשים ב־TS.
 - **קבלה:** צבעי React מופיעים; אין שגיאות CSS/Build.
+
+- **אימות ביצוע:** feat: add Tailwind v4 and shared design tokens; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### T04 — רכיבי UI, אייקונים ופונטים
 - [ ] **תלויות:** T03.
