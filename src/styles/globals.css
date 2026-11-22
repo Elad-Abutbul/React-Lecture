@@ -202,3 +202,106 @@ html {
     transition: none !important;
   }
 }
+@layer components {
+  .hero {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    align-items: center;
+    gap: 2rem;
+    min-height: 80vh;
+    padding-block: 5rem 2rem;
+  }
+  .hero h1 {
+    max-width: 12ch;
+    font-size: clamp(3rem, 5.6vw, 5.75rem);
+    font-weight: 600;
+    letter-spacing: -0.04em;
+  }
+  .hero-description {
+    max-width: 35rem;
+    font-size: 1.2rem;
+    color: var(--color-muted);
+    margin-top: 2rem;
+  }
+  .atom-stage {
+    position: relative;
+    display: grid;
+    place-items: center;
+    aspect-ratio: 1;
+    max-width: 30rem;
+    width: 100%;
+    justify-self: center;
+    color: var(--color-react);
+  }
+  .atom {
+    width: 100%;
+    filter: drop-shadow(
+      0 0 15px color-mix(in srgb, var(--color-react) 25%, transparent)
+    );
+    animation: orbit 60s linear infinite;
+  }
+  .atom-halo {
+    position: absolute;
+    inset: 10%;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle,
+      color-mix(in srgb, var(--color-react) 10%, transparent),
+      transparent 70%
+    );
+    border: 1px solid var(--color-border);
+  }
+  .atom-label {
+    position: absolute;
+    bottom: 0;
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    color: var(--color-muted);
+  }
+  .hero-route {
+    grid-column: 1/-1;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 1.5rem;
+    border-block: 1px solid var(--color-border);
+    padding-block: 1.5rem;
+    margin-top: 3rem;
+    color: var(--color-muted);
+    font-size: 0.875rem;
+  }
+  .hero-route li {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+  }
+  .route-dot {
+    display: block;
+    width: 0.5rem;
+    height: 0.5rem;
+    border: 1px solid var(--color-react);
+    border-radius: 50%;
+  }
+}
+@keyframes orbit {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (max-width: 768px) {
+  .hero {
+    grid-template-columns: 1fr;
+    padding-top: 3rem;
+  }
+  .atom-stage {
+    max-width: 17rem;
+    grid-row: 2;
+  }
+  .hero h1 {
+    font-size: clamp(2.75rem, 10vw, 4rem);
+  }
+  .hero-route {
+    margin-top: 1rem;
+  }
+}

@@ -68,7 +68,7 @@
 - **אימות ביצוע:** feat: build responsive Hebrew RTL application shell; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### T06 — Hero אינטראקטיבי ראשון
-- [ ] **תלויות:** T05.
+- [x] **תלויות:** T05.
 - **לבצע:** Hero עם כותרת, תיאור, אטום React דקורטיבי בסגנון SVG/CSS, וכפתור ״מתחילים״ שגולל לעץ ההתקנה. להגדיר טקסט ב־`src/content/hero.ts`.
 - **קבצים:** `src/components/layout/Hero.tsx`, `src/content/hero.ts`.
 - **קבלה:** הכפתור באמת גולל לעוגן; האטום אינו חוסם אינטראקציה והעיצוב עובד במובייל.
@@ -76,6 +76,8 @@
 ---
 
 ## שלב ב — מודל נתונים והתקנת React (ללא אנימציה מורכבת)
+
+- **אימות ביצוע:** feat: create responsive React hero with working journey anchor; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### T07 — טיפוסים, פקודות וקישורים
 - [ ] **תלויות:** T02.
