@@ -327,3 +327,13 @@ html {
     background: var(--color-surface);
   }
 }
+@layer components {
+  .command-card {
+    margin-top: 1.25rem;
+    overflow: hidden;
+    min-width: 0;
+    border-radius: 0.75rem;
+    border: 1px solid var(--color-border);
+    background: var(--color-bg);
+  }
+}

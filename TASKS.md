@@ -120,10 +120,12 @@
 - **אימות ביצוע:** feat: add accessible decision cards and branch-change confirmation; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### T12 — CommandCard
-- [ ] **תלויות:** T07, T11.
+- [x] **תלויות:** T07, T11.
 - **לבצע:** בלוק פקודה LTR עם Copy, הודעת ״הועתק״, הסבר מה הפקודה עושה וכפתורי ״בוצע״ / ״יש שגיאה״. להפריד מזהה פקודה מהצגה.
 - **קבצים:** `src/components/journey/CommandCard.tsx`, `src/components/journey/CommandNode.tsx`.
 - **קבלה:** העתקה מעתיקה בדיוק את הפקודה; ״בוצע״ אינו מופעל בלי אישור משתמש; אין טענה להרצה אוטומטית.
+
+- **אימות ביצוע:** feat: add precise copy-only command cards and manual confirmation; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### T13 — בדיקת סביבה ופתרון תקלות
 - [ ] **תלויות:** T12.
