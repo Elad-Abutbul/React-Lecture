@@ -104,10 +104,12 @@
 - **אימות ביצוע:** feat: implement pure route reconciliation and graph validation; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### T10 — Zustand ושמירה מקומית
-- [ ] **תלויות:** T09.
+- [x] **תלויות:** T09.
 - **לבצע:** store של `choices`, `completedNodeIds`, `currentNodeId`, פעולות בחירה/השלמה/חזרה/איפוס; persist עם מפתח קבוע וגרסת סכמה ל־`localStorage`. לחשב מסלול פעיל מהמנוע, לא לשכפל לוגיקה.
 - **קבצים:** `src/store/journey-store.ts`, `src/constants/storage.ts`, בדיקות store.
 - **קבלה:** רענון שומר התקדמות; שינוי ענף מנקה התקדמות לא רלוונטית; איפוס עובד.
+
+- **אימות ביצוע:** feat: persist reconciled journey progress with Zustand; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### T11 — QuestionNode ו־ExplanationNode
 - [ ] **תלויות:** T08, T10.
