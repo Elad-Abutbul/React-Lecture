@@ -208,10 +208,12 @@
 - **אימות ביצוע:** feat: teach declarative UI with live manual DOM and React counters; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### T22 — React לעומת Vite
-- [ ] **תלויות:** T21.
+- [x] **תלויות:** T21.
 - **לבצע:** מקטע קצר עם שתי כרטיסיות תפקידים ופקודות יצירת הפרויקט מתוך `COMMANDS`.
 - **קבצים:** `src/components/lessons/ReactViteSection.tsx`, עדכון `src/content/lessons.ts`.
 - **קבלה:** יש הבחנה נכונה בין ספריית UI לכלי פיתוח; אין פקודות סותרות.
+
+- **אימות ביצוע:** feat: distinguish React and Vite using shared setup commands; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### T23 — עץ קבצים לחיץ
 - [ ] **תלויות:** T14.

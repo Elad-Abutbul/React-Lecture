@@ -1,3 +1,4 @@
+import { COMMANDS } from '@/constants/commands'
 import type { Lesson } from '@/types/lesson'
 export const LESSON_UI = {
   check: 'רגע של בדיקה',
@@ -26,3 +27,35 @@ export const WHY_REACT: Lesson = {
   },
 }
 export const COUNTER_CONFIG = { initial: 0, step: 1 } as const
+export const REACT_VITE: Lesson = {
+  id: 'react-vite',
+  title: 'React בונה ממשק. Vite מפעיל את סביבת העבודה.',
+  body: 'React ו־Vite עושים עבודות שונות ומשלימות. בוחרים תבנית React + TypeScript, ואז מתקינים תלויות ומפעילים שרת פיתוח.',
+  code: [
+    COMMANDS.CREATE_REACT,
+    COMMANDS.ENTER_PROJECT,
+    COMMANDS.INSTALL,
+    COMMANDS.DEV,
+  ]
+    .map((c) => c.code)
+    .join('\n'),
+  check: {
+    prompt: 'מי מספק שרת פיתוח ובנייה לפרודקשן?',
+    options: ['React', 'Vite'],
+    answer: 1,
+    explanation:
+      'Vite הוא כלי הפיתוח והבנייה. React הוא הספרייה שמרכיבה ומעדכנת את ממשק המשתמש.',
+  },
+}
+export const TOOL_ROLES = [
+  {
+    name: 'React',
+    role: 'ספריית ממשק',
+    description: 'רכיבים, JSX, Props, State ו־Hooks.',
+  },
+  {
+    name: 'Vite',
+    role: 'כלי פיתוח',
+    description: 'יצירת פרויקט, שרת פיתוח, טעינת שינויים ובנייה לפרודקשן.',
+  },
+] as const

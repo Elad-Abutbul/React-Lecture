@@ -1,3 +1,4 @@
+import { ReactViteSection } from './ReactViteSection'
 import { Section } from '@/components/layout/Section'
 import { LessonSection } from './LessonSection'
 import { ImperativeVsDeclarative } from '@/components/demos/ImperativeVsDeclarative'
@@ -8,6 +9,7 @@ export function WhyReactSection() {
       <LessonSection lesson={WHY_REACT}>
         <ImperativeVsDeclarative />
       </LessonSection>
+      <ReactViteSection />
     </Section>
   )
 }
