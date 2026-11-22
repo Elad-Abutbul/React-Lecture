@@ -328,10 +328,12 @@
 - **אימות ביצוע:** feat: teach functional state updates versus nonreactive local variables; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### T27 — Snapshot ו־Render/Commit/Paint
-- [ ] **תלויות:** T26.
+- [x] **תלויות:** T26.
 - **לבצע:** דמו שמראה ערך `count` הישן ב־handler לעומת הערך לאחר רינדור; תרשים של טריגר → Render → Commit → Paint. לציין שלא כל Render משנה DOM.
 - **קבצים:** `src/components/demos/SnapshotDemo.tsx`, `src/components/lessons/RenderSection.tsx`.
 - **קבלה:** ההתנהגות תואמת React ואינה טוענת ש־`setCount` מעדכן משתנה מיד בתוך handler.
+
+- **אימות ביצוע:** feat: demonstrate render snapshots queued updates and commit-paint phases; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### T28 — useEffect ותלויות
 - [ ] **תלויות:** T27.

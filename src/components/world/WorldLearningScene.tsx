@@ -1,3 +1,4 @@
+import { RenderSection } from '@/components/lessons/RenderSection'
 import { StateSection } from '@/components/lessons/StateSection'
 import { PropsSection } from '@/components/lessons/PropsSection'
 import { useState, useId } from 'react'
@@ -48,6 +49,7 @@ function ToolRoles() {
   )
 }
 const DEMOS: Record<string, () => React.ReactNode> = {
+  snapshot: RenderSection,
   state: StateSection,
   props: PropsSection,
   declarative: ImperativeVsDeclarative,

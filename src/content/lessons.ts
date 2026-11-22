@@ -146,3 +146,37 @@ export const STATE_UI = {
   note: 'בכוונה לא רואים עדכון בצד המשתנה הרגיל: שינויו אינו מבקש רינדור. ברינדור הבא הוא נוצר מחדש.',
   reset: 'איפוס המונה',
 } as const
+export const SNAPSHOT: Lesson = {
+  id: 'snapshot',
+  title: 'ה־handler רואה צילום מצב. הרינדור הבא רואה ערך חדש.',
+  body: 'setCount מבקש רינדור נוסף; הוא אינו משנה את count בתוך ה־handler שכבר רץ. עדכון פונקציונלי מתבסס על העדכון שקדם לו בתור. לא כל Render גורם לשינוי ב־DOM.',
+  code: 'function handleClick() {\n  setCount(count + 1)\n  console.log(count) // snapshot of this render\n}\n\n// Queue three updates safely:\nsetCount(prev => prev + 1)\nsetCount(prev => prev + 1)\nsetCount(prev => prev + 1)',
+  check: {
+    prompt: 'אם count היה 0, מה ידפיס console.log מיד אחרי setCount?',
+    options: ['0', '1'],
+    answer: 0,
+    explanation:
+      'ה־handler שייך לרינדור שבו count היה 0. בקשת העדכון תופיע ברינדור הבא, ולא תשנה את המשתנה שכבר נקלט.',
+  },
+}
+export const SNAPSHOT_UI = {
+  before: 'הערך באותו handler',
+  after: 'הערך ברינדור הנוכחי',
+  single: 'בקשת עדכון אחת',
+  batchLabel: 'שלושה עדכונים פונקציונליים',
+  batch: 3,
+  empty: '—',
+  timeline: 'מהטריגר למסך',
+} as const
+export const RENDER_PHASES = [
+  { title: 'טריגר', body: 'טעינה או עדכון State מבקשים רינדור.' },
+  { title: 'Render', body: 'React מפעיל רכיבים ומחשב את תיאור הממשק החדש.' },
+  {
+    title: 'Commit',
+    body: 'React מחיל ב־DOM רק את השינויים הנחוצים. אם אין הבדל, ייתכן שלא ישתנה דבר.',
+  },
+  {
+    title: 'Paint',
+    body: 'הדפדפן מציג את התוצאה. Render ו־Paint הם תהליכים שונים.',
+  },
+] as const
