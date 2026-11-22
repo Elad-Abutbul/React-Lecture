@@ -1,6 +1,6 @@
 export const ATMOSPHERE = {
   frameMs: 50,
-  particles: Array.from({ length: 22 }, (_, index) => ({
+  particles: Array.from({ length: 64 }, (_, index) => ({
     id: index,
     x: (index * 47 + 11) % 100,
     y: (index * 31 + 7) % 100,
@@ -8,6 +8,16 @@ export const ATMOSPHERE = {
     delay: -(index % 9),
     size: (index % 3) + 1,
   })),
+  nebulae: [
+    { id: 'cyan', x: 78, y: 23, size: 75, color: '#0a839b', duration: 32 },
+    { id: 'violet', x: 12, y: 68, size: 78, color: '#44318e', duration: 41 },
+    { id: 'blue', x: 48, y: 92, size: 68, color: '#124079', duration: 37 },
+  ],
+  orbits: [
+    { id: 'near', tilt: -24, width: 120, duration: 80 },
+    { id: 'far', tilt: 24, width: 150, duration: 110 },
+    { id: 'deep', tilt: 64, width: 90, duration: 95 },
+  ],
   cursor: {
     offset: 18,
     size: 36,

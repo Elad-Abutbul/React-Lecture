@@ -16,7 +16,7 @@ export function WorldJourneyScene({
 }) {
   const [tip, setTip] = useState(0)
   const tips = node.helpKey ? TROUBLESHOOTING[node.helpKey] : []
-  const Heading = node.kind === 'question' ? 'h1' : 'h2'
+  const Heading = 'h1'
   return (
     <article
       className={`focus-content ${node.kind === 'question' ? 'decision-content' : ''}`}

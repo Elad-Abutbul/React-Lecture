@@ -317,3 +317,26 @@ src/
 - קנבס עולם fixed ממלא viewport. שאלת הסצנה הפעילה מרוכזת בלוח פוקוס מלא־מסך; חיבורים וציוני מרחב מאחוריו נעים באמת ב־x/y דרך GSAP/ScrollTrigger. אין קלפים רחוקים או מסגור תרשים.
 - horizontal intent בוחר רק בצומתי שאלה. שדות, קוד, Dialog ו־Tabs אינם מאבדים את מקשי החצים שלהם. Wheel אנכי רגיל נשאר native. במגע נדרשת החלקה אופקית מכוונת.
 - reduced motion שומר את אותם כיוונים ופקדים ללא טיסת מצלמה; סמן React אינו מסתיר את הסמן הנגיש. בדיקות browser בודקות deltaX קטן/גדול, diagonal, מקלדת וחזרה לצומת משותף.
+
+## 18. ענפים אלכסוניים, חזרה חופשית והתקדמות חיה
+
+- `DirectionGuide`: שני button אזוריים גדולים עם שמות נגישים, תווית כיוון פיזי ויעד מוקטן על קשת SVG אלכסונית. CSS left/right מפורשים אינם מתהפכים ב־RTL. Enter/Space, חצים, touch ומחוות משתמשים באותה פעולת בחירה. אין modal החלפת מסלול.
+- `constants/navigationProgress.ts`: גאומטריית projection, תוויות ומספר פריטי trail. `timelineEntries` נגזר מ־choices והמסלול הפעיל; prefix עד המיקום הנוכחי מצטמצם בגלילה אחורה, ולא מכיל פריטים מהענף שהוחלף. בחירות/השלמות ו־currentNodeId נשמרים ב־journey-store; גלילה אינה מאשרת פקודה.
+- `WorldProgress`: trail קטן לחיץ ומד מיקום עבה עם נקודות שלבים וסמן נוכחי. המיקום הרציף מחושב כנגד אורך המסלול הצפוי (כולל המשך שעוד לא נבחר) ונכתב ל־CSS/ARIA דרך ref ללא render לכל פיקסל. אחוזי השלמה ידניים נשארים נפרדים.
+- `useWorldCamera`: גלילה טבעית בשני הכיוונים, מעברים אלכסוניים ניתנים להפסקה בגלילה אנכית מכוונת, שיקום מיקום בטעינה ו־cleanup של כל listeners. אין גלילה פנימית או עודפי spacer לאחר סוף הנתיב.
+- `Atmosphere`: ערפיליות ומסלולי אטום ב־CSS עם נתונים מ־constants; parallax מוזן מקואורדינטות המצלמה. אפקטי רקע אינם מקבלים pointer events; ללא תנועה רציפה במצב reduced motion.
+
+## 19. Graph navigation state machine — מחליף כל ניווט קודם
+
+- `content/worldGraph.ts` הוא הגרף הקנוני המורכב מתוכן ההתקנה, המצגת והסדנה. לכל node: סוג, קואורדינטות ותוכן; לכל edge: יעד, תווית וכיוון. ענפי שגיאה חוזרים לפקודה שכשלה, ושאלות ממזגות משוב לצומת המשותף הבא.
+- `graph-navigation.ts`: הרחבת שרשראות single-edge עד להחלטה, נתיב BFS למיקום חוזר, נרמול wheel ובדיקת reachability/קשרים. `graph-store.ts`: route של מופעי צמתים, cursor, choices וארכיון visited מתמיד. שינוי ענף מחליף suffix פעיל בלבד; retry יכול לחזור לאותו צומת בלי לולאה אינסופית בפתיחת נתיב.
+- `useGraphGesture` הוא wheel handler יחיד: כוונה אופקית/אלכסונית בוחרת כיוון, vertical בתוך אזור ענף בוחר בגלגלת בלבד, ולמעלה נשאר native. רצף מומנטום נחסם עד מחווה חדשה; שדות ופקדי למידה שומרים אינטראקציה.
+- `useGraphCamera`: GSAP ו־ScrollTrigger מתרגמים document scroll לאינטרפולציה בין מיקומי צמתים. כל node נמצא תחת transform העולם; רק תוכן הצומת הפעיל מורכב במלואו, והשאר מופיעים כ־ghost/landmark. native scroll יכול לעצור טיסת מצלמה. ARIA/CSS/progress מתעדכנים ללא state לכל פיקסל.
+- `GraphContent` בוחר renderer; `GraphBranches` מציג fan של ענפים ואזורים רחבים (לחיצה היא חלופה נגישה, לעולם לא תנאי להתקדמות). `GraphProgress` מראה prefix ביקורים ומיקום רציף, לא השלמת עבודה חיצונית. אין מצבי journey/learning נפרדים באפליקציה הפעילה.
+- Hands-on משתמש באותו גרף ובאותה מצלמה. רמזים, בדיקה עצמית, תוכנית זמן ומצב מרצה נשמרים במפתח מקומי נפרד. מעבר בגלילה מסמן ביקור בלבד; checkbox אופציונלי לתוצאה האישית אינו עוצר ניווט.
+
+## 20. Guided node snapping — מחליף מיפוי גלילת document
+
+`graph-store` הוא מקור האמת ל־cursor ול־transitioning. `step` משנה אינדקס אחד, `select` מחליף suffix ופותח שרשראות, ו־`arrive` משחרר נעילת טיסה. `useGraphGesture` אוסף wheel ומתרגם אותו לאירוע אחד; סף + שקט + נעילת טיסה מונעים דילוג מהיר. אותו handler מנהל גם משטח קריאה יחיד בתוכן ארוך, ללא תחרות עם ScrollTrigger או גלילת document.
+
+`useGraphCamera` מקבל יעד מה־cursor ומניע GSAP camera object בדיוק אליו עם האטה; אין כפילות של state ניווט. קואורדינטות x/y ו־index הרציף מזינות transform, path draw ו־progress ישירות. `GraphPaths` הוא SVG מתמיד יחיד עם endpoints של actual node positions. CSS arrival stagger ופולס משנים רק opacity/translate לאחר נחיתה, ללא שינוי מידות טקסט. משטח הקריאה הוא focusable וניתן ל־PageUp/PageDown; אין חובה לעכבר או לכפתורי התקדמות.

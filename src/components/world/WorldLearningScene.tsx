@@ -53,7 +53,7 @@ function ToolRoles() {
     </div>
   )
 }
-const DEMOS: Record<string, () => React.ReactNode> = {
+export const LEARNING_DEMOS: Record<string, () => React.ReactNode> = {
   cleanup: CleanupSection,
   effect: EffectSection,
   snapshot: RenderSection,
@@ -72,7 +72,7 @@ export function WorldLearningScene({ id }: { id: string }) {
   const scene = LEARNING_SCENES.find((s) => s.id === id)
   if (!scene?.lesson) return null
   const lesson = scene.lesson
-  const Demo = DEMOS[id]
+  const Demo = LEARNING_DEMOS[id]
   return (
     <article className="focus-content learning-focus">
       <h1 className="focus-title">{lesson.title}</h1>
