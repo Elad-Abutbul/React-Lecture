@@ -1,3 +1,4 @@
+import { QuizSection } from '@/components/lessons/QuizSection'
 import { LabsSection } from '@/components/labs/LabsSection'
 import { CleanupSection } from '@/components/lessons/CleanupSection'
 import { EffectSection } from '@/components/lessons/EffectSection'
@@ -63,6 +64,7 @@ const DEMOS: Record<string, () => React.ReactNode> = {
   jsx: JsxDemo,
 }
 export function WorldLearningScene({ id }: { id: string }) {
+  if (id === 'quiz') return <QuizSection />
   if (id === 'labs') return <LabsSection />
   if (id === 'files') return <WorldFiles />
   const scene = LEARNING_SCENES.find((s) => s.id === id)

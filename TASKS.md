@@ -360,10 +360,12 @@
 - **אימות ביצוע:** feat: assemble four live component props state and effect lab stations; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### T31 — חידון ומשוב
-- [ ] **תלויות:** T30.
+- [x] **תלויות:** T30.
 - **לבצע:** ליצור שלוש שאלות הסיכום של המצגת ועוד משחק קצר לזיהוי Props/State/Event/Effect; להציג תשובה נכונה והסבר, לא רק ניקוד.
 - **קבצים:** `src/content/quiz.ts`, `src/components/lessons/QuizSection.tsx`.
 - **קבלה:** כל תשובה מקבלת משוב; אפשר לנסות שוב; אין שאלות hardcoded ב־JSX.
+
+- **אימות ביצוע:** feat: add explanatory workshop quiz and props-state-event-effect decisions; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### T32 — חיבור כל המסע + מקורות
 - [ ] **תלויות:** T20, T22, T31.

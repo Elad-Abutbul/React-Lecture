@@ -1,3 +1,4 @@
+import { QUIZ_COPY } from './quiz'
 import { LABS_COPY } from './labs'
 import {
   WHY_REACT,
@@ -22,6 +23,7 @@ export const LEARNING_SCENES = [
   { id: EFFECT.id, title: EFFECT.title, lesson: EFFECT },
   { id: CLEANUP.id, title: CLEANUP.title, lesson: CLEANUP },
   { id: 'labs', title: LABS_COPY.title, lesson: null },
+  { id: 'quiz', title: QUIZ_COPY.title, lesson: null },
 ] as const
 export const LEARNING_POSITIONS: Record<string, { x: number; y: number }> =
   Object.fromEntries(
