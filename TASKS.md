@@ -224,10 +224,12 @@
 - **אימות ביצוע:** feat: add keyboard-accessible project file explorer and load trace; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### T24 — Components ו־JSX/TSX
-- [ ] **תלויות:** T23.
+- [x] **תלויות:** T23.
 - **לבצע:** דמו של `Welcome` בשימוש חוזר; להסביר פונקציה שמחזירה JSX; להראות `return`, `{}`, `className`, תגית עוטפת ו־`.tsx` מול `.ts`.
 - **קבצים:** `src/components/lessons/ComponentsSection.tsx`, `JsxSection.tsx`, עדכון תוכן הפרקים.
 - **קבלה:** רכיבים אמיתיים מוצגים וניתן לראות הבדל כשמשנים נתונים בדמו.
+
+- **אימות ביצוע:** feat: teach reusable components and JSX through live experiments; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### T25 — Props (הורה → ילד)
 - [ ] **תלויות:** T24.

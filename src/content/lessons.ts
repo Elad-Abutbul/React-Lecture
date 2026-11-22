@@ -59,3 +59,46 @@ export const TOOL_ROLES = [
     description: 'יצירת פרויקט, שרת פיתוח, טעינת שינויים ובנייה לפרודקשן.',
   },
 ] as const
+export const COMPONENTS: Lesson = {
+  id: 'components',
+  title: 'פונקציה אחת. חלק אחד בממשק.',
+  body: 'קומפוננטה היא פונקציה עם שם שמתחיל באות גדולה ומחזירה JSX. מרכיבים רכיבים זה בתוך זה ומשתמשים באותו רכיב בכמה מקומות.',
+  code: 'function Welcome() {\n  return <h3>Welcome!</h3>\n}\n\nexport default function App() {\n  return <>\n    <Welcome />\n    <Welcome />\n  </>\n}',
+  check: {
+    prompt: 'איך משתמשים שוב באותו רכיב?',
+    options: ['כותבים מחדש את כל הפונקציה', 'מציגים מופע נוסף של הרכיב'],
+    answer: 1,
+    explanation:
+      'אותה הגדרת קומפוננטה יכולה לשמש כמה מופעים. כל מופע יכול לקבל נתונים משלו.',
+  },
+}
+export const JSX: Lesson = {
+  id: 'jsx',
+  title: 'זה נראה כמו HTML. זו בעצם TSX.',
+  body: 'מחוץ ל־return כותבים טיפוסים, משתנים ופונקציות. בתוך ה־return כותבים JSX עם ביטויי JavaScript בסוגריים מסולסלים. קובץ עם JSX מסתיים ב־.tsx; קובץ TypeScript ללא JSX יכול להסתיים ב־.ts.',
+  code: 'type Props = { name: string }\nfunction Greeting({ name }: Props) {\n  const message = "Hello " + name\n  return <h2 className="title">{message}</h2>\n}',
+  check: {
+    prompt: 'איך מציגים ערך של משתנה בתוך JSX?',
+    options: ['בעזרת {name}', 'כותבים name כטקסט רגיל'],
+    answer: 0,
+    explanation:
+      'סוגריים מסולסלים מאפשרים להכניס ביטויי JavaScript לתיאור הממשק.',
+  },
+}
+export const COMPONENT_UI = {
+  greeting: 'ברוכים הבאים לרכיב!',
+  add: 'להוסיף מופע',
+  remove: 'להסיר מופע',
+  instances: 'מופעים של אותו רכיב',
+  initial: 2,
+  min: 1,
+  max: 4,
+  name: 'מה השם שלך?',
+  defaultName: 'דנה',
+  hello: 'שלום, ',
+  rules: [
+    'מחזירים אלמנט שורש אחד, או Fragment: <>...</>.',
+    'className במקום class; אירועים נכתבים למשל onClick.',
+    'ביטויים דינמיים נכנסים בתוך {}.',
+  ],
+} as const
