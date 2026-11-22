@@ -380,10 +380,12 @@
 - **אימות ביצוע:** feat: connect the full learning world labs quiz and official resources; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### T33 — בדיקות מסלול ורכיבים
-- [ ] **תלויות:** T32.
+- [x] **תלויות:** T32.
 - **לבצע:** להרחיב Vitest + Testing Library לבחירות, העתקה, אישור ידני, חזרה אחורה, persist, quiz ו־cleanup.
 - **קבצים:** `*.test.ts(x)` בסמיכות לרכיבים/ללוגיקה.
 - **קבלה:** בדיקות עוברות ומכסות מקרי שגיאה משמעותיים, לא רק רינדור בסיסי.
+
+- **אימות ביצוע:** test: cover unified graph transitions gestures backtracking and learning utilities; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### T34 — Playwright מקצה לקצה
 - [ ] **תלויות:** T33.
