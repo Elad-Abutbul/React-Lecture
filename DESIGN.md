@@ -340,3 +340,6 @@ src/
 `graph-store` הוא מקור האמת ל־cursor ול־transitioning. `step` משנה אינדקס אחד, `select` מחליף suffix ופותח שרשראות, ו־`arrive` משחרר נעילת טיסה. `useGraphGesture` אוסף wheel ומתרגם אותו לאירוע אחד; סף + שקט + נעילת טיסה מונעים דילוג מהיר. אותו handler מנהל גם משטח קריאה יחיד בתוכן ארוך, ללא תחרות עם ScrollTrigger או גלילת document.
 
 `useGraphCamera` מקבל יעד מה־cursor ומניע GSAP camera object בדיוק אליו עם האטה; אין כפילות של state ניווט. קואורדינטות x/y ו־index הרציף מזינות transform, path draw ו־progress ישירות. `GraphPaths` הוא SVG מתמיד יחיד עם endpoints של actual node positions. CSS arrival stagger ופולס משנים רק opacity/translate לאחר נחיתה, ללא שינוי מידות טקסט. משטח הקריאה הוא focusable וניתן ל־PageUp/PageDown; אין חובה לעכבר או לכפתורי התקדמות.
+
+## 21. מימוש הסדנה באותו גרף
+נקודת הכניסה היא `create` ב־`content/worldGraph.ts`, עם הפקודה CREATE_REACT ו־HandsOnEntryCard. ענף workshop מוביל לבחירת תוכנית, H01–H11 ושתי עצירות; H02 מפצל את שלוש הפקודות לצמתים נפרדים, H03 מציג כל קובץ בשרשרת, ו־H10 מציג cleanup בניסוי נפרד. סיום 90 או 120 מתמזג אל success, ואז אל תוכן המצגת. `hands-on-store` שומר ביקורים, סימונים, רמזים ותוכנית בנפרד מהניווט. פתרונות מלאים ב־handsOnSolutions נבדקים עם `pnpm test:workshop` ב־TypeScript strict וב־Vite עבור כל snapshot H04–H11. תצוגת קוד מקוצרת מסומנת במפורש; העתקה והורדה כוללות את הקובץ המלא.
