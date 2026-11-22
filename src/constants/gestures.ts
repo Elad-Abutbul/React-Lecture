@@ -26,8 +26,8 @@ export const BRANCH_DIRECTIONS: Record<
     left: { choiceId: 'no', label: 'לא' },
   },
   os: {
-    right: { choiceId: 'windows', label: 'Windows' },
-    left: { choiceId: 'mac', label: 'macOS' },
+    right: { choiceId: 'mac', label: 'macOS' },
+    left: { choiceId: 'windows', label: 'Windows' },
   },
   project: {
     right: { choiceId: 'existing', label: 'כן' },

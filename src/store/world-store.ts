@@ -5,7 +5,7 @@ export const useWorldStore = create<{
   reveal: boolean
   navigate: (id: string, reveal?: boolean) => void
 }>((set) => ({
-  requestedId: 'intro',
+  requestedId: 'node',
   revision: 0,
   reveal: false,
   navigate: (id, reveal = false) =>

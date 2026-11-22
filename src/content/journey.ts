@@ -1,6 +1,6 @@
 import type { JourneyNode, Choice } from '@/types/journey'
 import { LINKS } from '@/constants/links'
-export const JOURNEY_START = 'start'
+export const JOURNEY_START = 'node'
 const go = (nextNodeId: string, label = 'ממשיכים'): Choice => ({
   id: 'done',
   label,
@@ -34,7 +34,7 @@ export const JOURNEY_NODES: readonly JourneyNode[] = [
   {
     id: 'node',
     kind: 'question',
-    title: 'Node.js כבר מותקן אצלך?',
+    title: 'יש לך Node.js מותקן?',
     description:
       'Node.js מאפשר להפעיל את כלי הפיתוח. אין לאתר אפשרות לבדוק את המחשב שלך.',
     choices: [

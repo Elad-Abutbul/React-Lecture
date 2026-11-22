@@ -277,9 +277,11 @@
 - **אימות ביצוע:** feat: add guarded horizontal and diagonal gestures with physical arrow-key navigation; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### GX03 — עולם ממורכז ללא קלפים וכפתורי כן/לא
-- [ ] **תלויות:** GX02.
+- [x] **תלויות:** GX02.
 - **לבצע:** להתחיל בשאלת Node, להציג תוכן גדול ומכווני כיוון; קנבס מלא וחיבורים נעים, ללא zoom-out מופרז או nested scroll; migrate שומר התקדמות קיימת.
 - **קבלה:** גלילה משנה viewpoint, ענף מוביל למיקום אחר והתקנה מתאחדת בבדיקה; אין כותרת ״המסע שלך״ או כפתורי כן/לא.
+
+- **אימות ביצוע:** feat: center full-screen decisions and replace yes-no clicks with guarded gestures; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### IM03 — הרחבת העולם לכל תוכן ההתקנה והלימוד
 - [ ] **תלויות:** GX03.

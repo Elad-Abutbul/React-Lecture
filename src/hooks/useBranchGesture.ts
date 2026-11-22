@@ -11,7 +11,7 @@ export function useBranchGesture(
   onDirection: (direction: BranchDirection) => void,
 ) {
   const intent = useRef<GestureState>({ sum: 0, lastAt: 0 })
-  const lastSelected = useRef(0)
+  const lastSelected = useRef(-GESTURE.cooldown)
   const lastWheel = useRef(0)
   const needsQuiet = useRef(false)
   const previousScene = useRef(sceneId)

@@ -1,33 +1,42 @@
 import { useRef, useState, useCallback, useMemo } from 'react'
-import { Atom, Compass } from 'lucide-react'
-import { HERO } from '@/content/hero'
-import { JOURNEY_NODES } from '@/content/journey'
+import { Atom, RotateCcw } from 'lucide-react'
+import { JOURNEY_NODES, JOURNEY_COPY } from '@/content/journey'
+import { WORLD, WORLD_COPY } from '@/constants/world'
 import {
-  WORLD,
-  WORLD_POSITIONS,
-  WORLD_COPY,
-  WORLD_CONNECTIONS,
-} from '@/constants/world'
+  BRANCH_DIRECTIONS,
+  GESTURE_COPY,
+  type BranchDirection,
+} from '@/constants/gestures'
 import { getActivePath } from '@/lib/journey-engine'
 import { useJourneyStore } from '@/store/journey-store'
 import { useWorldStore } from '@/store/world-store'
 import { useWorldViewport } from '@/hooks/useWorldViewport'
 import { useWorldCamera } from '@/hooks/useWorldCamera'
+import { useBranchGesture } from '@/hooks/useBranchGesture'
 import { Button } from '@/components/ui/button'
+import { ConfirmationDialog } from '@/components/ui/ConfirmationDialog'
+import { WorldJourneyScene } from './WorldJourneyScene'
+import { WorldPaths } from './WorldPaths'
+import { DirectionGuide } from './DirectionGuide'
 export function ImmersiveWorld() {
   const choices = useJourneyStore((s) => s.choices)
   const completed = useJourneyStore((s) => s.completedNodeIds)
-  const [active, setActive] = useState('intro')
-  const [revealing, setRevealing] = useState(false)
+  const [active, setActive] = useState('node')
+  const [pending, setPending] = useState<{
+    nodeId: string
+    choiceId: string
+  } | null>(null)
+  const [resetOpen, setResetOpen] = useState(false)
+  const [announcement, setAnnouncement] = useState('')
   const stage = useRef<HTMLDivElement>(null)
   const space = useRef<HTMLDivElement>(null)
   const viewport = useWorldViewport()
   const route = useMemo(
-    () => ['intro', ...getActivePath(choices).map((n) => n.id)],
+    () => getActivePath(choices).map((n) => n.id),
     [choices],
   )
   const changeScene = useCallback((id: string) => setActive(id), [])
-  const changeReveal = useCallback((value: boolean) => setRevealing(value), [])
+  const changeReveal = useCallback(() => undefined, [])
   useWorldCamera({
     stage,
     space,
@@ -36,14 +45,39 @@ export function ImmersiveWorld() {
     onScene: changeScene,
     onReveal: changeReveal,
   })
-  const width = Math.min(viewport.width - WORLD.gutter * 2, WORLD.maxWidth)
-  const height = viewport.height - WORLD.chrome * 2
-  const outgoing = WORLD_CONNECTIONS.filter((e) => e.source === active)
-  const visible = new Set([...route, ...outgoing.map((e) => e.target)])
-  function select(source: string, choice: string) {
-    useJourneyStore.getState().choose(source, choice)
+  const node =
+    JOURNEY_NODES.find((n) => n.id === active) ??
+    JOURNEY_NODES.find((n) => n.id === 'node')!
+  const apply = useCallback((nodeId: string, choiceId: string) => {
+    useJourneyStore.getState().choose(nodeId, choiceId)
     useWorldStore.getState().navigate(useJourneyStore.getState().currentNodeId)
-  }
+  }, [])
+  const select = useCallback(
+    (nodeId: string, choiceId: string) => {
+      const state = useJourneyStore.getState()
+      const path = getActivePath(state.choices)
+      const index = path.findIndex((n) => n.id === nodeId)
+      if (
+        state.choices[nodeId] &&
+        state.choices[nodeId] !== choiceId &&
+        path.slice(index + 1).some((n) => state.completedNodeIds.includes(n.id))
+      )
+        setPending({ nodeId, choiceId })
+      else apply(nodeId, choiceId)
+    },
+    [apply],
+  )
+  const direction = useCallback(
+    (value: BranchDirection) => {
+      const option = BRANCH_DIRECTIONS[node.id]?.[value]
+      if (option) {
+        setAnnouncement(`${GESTURE_COPY.announcement}: ${option.label}`)
+        select(node.id, option.choiceId)
+      }
+    },
+    [node.id, select],
+  )
+  useBranchGesture(node.kind === 'question', node.id, direction)
   return (
     <>
       <div
@@ -54,104 +88,74 @@ export function ImmersiveWorld() {
         }}
         aria-hidden="true"
       />
-      <main id="main" className="world-viewport" aria-label={WORLD_COPY.world}>
+      <main
+        id="main"
+        className={`world-viewport scene-${node.kind}`}
+        aria-label={WORLD_COPY.world}
+      >
         <div className="world-aura" />
         <header className="world-chrome">
-          <a
-            href="#"
-            onClick={(event) => {
-              event.preventDefault()
-              useWorldStore.getState().navigate('intro')
-            }}
-            className="brand"
-            dir="ltr"
-          >
+          <span className="brand" dir="ltr">
             <Atom className="text-react" aria-hidden="true" />
             {WORLD_COPY.brand}
-          </a>
-          <span className="text-sm text-muted">
-            {completed.length} / {WORLD_COPY.chapter}
           </span>
+          <div className="flex items-center gap-3">
+            <span className="font-mono text-sm text-react" dir="ltr">
+              {completed.length}
+            </span>
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label={JOURNEY_COPY.reset}
+              onClick={() => setResetOpen(true)}
+            >
+              <RotateCcw aria-hidden="true" />
+            </Button>
+          </div>
         </header>
         <div ref={stage} className="world-stage">
-          {[...visible].map((id) => {
-            const point = WORLD_POSITIONS[id]
-            const node = JOURNEY_NODES.find((n) => n.id === id)
-            const edge = outgoing.find((e) => e.target === id)
-            const current = active === id
-            const preview = !current && !!edge
-            return (
-              <section
-                key={id}
-                data-world-scene={id}
-                className={`world-scene ${preview ? 'world-preview' : ''}`}
-                style={{
-                  left: point.x - width / 2,
-                  top: point.y - height / 2,
-                  width,
-                  height,
-                }}
-                inert={!current && !(revealing && preview)}
-                aria-hidden={!current && !(revealing && preview)}
-              >
-                {preview ? (
-                  <button
-                    className="world-portal"
-                    onClick={() =>
-                      id === 'start'
-                        ? useWorldStore.getState().navigate('start')
-                        : select(active, edge!.choiceId)
-                    }
-                  >
-                    <span className="eyebrow">
-                      {edge?.label || WORLD_COPY.continue}
-                    </span>
-                    <h2>{node?.title}</h2>
-                    <span className="world-portal-label">
-                      {WORLD_COPY.choose}
-                    </span>
-                  </button>
-                ) : id === 'intro' ? (
-                  <div className="world-intro">
-                    <p className="eyebrow">{HERO.kicker}</p>
-                    <h1>{HERO.title}</h1>
-                    <p className="world-description">{HERO.description}</p>
-                    <Button
-                      size="lg"
-                      className="rounded-full px-8 py-7 text-base"
-                      onClick={() => useWorldStore.getState().navigate('start')}
-                    >
-                      {WORLD_COPY.continue}
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="world-content">
-                    <p className="eyebrow">{WORLD_COPY.chapter}</p>
-                    <h2>{node?.title}</h2>
-                    <p className="world-description">{node?.description}</p>
-                    <Button
-                      variant="outline"
-                      onClick={() =>
-                        useWorldStore.getState().navigate(id, true)
-                      }
-                    >
-                      {WORLD_COPY.reveal}
-                    </Button>
-                  </div>
-                )}
-              </section>
-            )
-          })}
+          <WorldPaths route={route} active={active} />
+        </div>
+        <div className="world-focus" data-active-scene={node.id}>
+          <WorldJourneyScene
+            key={node.id}
+            node={node}
+            onChoose={(choiceId) => select(node.id, choiceId)}
+          />
+          {node.kind === 'question' && <DirectionGuide node={node} />}
         </div>
         <footer className="world-footer">
-          <span className="flex items-center gap-3">
-            <Compass className="size-4 text-react" aria-hidden="true" />
-            {revealing ? WORLD_COPY.choose : WORLD_COPY.scroll}
+          <span>
+            {node.kind === 'question' ? GESTURE_COPY.wheel : WORLD_COPY.scroll}
           </span>
           <span className="font-mono text-xs text-muted" dir="ltr">
-            {active}
+            {node.id}
           </span>
         </footer>
+        <p className="sr-only" role="status">
+          {announcement}
+        </p>
+        <ConfirmationDialog
+          open={pending !== null}
+          onOpenChange={(open) => {
+            if (!open) setPending(null)
+          }}
+          title={JOURNEY_COPY.changeTitle}
+          description={JOURNEY_COPY.changeDescription}
+          onConfirm={() => {
+            if (pending) apply(pending.nodeId, pending.choiceId)
+          }}
+        />
+        <ConfirmationDialog
+          open={resetOpen}
+          onOpenChange={setResetOpen}
+          title={JOURNEY_COPY.resetTitle}
+          description={JOURNEY_COPY.resetDescription}
+          onConfirm={() => {
+            useJourneyStore.getState().reset()
+            useWorldStore.getState().navigate('node')
+          }}
+        />
       </main>
     </>
   )

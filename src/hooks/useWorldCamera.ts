@@ -71,7 +71,7 @@ export function useWorldCamera({
       const index = Math.max(0, window.scrollY / WORLD.scrollStep)
       const last = route.length - 1
       const id = route[Math.min(last, Math.round(index))]
-      const reveal = index > last + WORLD.revealAt
+      const reveal = false
       const target = reveal
         ? worldCameraTarget(route[last], true, width, height)
         : interpolateWorld(route, index)

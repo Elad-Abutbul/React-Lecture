@@ -7,7 +7,6 @@ beforeEach(() => useJourneyStore.getState().reset())
 test('completes the new-project installation with explicit approvals', () => {
   render(<JourneySection />)
   for (const [id, choice] of [
-    ['start', 'yes'],
     ['node', 'yes'],
     ['verify', 'done'],
     ['project', 'new'],

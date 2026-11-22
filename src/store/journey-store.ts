@@ -79,6 +79,7 @@ export const useJourneyStore = create<JourneyStore>()(
     {
       name: JOURNEY_STORAGE.key,
       version: JOURNEY_STORAGE.version,
+      migrate: (persisted) => sanitizeProgress(persisted),
       storage: createJSONStorage(() => localStorage),
       partialize: ({ choices, completedNodeIds, currentNodeId }) => ({
         choices,
