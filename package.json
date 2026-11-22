@@ -38,6 +38,7 @@
     "zustand": "^5.1.0"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
     "@eslint/js": "^10.0.1",
     "@fontsource/ibm-plex-sans-hebrew": "^5.3.0",
     "@fontsource/jetbrains-mono": "^5.3.0",

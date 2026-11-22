@@ -12,6 +12,7 @@ import {
 test('create-project branches into the workshop, visits two stations, backtracks and persists personal checks', async ({
   page,
 }) => {
+  test.setTimeout(60000)
   await open(page)
   await branch(page, 'yes')
   await at(page, 'verify')

@@ -6,6 +6,8 @@ import { useHandsOnStore, sanitizeWorkshop } from '@/store/hands-on-store'
 beforeEach(() => {
   localStorage.clear()
   useHandsOnStore.getState().reset()
+  useHandsOnStore.getState().setPlan(120)
+  useHandsOnStore.getState().setInstructor(false)
 })
 afterEach(() => vi.restoreAllMocks())
 test('both plans have honest totals and bonuses remain outside the 90-minute plan', () => {
@@ -35,6 +37,10 @@ test('visits never claim external success, hints are bounded, and personal check
     JSON.parse(localStorage.getItem(HANDS_ON.storage.key)!).state.skipped,
   ).toEqual(['H04'])
   expect(localStorage.getItem('react-world-navigation')).toBeNull()
+  store().setPlan(90)
+  store().reset()
+  expect(store().plan).toBe(90)
+  expect(store().checked).toEqual([])
   expect(
     sanitizeWorkshop({
       visited: ['H04', 'invalid', null],

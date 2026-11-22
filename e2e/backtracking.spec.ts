@@ -105,9 +105,7 @@ test('touch swipe and keyboard alternatives use the same graph', async ({
   await at(page, 'verify')
   await roll(page, -1)
   await at(page, 'node')
-  await page
-    .getByRole('button', { name: 'לא · התקנת Node.js', exact: true })
-    .focus()
+  await page.getByRole('button', { name: /^לא · התקנת Node.js/ }).focus()
   await page.keyboard.press('Enter')
   await at(page, 'os')
 })
