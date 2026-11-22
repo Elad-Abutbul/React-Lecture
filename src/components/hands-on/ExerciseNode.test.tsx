@@ -11,6 +11,8 @@ const clipboard = Object.getOwnPropertyDescriptor(navigator, 'clipboard')
 beforeEach(() => {
   localStorage.clear()
   useHandsOnStore.getState().reset()
+  useHandsOnStore.getState().setPlan(120)
+  useHandsOnStore.getState().setInstructor(false)
   Object.defineProperty(navigator, 'clipboard', {
     configurable: true,
     value: { writeText: vi.fn().mockResolvedValue(undefined) },
@@ -71,4 +73,15 @@ test('instructor timer starts manually and never advances navigation', () => {
   expect(screen.getByText('9:58')).toBeInTheDocument()
   view.unmount()
   expect(vi.getTimerCount()).toBe(0)
+})
+test('explicit instructor mode offers direct solution and question tools without advancing the tree', () => {
+  render(<ExerciseNode id="H04" />)
+  fireEvent.click(screen.getByText(COPY.instructor, { selector: 'summary' }))
+  fireEvent.click(screen.getByRole('checkbox', { name: COPY.instructor }))
+  fireEvent.click(screen.getByRole('button', { name: COPY.instructorSolution }))
+  expect(screen.getByLabelText(COPY.source)).toBeVisible()
+  expect(useHandsOnStore.getState().hints.H04).toBe(3)
+  fireEvent.click(screen.getByRole('button', { name: COPY.instructorQuestion }))
+  expect(screen.getByRole('checkbox', { name: COPY.selfCheck })).toBeVisible()
+  expect(useHandsOnStore.getState().checked).toEqual([])
 })

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { Dialog } from 'radix-ui'
 import { GRAPH_BY_ID } from '@/content/worldGraph'
 import { GRAPH_COPY } from '@/constants/graphNavigation'
@@ -12,6 +12,7 @@ export function GraphMenu({
   onOpenChange: (open: boolean) => void
 }) {
   const [query, setQuery] = useState('')
+  const selected = useRef(false)
   const visited = useGraphStore((s) => s.visited)
   return (
     <Dialog.Root
@@ -23,7 +24,23 @@ export function GraphMenu({
     >
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-40 bg-bg/95 backdrop-blur-xl" />
-        <Dialog.Content className="world-menu" dir="rtl">
+        <Dialog.Content
+          id="world-tree-menu"
+          className="world-menu"
+          dir="rtl"
+          onCloseAutoFocus={(event) => {
+            event.preventDefault()
+            if (selected.current) {
+              selected.current = false
+              if (!useGraphStore.getState().transitioning)
+                document
+                  .querySelector<HTMLElement>(
+                    '.graph-node-active .graph-reading',
+                  )
+                  ?.focus({ preventScroll: true })
+            } else document.getElementById('tree-map-trigger')?.focus()
+          }}
+        >
           <Dialog.Title className="text-2xl font-semibold">
             {GRAPH_COPY.map}
           </Dialog.Title>
@@ -51,6 +68,7 @@ export function GraphMenu({
                   variant="outline"
                   key={id}
                   onClick={() => {
+                    selected.current = true
                     useGraphStore.getState().jump(id)
                     onOpenChange(false)
                   }}

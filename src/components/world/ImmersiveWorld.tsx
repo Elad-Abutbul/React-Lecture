@@ -1,7 +1,8 @@
-import { useRef, useState } from 'react'
+import { useRef, useState, type CSSProperties } from 'react'
 import { Atom, Compass, RotateCcw } from 'lucide-react'
 import { WORLD_GRAPH, GRAPH_BY_ID } from '@/content/worldGraph'
-import { GRAPH_COPY } from '@/constants/graphNavigation'
+import { GRAPH_COPY, GRAPH_NAV } from '@/constants/graphNavigation'
+import { ATMOSPHERE } from '@/constants/atmosphere'
 import { WORLD_COPY } from '@/constants/world'
 import { useGraphStore } from '@/store/graph-store'
 import { useGraphGesture } from '@/hooks/useGraphGesture'
@@ -19,6 +20,7 @@ export function ImmersiveWorld() {
   const route = useGraphStore((s) => s.route),
     cursor = useGraphStore((s) => s.cursor),
     visited = useGraphStore((s) => s.visited)
+  const transitioning = useGraphStore((state) => state.transitioning)
   const node = GRAPH_BY_ID[route[cursor]]
   const [menuOpen, setMenuOpen] = useState(false),
     [announcement, setAnnouncement] = useState('')
@@ -38,6 +40,16 @@ export function ImmersiveWorld() {
         id="main"
         className={`world-viewport unified-world topic-${node.kind}`}
         aria-label={WORLD_COPY.world}
+        aria-busy={transitioning}
+        style={
+          {
+            '--topic-hue': `${ATMOSPHERE.topicHue[node.sourceId ?? node.id] ?? 0}deg`,
+            '--arrival-duration': `${GRAPH_NAV.arrival.duration}s`,
+            '--arrival-stagger': `${GRAPH_NAV.arrival.stagger}s`,
+            '--path-pulse': `${GRAPH_NAV.arrival.pulse}s`,
+            '--ghost-scale': GRAPH_NAV.ghostScale,
+          } as CSSProperties
+        }
       >
         <Atmosphere />
         <ReactCursor />
@@ -50,6 +62,10 @@ export function ImmersiveWorld() {
             <Button
               variant="ghost"
               size="icon"
+              id="tree-map-trigger"
+              aria-haspopup="dialog"
+              aria-expanded={menuOpen}
+              aria-controls="world-tree-menu"
               aria-label={GRAPH_COPY.map}
               onClick={() => setMenuOpen(true)}
             >

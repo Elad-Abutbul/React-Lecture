@@ -1394,3 +1394,51 @@ body:has(.unified-world) {
     animation: none;
   }
 }
+.world-atmosphere {
+  filter: hue-rotate(var(--topic-hue, 0deg));
+  transition: filter 1.5s;
+}
+.unified-world:has(.world-stage[data-camera-busy='true']) .graph-branches {
+  opacity: 0;
+}
+.graph-branches {
+  transition: opacity 0.3s;
+}
+.graph-branch:disabled {
+  pointer-events: none;
+}
+.graph-future-edge {
+  opacity: 0.1;
+  stroke-width: 1.5;
+}
+.graph-visited-edge {
+  opacity: 0.24;
+  stroke-width: 2;
+}
+.graph-reading:focus-visible {
+  outline: 1px solid #61dafb80;
+  outline-offset: 0.25rem;
+}
+@media (prefers-reduced-motion: reduce) {
+  .world-atmosphere,
+  .graph-branches {
+    transition: none;
+  }
+}
+.graph-node-distant {
+  transform: translate(-50%, -50%) scale(var(--ghost-scale, 0.4));
+}
+.world-stage[data-camera-busy='false'] .graph-node-active .focus-title {
+  animation-duration: var(--arrival-duration, 0.55s);
+}
+.world-stage[data-camera-busy='false'] .graph-node-active .focus-description {
+  animation-duration: var(--arrival-duration, 0.55s);
+  animation-delay: var(--arrival-stagger, 0.1s);
+}
+.world-stage[data-camera-busy='false'] .graph-node-active .graph-node-content {
+  animation-duration: var(--arrival-duration, 0.55s);
+  animation-delay: calc(var(--arrival-stagger, 0.1s) * 1.8);
+}
+.world-stage[data-camera-busy='false'] .world-path-selected {
+  animation-duration: var(--path-pulse, 1.4s);
+}

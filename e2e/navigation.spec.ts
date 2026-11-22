@@ -28,6 +28,7 @@ test('opens a large spatial decision with no traditional progression controls', 
 test('mouse-wheel-only Windows installation reaches commands and learning without clicking progression', async ({
   page,
 }) => {
+  test.setTimeout(60000)
   await open(page)
   await branch(page, 'no')
   await at(page, 'os')

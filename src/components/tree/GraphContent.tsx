@@ -72,9 +72,10 @@ export function GraphContent({ node }: { node: WorldNode }) {
         </div>
       )}
       {Demo && (
-        <div className="graph-demo">
+        <section className="graph-demo" aria-label={GRAPH_COPY.demo}>
+          <h2 className="sr-only">{GRAPH_COPY.demo}</h2>
           <Demo />
-        </div>
+        </section>
       )}
       {node.kind === 'code' && lesson && <CodeBlock code={lesson.code} />}
       {node.kind === 'file' && file && (

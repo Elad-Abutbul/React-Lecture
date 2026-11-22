@@ -119,6 +119,7 @@ export function useGraphGesture() {
     function key(event: KeyboardEvent) {
       if (
         event.repeat ||
+        event.shiftKey ||
         event.ctrlKey ||
         event.metaKey ||
         event.altKey ||

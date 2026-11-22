@@ -84,7 +84,10 @@ for (const original of JOURNEY_NODES.filter(
         title: tip.title,
         description: tip.body,
         kind: 'installation',
-        position: position(p.x - 1000 - index * 350, p.y + 750 + index * 650),
+        position: position(
+          p.x - GRAPH_NAV.help.x - index * GRAPH_NAV.help.stepX,
+          p.y + GRAPH_NAV.help.y + index * GRAPH_NAV.help.stepY,
+        ),
         edges: [
           edge(
             'return',
@@ -122,7 +125,7 @@ for (const original of JOURNEY_NODES.filter(
       title: outcome.question,
       description: 'משווים את הפלט במחשב שלך ובוחרים את הנתיב שמתאר אותו.',
       kind: 'decision',
-      position: position(p.x, p.y + 450),
+      position: position(p.x, p.y + GRAPH_NAV.outcomeGap),
       edges: outcomes,
     })
     current.kind = 'installation'
@@ -137,7 +140,10 @@ nodes.push({
   description:
     'בדקו שבמחשב שלכם נוצרו package.json ותיקיית src. אין לאתר גישה לקבצים שלכם.',
   kind: 'decision',
-  position: position(850, 5400),
+  position: position(
+    INSTALL_POSITIONS['create-result'].x,
+    INSTALL_POSITIONS['create-result'].y,
+  ),
   edges: [
     edge('done', 'enter', 'התיקייה נוצרה', 'right'),
     edge('error', 'create-help-0', 'פלט שגיאה', 'left'),
@@ -149,7 +155,10 @@ TROUBLESHOOTING.browser.forEach((tip, index) =>
     title: tip.title,
     description: tip.body,
     kind: 'installation',
-    position: position(-400 - index * 350, 6000 + index * 650),
+    position: position(
+      GRAPH_NAV.createHelp.x - index * GRAPH_NAV.help.stepX,
+      GRAPH_NAV.createHelp.y + index * GRAPH_NAV.help.stepY,
+    ),
     edges: [
       edge(
         'return',
@@ -167,15 +176,7 @@ function add(
   node: Omit<WorldNode, 'position' | 'edges'>,
   edges: WorldEdge[] = [],
 ) {
-  const index = learning.length
-  learning.push({
-    ...node,
-    position: position(
-      3000 + ((index % 3) - 1) * 280,
-      13000 + index * GRAPH_NAV.stride,
-    ),
-    edges,
-  })
+  learning.push({ ...node, position: { ...GRAPH_NAV.origin }, edges })
 }
 for (const scene of LEARNING_SCENES) {
   if (scene.id === 'files') {
@@ -298,24 +299,16 @@ for (let i = 0; i < learning.length; i++) {
     node.edges[0].target = next?.id ?? 'resources'
   } else if (!node.edges.length && node.id !== 'resources')
     node.edges = [edge('path', learning[i + 1].id, GRAPH_COPY.read)]
-  if (node.kind === 'decision')
-    node.edges.forEach((e, index) => {
-      const child = learning.find((n) => n.id === e.target)!
-      child.position = {
-        x:
-          node.position.x +
-          (index - (node.edges.length - 1) / 2) * GRAPH_NAV.branchX * 1.5,
-        y: node.position.y + GRAPH_NAV.stride,
-      }
-    })
 }
 let row = 0,
   previousFeedback = false
 for (const node of learning) {
   if (!(node.kind === 'feedback' && previousFeedback)) row++
   node.position = position(
-    3000 + ((row % 3) - 1) * 280,
-    12500 + row * GRAPH_NAV.stride,
+    GRAPH_NAV.learning.x +
+      ((row % GRAPH_NAV.learning.lanes) - (GRAPH_NAV.learning.lanes - 1) / 2) *
+        GRAPH_NAV.learning.laneShift,
+    GRAPH_NAV.learning.y + row * GRAPH_NAV.stride,
   )
   previousFeedback = node.kind === 'feedback'
 }
@@ -325,7 +318,9 @@ for (const node of learning.filter((n) => n.kind === 'decision'))
     child.position = {
       x:
         node.position.x +
-        (index - (node.edges.length - 1) / 2) * GRAPH_NAV.branchX * 1.5,
+        (index - (node.edges.length - 1) / 2) *
+          GRAPH_NAV.branchX *
+          GRAPH_NAV.learning.branchScale,
       y: node.position.y + GRAPH_NAV.stride,
     }
   })

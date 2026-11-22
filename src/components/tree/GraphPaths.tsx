@@ -1,32 +1,45 @@
 import type { CSSProperties } from 'react'
 import { useGraphStore } from '@/store/graph-store'
 import { WORLD_GRAPH, GRAPH_BY_ID } from '@/content/worldGraph'
+import { GRAPH_NAV } from '@/constants/graphNavigation'
 export function GraphPaths({ route }: { route: readonly string[] }) {
-  const visited = useGraphStore((s) => s.visited)
+  const traversed = useGraphStore((state) => state.traversed)
   return (
     <svg
       className="world-connections graph-connections"
-      width="120000"
-      height="160000"
+      width={GRAPH_NAV.bounds.width}
+      height={GRAPH_NAV.bounds.height}
       aria-hidden="true"
     >
       {WORLD_GRAPH.flatMap((node) =>
         node.edges.map((edge) => {
           const target = GRAPH_BY_ID[edge.target]?.position
           if (!target) return null
-          const i = route.findIndex(
-            (id, index) => id === node.id && route[index + 1] === edge.target,
+          const index = route.findIndex(
+            (id, i) => id === node.id && route[i + 1] === edge.target,
           )
+          const d = `M ${node.position.x} ${node.position.y} C ${node.position.x} ${(node.position.y + target.y) / 2} ${target.x} ${(node.position.y + target.y) / 2} ${target.x} ${target.y}`
           return (
-            <path
-              key={`${node.id}-${edge.id}`}
-              d={`M ${node.position.x} ${node.position.y} C ${node.position.x} ${(node.position.y + target.y) / 2} ${target.x} ${(node.position.y + target.y) / 2} ${target.x} ${target.y}`}
-              fill="none"
-              pathLength={1}
-              vectorEffect="non-scaling-stroke"
-              style={{ '--edge-index': i } as CSSProperties}
-              className={`world-path ${i >= 0 ? 'world-path-selected' : visited.includes(node.id) && visited.includes(edge.target) ? 'graph-visited-edge' : 'world-path-option'} graph-edge-${edge.direction}`}
-            />
+            <g key={`${node.id}-${edge.id}`}>
+              <path
+                data-source={node.id}
+                data-target={edge.target}
+                d={d}
+                fill="none"
+                vectorEffect="non-scaling-stroke"
+                className={`world-path ${traversed.includes(`${node.id}::${edge.target}`) ? 'graph-visited-edge' : 'graph-future-edge'} graph-edge-${edge.direction}`}
+              />
+              {index >= 0 && (
+                <path
+                  d={d}
+                  pathLength={1}
+                  fill="none"
+                  vectorEffect="non-scaling-stroke"
+                  style={{ '--edge-index': index } as CSSProperties}
+                  className={`world-path world-path-selected graph-edge-${edge.direction}`}
+                />
+              )}
+            </g>
           )
         }),
       )}

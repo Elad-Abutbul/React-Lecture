@@ -15,6 +15,7 @@ type WorkshopStore = WorkshopProgress & {
   check: (id: string, value: boolean) => void
   skip: (id: string, value: boolean) => void
   hint: (id: string) => void
+  reveal: (id: string) => void
   setPlan: (plan: 90 | 120) => void
   setInstructor: (value: boolean) => void
   reset: () => void
@@ -91,10 +92,22 @@ export const useHandsOnStore = create<WorkshopStore>()(
             hints: { ...s.hints, [id]: Math.min(3, (s.hints[id] ?? 0) + 1) },
           }))
       },
+      reveal: (id) => {
+        if (HANDS_ON_BY_ID[id])
+          set((state) => ({ hints: { ...state.hints, [id]: 3 } }))
+      },
       setPlan: (plan) => set({ plan }),
       setInstructor: (instructor) => set({ instructor }),
       reset: () =>
-        set({ ...blank, visited: [], checked: [], skipped: [], hints: {} }),
+        set((state) => ({
+          ...blank,
+          visited: [],
+          checked: [],
+          skipped: [],
+          hints: {},
+          plan: state.plan,
+          instructor: state.instructor,
+        })),
     }),
     {
       name: HANDS_ON.storage.key,

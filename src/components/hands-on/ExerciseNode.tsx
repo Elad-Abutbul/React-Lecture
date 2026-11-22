@@ -173,7 +173,15 @@ export function ExerciseNode({ id }: { id: string }) {
       )}
       {panel === 'demo' && <WorkshopTaskBoard />}
       {unit.pause && <p className="mt-3 text-violet">{COPY.classCheck}</p>}
-      <InstructorMode key={`${id}-${plan}`} id={id} />
+      <InstructorMode
+        key={`${id}-${plan}`}
+        id={id}
+        onSolution={() => {
+          useHandsOnStore.getState().reveal(id)
+          setPanel('hints')
+        }}
+        onQuestion={() => setPanel('check')}
+      />
     </div>
   )
 }

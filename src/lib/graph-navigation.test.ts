@@ -51,3 +51,45 @@ test('troubleshooting rejoins its original command and does not create a dead en
     expect(end.edges.length).toBeGreaterThan(0)
   }
 })
+test('repeated retries rejoin the original stop without unbounded history or lost visited paths', () => {
+  const store = () => useGraphStore.getState()
+  store().reset()
+  store().select('yes')
+  store().arrive()
+  for (let i = 0; i < 100; i++) {
+    store().select('error')
+    store().arrive()
+    store().step(1)
+    store().arrive()
+    store().step(1)
+    store().arrive()
+    expect(store().route).toEqual(['node', 'verify'])
+  }
+  expect(store().visited).toEqual(
+    expect.arrayContaining(['verify-help-0', 'verify-help-1']),
+  )
+  expect(store().traversed).toContain('verify-help-1::verify')
+  expect(store().choices).toEqual({ node: 'yes' })
+})
+test('migration expands a newly introduced single path rather than leaving a navigation dead end', () => {
+  const prefix = pathTo('existing-run')
+  const recovered = sanitizeGraph({
+    route: prefix,
+    cursor: prefix.length - 1,
+    visited: prefix,
+  })
+  expect(recovered.route.at(-1)).toBe('existing-run-result')
+})
+test('large step requests and in-flight repeats never skip a logical stop', () => {
+  const store = () => useGraphStore.getState()
+  store().reset()
+  store().jump('existing')
+  store().arrive()
+  store().step(2000)
+  expect(store().route[store().cursor]).toBe('scripts')
+  store().step(1)
+  expect(store().route[store().cursor]).toBe('scripts')
+  store().arrive()
+  store().step(1)
+  expect(store().route[store().cursor]).toBe('scripts-result')
+})
