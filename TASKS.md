@@ -200,28 +200,36 @@
 - **אימות ביצוע:** fix: preserve native scrolling and focus newly selected journey steps; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### T21 — ״למה React?״ ומחשבה הצהרתית
-- [ ] **תלויות:** T05.
+- [x] **תלויות:** T05.
 - **לבצע:** להשוות בצורה חיה בין עדכון DOM ידני לבין React; להבהיר שבקוד קטן Vanilla JS מתאים, ו־React הוא ספרייה ולא שפה/שרת. להציג ״מה״ לעומת ״איך״.
 - **קבצים:** `src/content/lessons.ts`, `src/components/lessons/WhyReactSection.tsx`, `src/components/demos/ImperativeVsDeclarative.tsx`.
 - **קבלה:** לחיצה משנה מונה ונותנת השוואה מוחשית; לא רק שתי תמונות קוד.
 
+- **אימות ביצוע:** feat: teach declarative UI with live manual DOM and React counters; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
+
 ### T22 — React לעומת Vite
-- [ ] **תלויות:** T21.
+- [x] **תלויות:** T21.
 - **לבצע:** מקטע קצר עם שתי כרטיסיות תפקידים ופקודות יצירת הפרויקט מתוך `COMMANDS`.
 - **קבצים:** `src/components/lessons/ReactViteSection.tsx`, עדכון `src/content/lessons.ts`.
 - **קבלה:** יש הבחנה נכונה בין ספריית UI לכלי פיתוח; אין פקודות סותרות.
 
+- **אימות ביצוע:** feat: distinguish React and Vite using shared setup commands; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
+
 ### T23 — עץ קבצים לחיץ
-- [ ] **תלויות:** T14.
+- [x] **תלויות:** T14.
 - **לבצע:** ליצור עץ פרויקט עם `index.html`, `src/main.tsx`, `src/App.tsx`, `src/components`, `package.json`, קובצי CSS/הגדרות. לחיצה מציגה קוד והסבר; להמחיש `index.html → main.tsx → App.tsx → UI`.
 - **קבצים:** `src/content/files.ts`, `src/components/lessons/FileTreeSection.tsx`, `src/components/lessons/FileDetails.tsx`.
 - **קבלה:** כל קובץ מרכזי נפתח; מסלול טעינה ברור; אין להניח שכל פרויקט מכיל בדיוק אותו מבנה.
 
+- **אימות ביצוע:** feat: add keyboard-accessible project file explorer and load trace; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
+
 ### T24 — Components ו־JSX/TSX
-- [ ] **תלויות:** T23.
+- [x] **תלויות:** T23.
 - **לבצע:** דמו של `Welcome` בשימוש חוזר; להסביר פונקציה שמחזירה JSX; להראות `return`, `{}`, `className`, תגית עוטפת ו־`.tsx` מול `.ts`.
 - **קבצים:** `src/components/lessons/ComponentsSection.tsx`, `JsxSection.tsx`, עדכון תוכן הפרקים.
 - **קבלה:** רכיבים אמיתיים מוצגים וניתן לראות הבדל כשמשנים נתונים בדמו.
+
+- **אימות ביצוע:** feat: teach reusable components and JSX through live experiments; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### T25 — Props (הורה → ילד)
 - [ ] **תלויות:** T24.

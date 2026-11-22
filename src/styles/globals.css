@@ -441,3 +441,106 @@ html {
     width: 100%;
   }
 }
+@layer components {
+  .lesson-card {
+    min-width: 0;
+    margin-bottom: 3rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-card);
+    background: color-mix(in srgb, var(--color-surface) 65%, transparent);
+    padding: clamp(1.25rem, 3vw, 2.5rem);
+  }
+  .lesson-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.5rem;
+  }
+  .code-block {
+    min-width: 0;
+    overflow-x: auto;
+    text-align: left;
+    border: 1px solid var(--color-border);
+    border-radius: 0.85rem;
+    background: var(--color-bg);
+    color: var(--color-react);
+    font-size: 0.875rem;
+    line-height: 1.9;
+    padding: 1.5rem;
+    tab-size: 2;
+  }
+  .demo-panel {
+    padding: 1.5rem;
+    border: 1px solid var(--color-border);
+    border-radius: 0.85rem;
+    min-width: 0;
+  }
+  .demo-number {
+    display: block;
+    color: var(--color-react);
+    font-family: var(--font-mono);
+    font-size: 3rem;
+    margin-block: 1.5rem;
+    line-height: 1.2;
+  }
+  .knowledge-check {
+    border: 1px solid var(--color-violet);
+    border-radius: 0.85rem;
+    padding: 1.25rem;
+    margin-top: 2rem;
+    min-width: 0;
+  }
+  .field {
+    display: block;
+    width: 100%;
+    min-height: 2.75rem;
+    border: 1px solid var(--color-border);
+    border-radius: 0.5rem;
+    background: var(--color-bg);
+    color: var(--color-text);
+    padding: 0.5rem 0.75rem;
+    margin-block: 0.75rem 1.5rem;
+  }
+}
+@media (max-width: 768px) {
+  .lesson-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.file-explorer {
+  display: grid;
+  grid-template-columns: minmax(15rem, 1fr) minmax(0, 2fr);
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+}
+.file-list {
+  padding: 1rem;
+  border-inline-end: 1px solid var(--color-border);
+  background: var(--color-bg);
+}
+.file-tab {
+  display: flex;
+  align-items: center;
+  direction: ltr;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.75rem;
+  font: 0.875rem var(--font-mono);
+  border-radius: 0.5rem;
+  color: var(--color-muted);
+  text-align: left;
+}
+.file-tab[data-state='active'] {
+  color: var(--color-react);
+  background: var(--color-surface-raised);
+}
+@media (max-width: 768px) {
+  .file-explorer {
+    grid-template-columns: 1fr;
+  }
+  .file-list {
+    border-inline-end: 0;
+    border-bottom: 1px solid var(--color-border);
+  }
+}
