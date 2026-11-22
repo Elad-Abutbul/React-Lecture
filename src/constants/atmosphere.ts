@@ -1,4 +1,5 @@
 export const ATMOSPHERE = {
+  frameMs: 50,
   particles: Array.from({ length: 22 }, (_, index) => ({
     id: index,
     x: (index * 47 + 11) % 100,

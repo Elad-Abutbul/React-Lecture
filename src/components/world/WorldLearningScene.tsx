@@ -1,3 +1,11 @@
+import { WorldResources } from './WorldResources'
+import { QuizSection } from '@/components/lessons/QuizSection'
+import { LabsSection } from '@/components/labs/LabsSection'
+import { CleanupSection } from '@/components/lessons/CleanupSection'
+import { EffectSection } from '@/components/lessons/EffectSection'
+import { RenderSection } from '@/components/lessons/RenderSection'
+import { StateSection } from '@/components/lessons/StateSection'
+import { PropsSection } from '@/components/lessons/PropsSection'
 import { useState, useId } from 'react'
 import { Tabs } from 'radix-ui'
 import { LEARNING_SCENES } from '@/content/learningScenes'
@@ -46,12 +54,20 @@ function ToolRoles() {
   )
 }
 const DEMOS: Record<string, () => React.ReactNode> = {
+  cleanup: CleanupSection,
+  effect: EffectSection,
+  snapshot: RenderSection,
+  state: StateSection,
+  props: PropsSection,
   declarative: ImperativeVsDeclarative,
   'react-vite': ToolRoles,
   components: ComponentsDemo,
   jsx: JsxDemo,
 }
 export function WorldLearningScene({ id }: { id: string }) {
+  if (id === 'resources') return <WorldResources />
+  if (id === 'quiz') return <QuizSection />
+  if (id === 'labs') return <LabsSection />
   if (id === 'files') return <WorldFiles />
   const scene = LEARNING_SCENES.find((s) => s.id === id)
   if (!scene?.lesson) return null

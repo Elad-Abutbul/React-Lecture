@@ -7,7 +7,7 @@ export function WorldFiles() {
   const file = FILES.find((f) => f.id === fileId)!
   return (
     <article className="focus-content world-files">
-      <h1 className="focus-title">{FILE_COPY.tree}</h1>
+      <h1 className="focus-title">{FILE_COPY.title}</h1>
       <p className="focus-description">{FILE_COPY.intro}</p>
       <Tabs.Root
         dir="rtl"
@@ -22,7 +22,7 @@ export function WorldFiles() {
             </Tabs.Trigger>
           ))}
         </Tabs.List>
-        <FileDetails file={file} />
+        <FileDetails file={file} headingLevel="h2" />
       </Tabs.Root>
     </article>
   )

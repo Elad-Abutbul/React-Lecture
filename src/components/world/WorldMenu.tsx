@@ -1,8 +1,9 @@
+import { TREE_MENU_LABELS } from '@/constants/tree'
 import { Dialog, Tabs } from 'radix-ui'
 import { Button } from '@/components/ui/button'
 import { useJourneyStore } from '@/store/journey-store'
 import { getActivePath } from '@/lib/journey-engine'
-import { LEARNING_SCENES } from '@/content/learningScenes'
+import { LEARNING_SCENES, LEARNING_MENU_LABELS } from '@/content/learningScenes'
 import { WORLD_COPY } from '@/constants/world'
 import { useWorldStore } from '@/store/world-store'
 export function WorldMenu({
@@ -41,9 +42,10 @@ export function WorldMenu({
                   <Button
                     key={n.id}
                     variant="outline"
+                    aria-label={n.title}
                     onClick={() => visit(n.id)}
                   >
-                    {n.title}
+                    {TREE_MENU_LABELS[n.id] ?? n.title}
                   </Button>
                 ))}
               </div>
@@ -54,9 +56,10 @@ export function WorldMenu({
                   <Button
                     key={s.id}
                     variant="outline"
+                    aria-label={s.title}
                     onClick={() => visit(s.id)}
                   >
-                    {s.title}
+                    {LEARNING_MENU_LABELS[s.id] ?? s.title}
                   </Button>
                 ))}
               </div>

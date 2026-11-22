@@ -1,5 +1,5 @@
-import { useRef } from 'react'
-import { Canvas, useFrame } from '@react-three/fiber'
+import { useRef, useEffect } from 'react'
+import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { Float, Stars } from '@react-three/drei'
 import type { Group } from 'three'
 import { ATMOSPHERE } from '@/constants/atmosphere'
@@ -47,13 +47,25 @@ function AtomMesh() {
     </Float>
   )
 }
+function FrameBudget() {
+  const invalidate = useThree((state) => state.invalidate)
+  useEffect(() => {
+    const id = window.setInterval(() => {
+      if (document.visibilityState === 'visible') invalidate()
+    }, ATMOSPHERE.frameMs)
+    return () => window.clearInterval(id)
+  }, [invalidate])
+  return null
+}
 export default function ReactAtomScene() {
   return (
     <Canvas
+      frameloop="demand"
       camera={ATMOSPHERE.camera}
       dpr={ATMOSPHERE.dpr}
       gl={{ alpha: true, antialias: false, powerPreference: 'low-power' }}
     >
+      <FrameBudget />
       <AtomMesh />
       <Stars {...ATMOSPHERE.stars} saturation={0} fade />
     </Canvas>

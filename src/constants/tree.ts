@@ -57,3 +57,23 @@ export const TREE_COPY = {
   jump: 'מעבר לשלב',
   motion: 'במצב הפחתת תנועה בוחרים צומת ללא תנועת מצלמה.',
 } as const
+export const TREE_MENU_LABELS: Record<string, string> = {
+  node: 'Node.js',
+  os: 'מערכת הפעלה',
+  windows: 'Windows',
+  mac: 'macOS',
+  verify: 'בדיקת גרסאות',
+  project: 'בחירת פרויקט',
+  create: 'יצירת פרויקט',
+  enter: 'תיקיית הפרויקט',
+  install: 'תלויות',
+  dev: 'שרת פיתוח',
+  browser: 'בדיקת דפדפן',
+  tools: 'כלי עזר',
+  success: 'סיום ההתקנה',
+  existing: 'פרויקט קיים',
+  scripts: 'סקריפטים',
+  'existing-run': 'הפעלת סקריפט',
+  'browser-help': 'עזרה לשרת',
+  'node-help': 'עזרה ל־Node',
+}

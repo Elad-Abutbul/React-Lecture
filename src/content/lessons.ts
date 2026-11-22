@@ -102,3 +102,141 @@ export const COMPONENT_UI = {
     'ביטויים דינמיים נכנסים בתוך {}.',
   ],
 } as const
+export const PROPS: Lesson = {
+  id: 'props',
+  title: 'ההורה שולח. הילד מציג.',
+  body: 'Props הם קלט לקריאה בלבד, מהורה לילד. אותו רכיב יכול להופיע עם ערכים שונים, בלי לשנות את הקוד שלו. משנים את השם בהורה ורואים את הילד מתעדכן.',
+  code: 'type GreetingProps = { readonly name: string }\nfunction Greeting({ name }: GreetingProps) {\n  return <h3>Hello {name}!</h3>\n}\n\nfunction Parent() {\n  return <>\n    <Greeting name="Dana" />\n    <Greeting name="Yuval" />\n  </>\n}',
+  check: {
+    prompt: 'באיזה כיוון עוברים Props?',
+    options: ['מהורה לילד', 'מילד להורה'],
+    answer: 0,
+    explanation:
+      'ההורה קובע את הקלט. הילד קורא ומציג אותו; הוא אינו משנה את ה־Props.',
+  },
+}
+export const PROPS_UI = {
+  label: 'השם שההורה שולח',
+  initial: 'דנה',
+  second: 'יובל',
+  greeting: 'שלום, ',
+  parent: 'הורה',
+  child: 'שני מופעים של אותו ילד',
+} as const
+export const STATE: Lesson = {
+  id: 'state',
+  title: 'כדי שהממשק ישתנה, React צריך לדעת שמשהו השתנה.',
+  body: 'useState שומר ערך בין רינדורים. setCount מבקש רינדור חדש עם הערך הבא. שינוי משתנה רגיל לבדו לא מבקש מ־React לעדכן את התצוגה; המשתנה המקומי גם נוצר מחדש ברינדור הבא.',
+  code: "import { useState } from 'react'\n\nfunction Counter() {\n  const [count, setCount] = useState(0)\n  return (\n    <button onClick={() => setCount(prev => prev + 1)}>\n      {count}\n    </button>\n  )\n}",
+  check: {
+    prompt: 'מה מבקש מ־React לרנדר עם ערך חדש?',
+    options: ['שינוי משתנה רגיל', 'קריאה לפונקציית העדכון של State'],
+    answer: 1,
+    explanation:
+      'React שומר את ה־State ומרנדר מחדש בעקבות בקשת עדכון. הוא אינו עוקב אחר כל משתנה JavaScript.',
+  },
+}
+export const STATE_UI = {
+  state: 'עם State',
+  plain: 'משתנה רגיל',
+  addState: 'הוספה ל־State',
+  addPlain: 'שינוי המשתנה הרגיל',
+  stateValue: 'ערך ה־State',
+  plainValue: 'ערך המשתנה בתצוגה',
+  note: 'בכוונה לא רואים עדכון בצד המשתנה הרגיל: שינויו אינו מבקש רינדור. ברינדור הבא הוא נוצר מחדש.',
+  reset: 'איפוס המונה',
+} as const
+export const SNAPSHOT: Lesson = {
+  id: 'snapshot',
+  title: 'ה־handler רואה צילום מצב. הרינדור הבא רואה ערך חדש.',
+  body: 'setCount מבקש רינדור נוסף; הוא אינו משנה את count בתוך ה־handler שכבר רץ. עדכון פונקציונלי מתבסס על העדכון שקדם לו בתור. לא כל Render גורם לשינוי ב־DOM.',
+  code: 'function handleClick() {\n  setCount(count + 1)\n  console.log(count) // snapshot of this render\n}\n\n// Queue three updates safely:\nsetCount(prev => prev + 1)\nsetCount(prev => prev + 1)\nsetCount(prev => prev + 1)',
+  check: {
+    prompt: 'אם count היה 0, מה ידפיס console.log מיד אחרי setCount?',
+    options: ['0', '1'],
+    answer: 0,
+    explanation:
+      'ה־handler שייך לרינדור שבו count היה 0. בקשת העדכון תופיע ברינדור הבא, ולא תשנה את המשתנה שכבר נקלט.',
+  },
+}
+export const SNAPSHOT_UI = {
+  before: 'הערך באותו handler',
+  after: 'הערך ברינדור הנוכחי',
+  single: 'בקשת עדכון אחת',
+  batchLabel: 'שלושה עדכונים פונקציונליים',
+  batch: 3,
+  empty: '—',
+  timeline: 'מהטריגר למסך',
+} as const
+export const RENDER_PHASES = [
+  { title: 'טריגר', body: 'טעינה או עדכון State מבקשים רינדור.' },
+  { title: 'Render', body: 'React מפעיל רכיבים ומחשב את תיאור הממשק החדש.' },
+  {
+    title: 'Commit',
+    body: 'React מחיל ב־DOM רק את השינויים הנחוצים. אם אין הבדל, ייתכן שלא ישתנה דבר.',
+  },
+  {
+    title: 'Paint',
+    body: 'הדפדפן מציג את התוצאה. Render ו־Paint הם תהליכים שונים.',
+  },
+] as const
+export const EFFECT: Lesson = {
+  id: 'effect',
+  title: 'מדברים עם העולם שבחוץ.',
+  body: 'Effect מסנכרן את React עם מערכת חיצונית אחרי ה־Commit: כותרת לשונית, טיימר או מאזין. ערך שאפשר לחשב בזמן render אינו צריך Effect.',
+  code: "useEffect(() => {\n  const previousTitle = document.title\n  document.title = 'Likes: ' + count\n  return () => { document.title = previousTitle }\n}, [count])",
+  check: {
+    prompt: 'מתי Effect מתאים?',
+    options: ['לחישוב count * 2', 'לסנכרון כותרת הלשונית עם count'],
+    answer: 1,
+    explanation:
+      'כותרת הדפדפן היא מערכת חיצונית ל־React. הכפלה של ערך אפשר לחשב ישירות בזמן render.',
+  },
+}
+export const EFFECT_UI = {
+  prefix: 'React Journey · Likes: ',
+  increment: 'עדכון המונה והכותרת',
+  title: 'כותרת הלשונית כעת',
+  dependencies: 'מתי ה־Effect רץ?',
+} as const
+export const EFFECT_MODES = [
+  {
+    code: 'useEffect(fn)',
+    description: 'אחרי כל Commit רלוונטי של הקומפוננטה.',
+  },
+  {
+    code: 'useEffect(fn, [])',
+    description:
+      'בהתקנה, עם Cleanup בהסרה. ב־StrictMode בפיתוח יש בדיקת הפעלה וניקוי נוספת.',
+  },
+  {
+    code: 'useEffect(fn, [x])',
+    description:
+      'בהתקנה ושוב כש־x משתנה. הניקוי הקודם מתבצע לפני הסנכרון החדש.',
+  },
+] as const
+export const CLEANUP: Lesson = {
+  id: 'cleanup',
+  title: 'מתחילים חיבור. מסיימים באחריות.',
+  body: 'Cleanup משחרר טיימרים, מאזינים וחיבורים. הוא רץ בהסרה ולפני Effect חדש עם תלויות שהשתנו. ב־StrictMode בפיתוח הפעלה וניקוי נוספים הם בדיקה מכוונת.',
+  code: 'useEffect(() => {\n  if (!running) return\n  const id = window.setInterval(() => {\n    setSeconds(prev => prev + 1)\n  }, 1000)\n  return () => window.clearInterval(id)\n}, [running])',
+  check: {
+    prompt: 'מה צריך לקרות לטיימר כשהרכיב מוסר?',
+    options: ['הוא ממשיך לפעול', 'Cleanup מבטל את ה־interval'],
+    answer: 1,
+    explanation:
+      'טיימר שנשאר פעיל אחרי ההסרה מבזבז משאבים ועלול להפעיל קוד שכבר אינו נחוץ.',
+  },
+}
+export const TIMER_UI = {
+  initial: 0,
+  tickMs: 1000,
+  start: 'התחלת טיימר',
+  stop: 'עצירת טיימר',
+  remove: 'הסרת הרכיב',
+  mount: 'הרכבת הרכיב מחדש',
+  removed: 'הרכיב הוסר והטיימר נוקה.',
+  seconds: 'שניות בטיימר',
+  active: 'הטיימר פעיל',
+  paused: 'הטיימר עצור',
+} as const

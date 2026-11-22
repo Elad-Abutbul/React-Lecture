@@ -312,49 +312,63 @@
 - **אימות ביצוע:** test: verify responsive spatial branch merges and accessible world camera; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### T25 — Props (הורה → ילד)
-- [ ] **תלויות:** T24.
+- [x] **תלויות:** T24.
 - **לבצע:** רכיב הורה בוחר שם והילד מציג אותו; להציג שני מופעים עם אותו רכיב; להדגיש props לקריאה בלבד.
 - **קבצים:** `src/components/demos/PropsDemo.tsx`, `src/components/lessons/PropsSection.tsx`.
 - **קבלה:** שינוי השם בהורה משנה את הטקסט בילד בלי שינוי קוד הילד.
 
+- **אימות ביצוע:** feat: demonstrate readonly parent-to-child props with live input; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
+
 ### T26 — State ו־useState
-- [ ] **תלויות:** T25.
+- [x] **תלויות:** T25.
 - **לבצע:** מונה שימושי עם `setCount(prev => prev + 1)`, הסבר על שימור מצב בין רינדורים, השוואה למשתנה רגיל.
 - **קבצים:** `src/components/demos/CounterDemo.tsx`, `src/components/lessons/StateSection.tsx`.
 - **קבלה:** המונה עובד; ההבדל בין משתנה רגיל ל־state מוצג נכון.
 
+- **אימות ביצוע:** feat: teach functional state updates versus nonreactive local variables; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
+
 ### T27 — Snapshot ו־Render/Commit/Paint
-- [ ] **תלויות:** T26.
+- [x] **תלויות:** T26.
 - **לבצע:** דמו שמראה ערך `count` הישן ב־handler לעומת הערך לאחר רינדור; תרשים של טריגר → Render → Commit → Paint. לציין שלא כל Render משנה DOM.
 - **קבצים:** `src/components/demos/SnapshotDemo.tsx`, `src/components/lessons/RenderSection.tsx`.
 - **קבלה:** ההתנהגות תואמת React ואינה טוענת ש־`setCount` מעדכן משתנה מיד בתוך handler.
 
+- **אימות ביצוע:** feat: demonstrate render snapshots queued updates and commit-paint phases; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
+
 ### T28 — useEffect ותלויות
-- [ ] **תלויות:** T27.
+- [x] **תלויות:** T27.
 - **לבצע:** דמו שמסנכרן `document.title` עם מונה; להסביר למה Effect מיועד לסנכרון חיצוני ולא לחישוב רגיל בתוך render; להמחיש הבדלים בין `[]`, `[x]` וללא מערך.
 - **קבצים:** `src/components/demos/EffectDemo.tsx`, `src/components/lessons/EffectSection.tsx`.
 - **קבלה:** הכותרת משתנה בהתאם לערך; לא נוצרה לולאת effect.
 
+- **אימות ביצוע:** feat: demonstrate external title synchronization and effect dependencies; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
+
 ### T29 — Cleanup וטיימר
-- [ ] **תלויות:** T28.
+- [x] **תלויות:** T28.
 - **לבצע:** רכיב טיימר עם התחלה/עצירה ושחרור interval ב־cleanup; הצגת מידע על StrictMode בפיתוח.
 - **קבצים:** `src/components/demos/CleanupDemo.tsx`, `src/components/lessons/CleanupSection.tsx`.
 - **קבלה:** בהסרת הרכיב/עצירת הטיימר אין interval יתום או עדכון בלתי רצוי.
 
+- **אימות ביצוע:** feat: teach cleanup with a mountable stoppable interval and lifecycle tests; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
+
 ### T30 — ארבע תחנות מעבדה
-- [ ] **תלויות:** T24–T29.
+- [x] **תלויות:** T24–T29.
 - **לבצע:** לאחד ארבע תחנות התרגול מהמצגת — `Step01Components`, `Step02Props`, `Step03State`, `Step04Effect`. דוגמת קוד לצד תוצאה חיה; בלי `eval` או הרצת קוד שהמשתמש מקליד.
 - **קבצים:** `src/components/labs/Step01Components.tsx`, `Step02Props.tsx`, `Step03State.tsx`, `Step04Effect.tsx`, `LabsSection.tsx`.
 - **קבלה:** בכל תחנה פעולה שמשנה ממשק/תוצאה; אין תחנות ריקות.
 
+- **אימות ביצוע:** feat: assemble four live component props state and effect lab stations; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
+
 ### T31 — חידון ומשוב
-- [ ] **תלויות:** T30.
+- [x] **תלויות:** T30.
 - **לבצע:** ליצור שלוש שאלות הסיכום של המצגת ועוד משחק קצר לזיהוי Props/State/Event/Effect; להציג תשובה נכונה והסבר, לא רק ניקוד.
 - **קבצים:** `src/content/quiz.ts`, `src/components/lessons/QuizSection.tsx`.
 - **קבלה:** כל תשובה מקבלת משוב; אפשר לנסות שוב; אין שאלות hardcoded ב־JSX.
 
+- **אימות ביצוע:** feat: add explanatory workshop quiz and props-state-event-effect decisions; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
+
 ### T32 — חיבור כל המסע + מקורות
-- [ ] **תלויות:** T20, T22, T31.
+- [x] **תלויות:** T20, T22, T31.
 - **לבצע:** להרכיב את כל המקטעים לפי סדר המצגת ולפי ה־`REQUIREMENTS.md`; לקשר עוגנים, Hero, המסלול, עץ הקבצים, השיעורים, המעבדה והחידון. להוסיף קישורים לתיעוד הרשמי מתוך `constants/links.ts`.
 - **קבצים:** `src/app/App.tsx`, `src/constants/navigation.ts`, `src/components/layout/Footer.tsx`.
 - **קבלה:** מעבר רציף בין כל חלקי האתר, ללא מסך דמה וללא תוכן משוכפל.
@@ -362,6 +376,8 @@
 ---
 
 ## שלב ה — בדיקות, נגישות וסיום
+
+- **אימות ביצוע:** feat: connect the full learning world labs quiz and official resources; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### T33 — בדיקות מסלול ורכיבים
 - [ ] **תלויות:** T32.

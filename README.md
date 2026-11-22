@@ -75,3 +75,7 @@ keyboard scrolling, and reduced motion work without an additional scrolling laye
 Focus moves only after explicit journey actions, never on hydration or passive scrolling.
 The tracked specifications mirror the originals in the parent directory; task progress
 is updated in both copies after validation.
+
+The local-variable half of CounterDemo deliberately reproduces the workshop
+anti-pattern. Only its immutability lint rule is disabled, with an inline rationale;
+tests verify that this value does not refresh the UI while the State counter does.
