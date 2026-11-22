@@ -136,7 +136,7 @@
 - **אימות ביצוע:** feat: implement manual environment checks and actionable recovery help; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### T14 — מסלול התקנה מלא בפורמט אנכי
-- [ ] **תלויות:** T11–T13.
+- [x] **תלויות:** T11–T13.
 - **לבצע:** להציג את המסלול הפעיל כרשימת צמתים אנכית עם חיבורי CSS/SVG פשוטים; לשלב בעמוד כך שאפשר להשלים את כל מסלול ההתקנה בלי React Flow או אנימציות.
 - **קבצים:** `src/components/journey/MobileJourney.tsx`, `src/components/journey/JourneySection.tsx`, `src/app/App.tsx`.
 - **קבלה:** אפשר להגיע מתחילת העץ עד ״האתר עולה בדפדפן״ בנתיב החדש וגם הקיים. אין צמתים מתים.
@@ -144,6 +144,8 @@
 ---
 
 ## שלב ג — עץ עשיר, גלילה ואנימציות
+
+- **אימות ביצוע:** feat: connect the complete vertical installation journey; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### T15 — מפת זרימה בדסקטופ
 - [ ] **תלויות:** T14.

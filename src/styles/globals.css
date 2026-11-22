@@ -337,3 +337,25 @@ html {
     background: var(--color-bg);
   }
 }
+@layer components {
+  .journey-list {
+    display: grid;
+    gap: 2rem;
+    max-width: 50rem;
+    margin-inline: auto;
+  }
+  .journey-list > li {
+    position: relative;
+    min-width: 0;
+  }
+  .journey-list > li:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    height: 2rem;
+    right: 50%;
+    width: 1px;
+    background: var(--color-react);
+    opacity: 0.4;
+  }
+}
