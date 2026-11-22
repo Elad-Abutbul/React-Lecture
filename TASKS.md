@@ -344,10 +344,12 @@
 - **אימות ביצוע:** feat: demonstrate external title synchronization and effect dependencies; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### T29 — Cleanup וטיימר
-- [ ] **תלויות:** T28.
+- [x] **תלויות:** T28.
 - **לבצע:** רכיב טיימר עם התחלה/עצירה ושחרור interval ב־cleanup; הצגת מידע על StrictMode בפיתוח.
 - **קבצים:** `src/components/demos/CleanupDemo.tsx`, `src/components/lessons/CleanupSection.tsx`.
 - **קבלה:** בהסרת הרכיב/עצירת הטיימר אין interval יתום או עדכון בלתי רצוי.
+
+- **אימות ביצוע:** feat: teach cleanup with a mountable stoppable interval and lifecycle tests; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### T30 — ארבע תחנות מעבדה
 - [ ] **תלויות:** T24–T29.

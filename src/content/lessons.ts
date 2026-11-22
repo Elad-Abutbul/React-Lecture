@@ -215,3 +215,28 @@ export const EFFECT_MODES = [
       'בהתקנה ושוב כש־x משתנה. הניקוי הקודם מתבצע לפני הסנכרון החדש.',
   },
 ] as const
+export const CLEANUP: Lesson = {
+  id: 'cleanup',
+  title: 'מתחילים חיבור. מסיימים באחריות.',
+  body: 'Cleanup משחרר טיימרים, מאזינים וחיבורים. הוא רץ בהסרה ולפני Effect חדש עם תלויות שהשתנו. ב־StrictMode בפיתוח הפעלה וניקוי נוספים הם בדיקה מכוונת.',
+  code: 'useEffect(() => {\n  if (!running) return\n  const id = window.setInterval(() => {\n    setSeconds(prev => prev + 1)\n  }, 1000)\n  return () => window.clearInterval(id)\n}, [running])',
+  check: {
+    prompt: 'מה צריך לקרות לטיימר כשהרכיב מוסר?',
+    options: ['הוא ממשיך לפעול', 'Cleanup מבטל את ה־interval'],
+    answer: 1,
+    explanation:
+      'טיימר שנשאר פעיל אחרי ההסרה מבזבז משאבים ועלול להפעיל קוד שכבר אינו נחוץ.',
+  },
+}
+export const TIMER_UI = {
+  initial: 0,
+  tickMs: 1000,
+  start: 'התחלת טיימר',
+  stop: 'עצירת טיימר',
+  remove: 'הסרת הרכיב',
+  mount: 'הרכבת הרכיב מחדש',
+  removed: 'הרכיב הוסר והטיימר נוקה.',
+  seconds: 'שניות בטיימר',
+  active: 'הטיימר פעיל',
+  paused: 'הטיימר עצור',
+} as const

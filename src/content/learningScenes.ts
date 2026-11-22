@@ -7,6 +7,7 @@ import {
   STATE,
   SNAPSHOT,
   EFFECT,
+  CLEANUP,
 } from './lessons'
 export const LEARNING_SCENES = [
   { id: WHY_REACT.id, title: WHY_REACT.title, lesson: WHY_REACT },
@@ -18,6 +19,7 @@ export const LEARNING_SCENES = [
   { id: STATE.id, title: STATE.title, lesson: STATE },
   { id: SNAPSHOT.id, title: SNAPSHOT.title, lesson: SNAPSHOT },
   { id: EFFECT.id, title: EFFECT.title, lesson: EFFECT },
+  { id: CLEANUP.id, title: CLEANUP.title, lesson: CLEANUP },
 ] as const
 export const LEARNING_POSITIONS: Record<string, { x: number; y: number }> =
   Object.fromEntries(

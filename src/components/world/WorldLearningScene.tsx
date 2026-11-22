@@ -1,3 +1,4 @@
+import { CleanupSection } from '@/components/lessons/CleanupSection'
 import { EffectSection } from '@/components/lessons/EffectSection'
 import { RenderSection } from '@/components/lessons/RenderSection'
 import { StateSection } from '@/components/lessons/StateSection'
@@ -50,6 +51,7 @@ function ToolRoles() {
   )
 }
 const DEMOS: Record<string, () => React.ReactNode> = {
+  cleanup: CleanupSection,
   effect: EffectSection,
   snapshot: RenderSection,
   state: StateSection,
