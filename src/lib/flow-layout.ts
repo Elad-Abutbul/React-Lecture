@@ -1,8 +1,19 @@
 import type { Node, Edge } from '@xyflow/react'
 import type { JourneyNode } from '@/types/journey'
-import { FLOW } from '@/constants/flow'
+import { JOURNEY_NODES } from '@/content/journey'
+import { TREE_CONNECTIONS, TREE_POSITIONS } from '@/constants/tree'
 export type FlowNode = Node<
-  { journeyId: string; title: string; done: boolean; active: boolean },
+  {
+    journeyId: string
+    title: string
+    done: boolean
+    active: boolean
+    available: boolean
+    onPath: boolean
+    choiceLabel?: string
+    sourceId?: string
+    choiceId?: string
+  },
   'journey'
 >
 export function flowLayout(
@@ -10,23 +21,38 @@ export function flowLayout(
   completed: readonly string[],
   current: string,
 ): { nodes: FlowNode[]; edges: Edge[] } {
+  const active = new Set(path.map((n) => n.id))
+  const outgoing = TREE_CONNECTIONS.filter((e) => e.source === current)
   return {
-    nodes: path.map((n, index) => ({
-      id: n.id,
+    nodes: JOURNEY_NODES.map((n) => {
+      const candidate = outgoing.find((e) => e.target === n.id)
+      return {
+        id: n.id,
+        type: 'journey',
+        position: TREE_POSITIONS[n.id],
+        data: {
+          journeyId: n.id,
+          title: n.title,
+          done: completed.includes(n.id),
+          active: n.id === current,
+          onPath: active.has(n.id),
+          available: !!candidate,
+          choiceLabel: candidate?.label,
+          sourceId: candidate?.source,
+          choiceId: candidate?.choiceId,
+        },
+      }
+    }),
+    edges: TREE_CONNECTIONS.map((edge) => ({
+      ...edge,
       type: 'journey',
-      position: { x: 0, y: index * FLOW.rowGap },
       data: {
-        journeyId: n.id,
-        title: n.title,
-        done: completed.includes(n.id),
-        active: current === n.id,
+        active: path.some(
+          (n, i) => n.id === edge.source && path[i + 1]?.id === edge.target,
+        ),
+        available: edge.source === current,
       },
-    })),
-    edges: path.slice(1).map((n, i) => ({
-      id: `${path[i].id}-${n.id}`,
-      source: path[i].id,
-      target: n.id,
-      type: 'journey',
+      label: undefined,
     })),
   }
 }
