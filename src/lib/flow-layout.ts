@@ -26,7 +26,7 @@ export function flowLayout(
       id: `${path[i].id}-${n.id}`,
       source: path[i].id,
       target: n.id,
-      type: 'smoothstep',
+      type: 'journey',
     })),
   }
 }

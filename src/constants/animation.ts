@@ -13,3 +13,9 @@ export const ANIMATION = {
     transition: { duration: 0.2 },
   },
 } as const
+export const SCROLL_PATH = {
+  offset: ['start end', 'end center'],
+  input: [0.05, 0.95],
+  output: [0, 1],
+  d: 'M1 0 V100',
+} as const

@@ -172,10 +172,12 @@
 - **אימות ביצוע:** feat: add restrained reveal and branch animations with reduced motion; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### T18 — קווי נתיב שמגיבים לגלילה
-- [ ] **תלויות:** T17.
+- [x] **תלויות:** T17.
 - **לבצע:** `DrawPath` עם SVG + `useScroll`/`useTransform`, highlight לצומת פעיל ולענף שנבחר, בלי להזיז viewport בכוח. לקשור למקטע המתאים, לא לגלילת כל העמוד באופן שרירותי.
 - **קבצים:** `src/components/motion/DrawPath.tsx`, `src/components/journey/DecisionEdge.tsx`.
 - **קבלה:** הקו מתגלה בהדרגה בזמן גלילה; אין קפיצות layout או התרסקות בצומת משתנה.
+
+- **אימות ביצוע:** feat: draw scroll-linked journey paths and selected flow edges; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### T19 — ProgressRail וניווט מקטעים
 - [ ] **תלויות:** T18.

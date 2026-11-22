@@ -1,3 +1,4 @@
+import { DecisionEdge } from './DecisionEdge'
 import { ReactFlow, Controls, Background } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
 import { getActivePath } from '@/lib/journey-engine'
@@ -7,6 +8,7 @@ import { FlowSummary } from './flow-nodes/FlowSummary'
 import { DecisionNode } from './DecisionNode'
 import { JOURNEY_COPY } from '@/content/journey'
 import { FLOW, FLOW_LABELS } from '@/constants/flow'
+const EDGE_TYPES = { journey: DecisionEdge }
 const NODE_TYPES = { journey: FlowSummary }
 export default function FlowCanvas() {
   const choices = useJourneyStore((s) => s.choices)
@@ -28,6 +30,7 @@ export default function FlowCanvas() {
             nodes={nodes}
             edges={edges}
             nodeTypes={NODE_TYPES}
+            edgeTypes={EDGE_TYPES}
             nodesDraggable={false}
             nodesConnectable={false}
             nodesFocusable={false}

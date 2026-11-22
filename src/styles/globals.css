@@ -401,3 +401,18 @@ html {
     border-color: var(--color-border);
   }
 }
+.draw-path {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: -0.75rem;
+  height: 100%;
+  width: 2px;
+  color: var(--color-react);
+  opacity: 0.5;
+  pointer-events: none;
+}
+.journey-edge {
+  stroke: var(--color-react);
+  stroke-width: 2;
+  filter: drop-shadow(0 0 3px var(--color-react));
+}
