@@ -164,10 +164,12 @@
 - **אימות ביצוע:** feat: share journey state across responsive map and vertical views; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### T17 — Motion ומערכת אנימציות
-- [ ] **תלויות:** T06, T16.
+- [x] **תלויות:** T06, T16.
 - **לבצע:** להוסיף Motion, presets מאוחדים (reveal, branch, node-focus) ותמיכה ב־`prefers-reduced-motion`. אנימציות רק של opacity/transform ככל האפשר.
 - **קבצים:** `src/constants/animation.ts`, `src/components/motion/Reveal.tsx`, `src/hooks/useReducedMotion.ts`.
 - **קבלה:** הופעת מקטעים מתונה; בהפחתת תנועה כל המידע זמין ללא המתנה לאנימציה.
+
+- **אימות ביצוע:** feat: add restrained reveal and branch animations with reduced motion; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### T18 — קווי נתיב שמגיבים לגלילה
 - [ ] **תלויות:** T17.
