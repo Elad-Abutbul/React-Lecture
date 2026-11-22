@@ -416,3 +416,28 @@ html {
   stroke-width: 2;
   filter: drop-shadow(0 0 3px var(--color-react));
 }
+.progress-rail {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: color-mix(in srgb, var(--color-bg) 95%, transparent);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--color-border);
+}
+.rail-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  min-height: 3.5rem;
+}
+@media (max-width: 768px) {
+  .rail-inner {
+    flex-wrap: wrap;
+    gap: 0;
+    padding-bottom: 0.5rem;
+  }
+  .rail-inner > nav {
+    width: 100%;
+  }
+}

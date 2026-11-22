@@ -180,10 +180,12 @@
 - **אימות ביצוע:** feat: draw scroll-linked journey paths and selected flow edges; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### T19 — ProgressRail וניווט מקטעים
-- [ ] **תלויות:** T18.
+- [x] **תלויות:** T18.
 - **לבצע:** מד התקדמות דביק לפי שלבים **שהושלמו** (לא אחוזי scroll), ניווט למקטעים, הדגשת המקטע הנצפה באמצעות observer. אפשר לחזור לכל שלב.
 - **קבצים:** `src/components/layout/ProgressRail.tsx`, `src/hooks/useActiveSection.ts`.
 - **קבלה:** התקדמות נכונה אחרי שינוי ענף; הדגשת מקטע משתנה עם גלילה; ניווט מקלדת תקין.
+
+- **אימות ביצוע:** feat: add completed-step progress and observed section navigation; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### T20 — ליטוש גלילה ובחירה
 - [ ] **תלויות:** T19.
