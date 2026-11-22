@@ -512,3 +512,121 @@
     inset: 5% 1rem auto;
   }
 }
+.world-atmosphere {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.world-grid {
+  position: absolute;
+  inset: -50%;
+  opacity: 0.12;
+  transform: perspective(1000px) rotateX(55deg) translateY(20%);
+  background-image:
+    linear-gradient(var(--color-react) 1px, transparent 1px),
+    linear-gradient(90deg, var(--color-react) 1px, transparent 1px);
+  background-size: 7rem 7rem;
+  mask-image: radial-gradient(ellipse, black, transparent 65%);
+}
+.atmosphere-atom {
+  position: absolute;
+  top: 3%;
+  left: -3%;
+  width: 48%;
+  height: 80%;
+  opacity: 0.26;
+  color: var(--color-react);
+  filter: drop-shadow(
+    0 0 30px color-mix(in srgb, var(--color-react) 15%, transparent)
+  );
+}
+.atmosphere-atom > svg {
+  width: 100%;
+  height: 100%;
+  opacity: 0.4;
+}
+.world-particle {
+  position: absolute;
+  border-radius: 50%;
+  background: var(--color-react);
+  box-shadow: 0 0 8px var(--color-react);
+  opacity: 0.3;
+  animation: atmospheric-drift linear infinite alternate;
+}
+.scene-learning .world-aura {
+  background:
+    radial-gradient(
+      ellipse at 75% 40%,
+      color-mix(in srgb, var(--color-violet) 22%, transparent),
+      transparent 55%
+    ),
+    radial-gradient(
+      ellipse at 20% 80%,
+      color-mix(in srgb, var(--color-react) 10%, transparent),
+      transparent 50%
+    );
+}
+.scene-errorHelp .world-aura {
+  background: radial-gradient(
+    ellipse at center,
+    color-mix(in srgb, var(--color-warning) 9%, transparent),
+    transparent 65%
+  );
+}
+.scene-command .world-grid {
+  opacity: 0.06;
+}
+.react-cursor,
+.react-cursor-trail {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 100;
+  width: 36px;
+  height: 36px;
+  color: var(--color-react);
+  pointer-events: none;
+}
+.react-cursor {
+  filter: drop-shadow(0 0 8px var(--color-react));
+}
+.react-cursor-trail {
+  width: 55px;
+  height: 55px;
+  border: 1px solid color-mix(in srgb, var(--color-violet) 30%, transparent);
+  border-radius: 50%;
+}
+@keyframes atmospheric-drift {
+  from {
+    transform: translate3d(0, 0, 0);
+    opacity: 0.12;
+  }
+  to {
+    transform: translate3d(20px, -50px, 0);
+    opacity: 0.45;
+  }
+}
+@media (hover: none), (pointer: coarse) {
+  .react-cursor,
+  .react-cursor-trail {
+    display: none;
+  }
+  .atmosphere-atom {
+    width: 90%;
+    left: -40%;
+    opacity: 0.12;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .react-cursor,
+  .react-cursor-trail {
+    display: none;
+  }
+  .world-particle {
+    animation: none;
+  }
+  .world-stage {
+    will-change: auto;
+  }
+}

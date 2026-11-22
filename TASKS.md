@@ -291,9 +291,11 @@
 - **אימות ביצוע:** feat: reconnect installation and learning content as full-screen world scenes; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### IM04 — אווירה, אטום תלת־ממדי וסמן spring
-- [ ] **תלויות:** IM03.
+- [x] **תלויות:** IM03.
 - **לבצע:** רקעי סצנות דינמיים, עומק, חלקיקים, paths זוהרים, פרלקסה; R3F/Drei עם fallback; אטום עוקב עכבר ושביל עדין.
 - **קבלה:** אין אפקט סמן במגע/reduced motion; 3D אינו חוסם אינטראקציה; אין טעינות WebGL מיותרות במצב מופחת.
+
+- **אימות ביצוע:** feat: add layered atmosphere lazy 3D atom and accessible spring cursor; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### IM05 — אימות עולם, נגישות וביצועים בדפדפן
 - [ ] **תלויות:** IM04.

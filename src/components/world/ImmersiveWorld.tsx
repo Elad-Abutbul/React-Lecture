@@ -1,3 +1,5 @@
+import { Atmosphere } from './Atmosphere'
+import { ReactCursor } from './ReactCursor'
 import { Progress } from '@/components/ui/progress'
 import { WorldLearningScene } from './WorldLearningScene'
 import { WorldMenu } from './WorldMenu'
@@ -107,7 +109,8 @@ export function ImmersiveWorld() {
         className={`world-viewport scene-${mode === 'learning' ? 'learning' : node.kind}`}
         aria-label={WORLD_COPY.world}
       >
-        <div className="world-aura" />
+        <Atmosphere />
+        <ReactCursor />
         <header className="world-chrome">
           <span className="brand" dir="ltr">
             <Atom className="text-react" aria-hidden="true" />

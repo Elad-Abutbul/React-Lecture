@@ -1,0 +1,31 @@
+export const ATMOSPHERE = {
+  particles: Array.from({ length: 22 }, (_, index) => ({
+    id: index,
+    x: (index * 47 + 11) % 100,
+    y: (index * 31 + 7) % 100,
+    duration: 12 + (index % 7),
+    delay: -(index % 9),
+    size: (index % 3) + 1,
+  })),
+  cursor: {
+    offset: 18,
+    size: 36,
+    trail: 70,
+    spring: { stiffness: 110, damping: 24 },
+    trailSpring: { stiffness: 65, damping: 30 },
+  },
+  atom: {
+    ringRadius: 1.6,
+    tube: 0.014,
+    tubular: 100,
+    radial: 6,
+    angles: [0, Math.PI / 3, -Math.PI / 3],
+    core: 0.16,
+    rotation: 0.09,
+    floatSpeed: 0.55,
+    floatIntensity: 0.3,
+  },
+  stars: { radius: 35, depth: 20, count: 650, factor: 1.2, speed: 0.12 },
+  camera: { position: [0, 0, 6] as [number, number, number], fov: 45 },
+  dpr: [1, 1.5] as [number, number],
+} as const
