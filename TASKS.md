@@ -536,7 +536,7 @@
 - **קבלה:** prefix ו־current מתעדכנים בחזרה ובשינוי כיוון; reduced motion ומובייל נשמרים.
 
 ### GX06 — בדיקות ענפים, חזרה ומסירה ל־GitHub
-- [ ] **תלויות:** GX05.
+- [x] **תלויות:** GX05.
 - **לבצע:** בדיקות mouse/click/wheel/diagonal/keyboard/touch, חזרה ושינוי ענף; lint, unit, build ו־E2E; בדיקה חזותית; commit, merge ו־push ללא force.
 - **קבלה:** כל הבדיקות עוברות ו־origin/main תואם ל־main המקומי.
 
@@ -560,7 +560,7 @@
 - **קבלה:** lint, tests, build ו־E2E עוברים; הוראות קוד שמישות.
 
 ### UN04 — מסירה, תיעוד וסנכרון
-- [ ] **תלויות:** UN03.
+- [x] **תלויות:** UN03.
 - **לבצע:** README עדכני, בדיקה חזותית בדפדפן, קומיטים לוגיים, מיזוג main ו־push מאומת.
 - **קבלה:** main נקי ו־origin/main תואם; דיווח תוצאות ומגבלות מדויק.
 
@@ -580,3 +580,5 @@
 - **אימות HO16, HO17:** lint, unit tests (53), production build, 16 בדיקות קוד סדנה ו־45 תרחישי browser עברו; לאחר תיקון פריסה נוספו 8 אימותי mobile שעברו.
 
 - **אימות מסירה T34–T37 / HO18 / UN03:** `pnpm format:check`, `pnpm lint`, `pnpm test` (57 בדיקות), `pnpm build`, `pnpm test:workshop` (16 בדיקות strict TypeScript/build) ו־Playwright (60 תרחישי Chromium בדסקטופ, מובייל ו־reduced motion) עברו. axe, focus, SVG endpoints ו־resize, גלילה/מחוות/לחיצה, חזרה ושינוי ענף, קריאת קוד מלא ו־persistence נבדקו. תמונות desktop/mobile נבדקו חזותית.
+
+- **אימות GX06 / UN04:** כל 57 בדיקות היחידה, 60 תרחישי הדפדפן ו־16 בדיקות קוד הסדנה עברו; lint/format/build תקינים. ענפי unified-scroll-tree, hands-on-workshop ו־quality-and-accessibility מוזגו ל־main ונדחפו ללא force. GitHub API אישר את commit `27edf61c5455093f530282004d2c59ea359a1a96` ואת README המעודכן; local/origin SHA אומת לאחר כל push. ללא משימות או תקלות ידועות שנותרו פתוחות.
