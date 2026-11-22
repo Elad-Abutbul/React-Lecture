@@ -270,9 +270,11 @@
 - **אימות ביצוע:** docs: specify centered gesture-driven decisions and physical RTL directions; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### GX02 — מנוע מחוות עם סף כוונה ומקלדת
-- [ ] **תלויות:** GX01.
+- [x] **תלויות:** GX01.
 - **לבצע:** constants לכיוונים; צבירת deltaX, תמיכה באלכסון, reset/cooldown, ArrowLeft/ArrowRight ו־touch; רק שאלות בוחרות ענף.
 - **קבלה:** מחוות קטנות אינן בוחרות; כיוונים נכונים פיזית ב־RTL; שדות וטאבים מוחרגים; בדיקות עוברות.
+
+- **אימות ביצוע:** feat: add guarded horizontal and diagonal gestures with physical arrow-key navigation; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### GX03 — עולם ממורכז ללא קלפים וכפתורי כן/לא
 - [ ] **תלויות:** GX02.
