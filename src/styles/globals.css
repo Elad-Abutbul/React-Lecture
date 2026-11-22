@@ -611,9 +611,6 @@ html {
   .tree-stage .node-card {
     padding: 1.25rem;
   }
-  .tree-scroll-track {
-    min-height: 80vh !important;
-  }
 }
 @media (prefers-reduced-motion: reduce) {
   .spatial-edge-active {
@@ -622,4 +619,8 @@ html {
   .tree-scroll-track {
     min-height: 80vh !important;
   }
+}
+
+.tree-canvas .flow-node {
+  font-size: clamp(1rem, calc(1rem / var(--tree-zoom, 0.62)), 2.5rem);
 }

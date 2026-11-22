@@ -1,4 +1,4 @@
-import { useEffect, useRef, type RefObject } from 'react'
+import { useEffect, useRef, useState, type RefObject } from 'react'
 import { useReactFlow } from '@xyflow/react'
 import {
   animate,
@@ -23,7 +23,25 @@ export function TreeCamera({
   track: RefObject<HTMLDivElement | null>
   frame: RefObject<HTMLDivElement | null>
 }) {
-  const { setViewport, getViewport, viewportInitialized } = useReactFlow()
+  const [frameSize, setFrameSize] = useState({ width: 0, height: 0 })
+  useEffect(() => {
+    const element = frame.current
+    if (!element) return
+    const observer = new ResizeObserver((entries) => {
+      const rect = entries[0]?.contentRect
+      if (rect)
+        setFrameSize((previous) =>
+          previous.width === rect.width && previous.height === rect.height
+            ? previous
+            : { width: rect.width, height: rect.height },
+        )
+    })
+    observer.observe(element)
+    return () => observer.disconnect()
+  }, [frame])
+  const flow = useReactFlow()
+  const api = useRef(flow)
+  const viewportInitialized = flow.viewportInitialized
   const reduced = useReducedMotion()
   const x = useMotionValue(0)
   const y = useMotionValue(0)
@@ -46,12 +64,13 @@ export function TreeCamera({
         path.findIndex((n) => n.id === current),
       ),
     }
-    const previous = getViewport()
+    const previous = api.current.getViewport()
     x.set(previous.x)
     y.set(previous.y)
     zoom.set(previous.zoom)
     if (reduced) {
-      void setViewport(target)
+      frame.current.style.setProperty('--tree-zoom', String(target.zoom))
+      void api.current.setViewport(target)
       return
     }
     busy.current = true
@@ -70,13 +89,12 @@ export function TreeCamera({
     }
   }, [
     current,
+    frameSize,
     path,
     exploring,
     viewportInitialized,
     reduced,
     frame,
-    getViewport,
-    setViewport,
     scrollYProgress,
     x,
     y,
@@ -87,8 +105,14 @@ export function TreeCamera({
     const update = () => {
       if (scheduled) cancelAnimationFrame(scheduled)
       scheduled = requestAnimationFrame(() => {
-        if (!exploring && !reduced)
-          void setViewport({ x: x.get(), y: y.get(), zoom: zoom.get() })
+        if (!exploring && !reduced) {
+          frame.current?.style.setProperty('--tree-zoom', String(zoom.get()))
+          void api.current.setViewport({
+            x: x.get(),
+            y: y.get(),
+            zoom: zoom.get(),
+          })
+        }
       })
     }
     const unsub = [
@@ -100,7 +124,7 @@ export function TreeCamera({
       unsub.forEach((u) => u())
       cancelAnimationFrame(scheduled)
     }
-  }, [x, y, zoom, setViewport, exploring, reduced])
+  }, [x, y, zoom, exploring, reduced, frame])
   useMotionValueEvent(scrollYProgress, 'change', (progress) => {
     if (exploring || reduced || busy.current || !frame.current) return
     const index =

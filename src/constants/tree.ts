@@ -37,14 +37,14 @@ export const TREE_NAV = {
   scrollStep: 320,
   decisionZoom: 0.62,
   travelZoom: 0.85,
-  minZoom: 0.2,
+  minZoom: 0.12,
   maxZoom: 1.5,
   duration: 0.65,
   ease: 'easeInOut' as const,
   mobileZoom: 0.42,
   desktopQuery: '(min-width: 1024px)',
   viewportAnchorX: 0.5,
-  viewportAnchorY: 0.38,
+  viewportAnchorY: 0.5,
   offset: ['start start', 'end end'] as ['start start', 'end end'],
 } as const
 export const TREE_COPY = {
