@@ -64,6 +64,7 @@ export const FILES = [
   },
 ] as const
 export const FILE_COPY = {
+  title: 'מפת הקבצים',
   intro:
     'לחיצה על קובץ חושפת את תפקידו ואת החיבור הבא בשרשרת. זהו מבנה לדוגמה; שמות ומיקומים יכולים להשתנות בין פרויקטים.',
   trace: 'index.html → main.tsx → App.tsx → UI',

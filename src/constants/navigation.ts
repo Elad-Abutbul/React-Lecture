@@ -20,6 +20,4 @@ export const NAV_COPY = {
   edition: 'סדנת React + TypeScript',
   back: 'בחזרה להתחלה',
 } as const
-export const ACTIVE_NAVIGATION = SECTIONS.filter(
-  (s) => s.id === 'start' || s.id === 'journey',
-)
+export const ACTIVE_NAVIGATION = SECTIONS

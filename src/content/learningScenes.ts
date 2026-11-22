@@ -1,3 +1,4 @@
+import { REFERENCES_COPY } from '@/constants/links'
 import { QUIZ_COPY } from './quiz'
 import { LABS_COPY } from './labs'
 import {
@@ -24,6 +25,7 @@ export const LEARNING_SCENES = [
   { id: CLEANUP.id, title: CLEANUP.title, lesson: CLEANUP },
   { id: 'labs', title: LABS_COPY.title, lesson: null },
   { id: 'quiz', title: QUIZ_COPY.title, lesson: null },
+  { id: 'resources', title: REFERENCES_COPY.title, lesson: null },
 ] as const
 export const LEARNING_POSITIONS: Record<string, { x: number; y: number }> =
   Object.fromEntries(
@@ -41,8 +43,24 @@ export const LEARNING_POSITIONS: Record<string, { x: number; y: number }> =
       'cleanup',
       'labs',
       'quiz',
+      'resources',
     ].map((id, index) => [
       id,
       { x: 13000 + ((index % 3) - 1) * 1400, y: 3000 + index * 1300 },
     ]),
   )
+export const LEARNING_MENU_LABELS: Record<string, string> = {
+  declarative: 'למה React?',
+  'react-vite': 'React ו־Vite',
+  files: 'מפת הקבצים',
+  components: 'Components',
+  jsx: 'JSX / TSX',
+  props: 'Props',
+  state: 'State',
+  snapshot: 'Snapshot',
+  effect: 'useEffect',
+  cleanup: 'Cleanup',
+  labs: 'מעבדה',
+  quiz: 'בדיקת הבנה',
+  resources: 'מקורות',
+}

@@ -368,7 +368,7 @@
 - **אימות ביצוע:** feat: add explanatory workshop quiz and props-state-event-effect decisions; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### T32 — חיבור כל המסע + מקורות
-- [ ] **תלויות:** T20, T22, T31.
+- [x] **תלויות:** T20, T22, T31.
 - **לבצע:** להרכיב את כל המקטעים לפי סדר המצגת ולפי ה־`REQUIREMENTS.md`; לקשר עוגנים, Hero, המסלול, עץ הקבצים, השיעורים, המעבדה והחידון. להוסיף קישורים לתיעוד הרשמי מתוך `constants/links.ts`.
 - **קבצים:** `src/app/App.tsx`, `src/constants/navigation.ts`, `src/components/layout/Footer.tsx`.
 - **קבלה:** מעבר רציף בין כל חלקי האתר, ללא מסך דמה וללא תוכן משוכפל.
@@ -376,6 +376,8 @@
 ---
 
 ## שלב ה — בדיקות, נגישות וסיום
+
+- **אימות ביצוע:** feat: connect the full learning world labs quiz and official resources; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### T33 — בדיקות מסלול ורכיבים
 - [ ] **תלויות:** T32.

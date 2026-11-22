@@ -630,3 +630,6 @@
     will-change: auto;
   }
 }
+.world-menu-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
