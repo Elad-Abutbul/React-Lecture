@@ -352,10 +352,12 @@
 - **אימות ביצוע:** feat: teach cleanup with a mountable stoppable interval and lifecycle tests; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### T30 — ארבע תחנות מעבדה
-- [ ] **תלויות:** T24–T29.
+- [x] **תלויות:** T24–T29.
 - **לבצע:** לאחד ארבע תחנות התרגול מהמצגת — `Step01Components`, `Step02Props`, `Step03State`, `Step04Effect`. דוגמת קוד לצד תוצאה חיה; בלי `eval` או הרצת קוד שהמשתמש מקליד.
 - **קבצים:** `src/components/labs/Step01Components.tsx`, `Step02Props.tsx`, `Step03State.tsx`, `Step04Effect.tsx`, `LabsSection.tsx`.
 - **קבלה:** בכל תחנה פעולה שמשנה ממשק/תוצאה; אין תחנות ריקות.
+
+- **אימות ביצוע:** feat: assemble four live component props state and effect lab stations; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### T31 — חידון ומשוב
 - [ ] **תלויות:** T30.

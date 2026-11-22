@@ -1,3 +1,4 @@
+import { LABS_COPY } from './labs'
 import {
   WHY_REACT,
   REACT_VITE,
@@ -20,6 +21,7 @@ export const LEARNING_SCENES = [
   { id: SNAPSHOT.id, title: SNAPSHOT.title, lesson: SNAPSHOT },
   { id: EFFECT.id, title: EFFECT.title, lesson: EFFECT },
   { id: CLEANUP.id, title: CLEANUP.title, lesson: CLEANUP },
+  { id: 'labs', title: LABS_COPY.title, lesson: null },
 ] as const
 export const LEARNING_POSITIONS: Record<string, { x: number; y: number }> =
   Object.fromEntries(
