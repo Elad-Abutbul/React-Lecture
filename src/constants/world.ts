@@ -1,3 +1,4 @@
+import { LEARNING_POSITIONS, LEARNING_SCENES } from '@/content/learningScenes'
 import { TREE_POSITIONS, TREE_CONNECTIONS } from './tree'
 export const WORLD = {
   origin: { x: 8000, y: 1000 },
@@ -22,6 +23,7 @@ export const WORLD = {
 } as const
 export const WORLD_POSITIONS: Record<string, { x: number; y: number }> = {
   intro: { ...WORLD.origin },
+  ...LEARNING_POSITIONS,
   ...Object.fromEntries(
     Object.entries(TREE_POSITIONS).map(([id, p]) => [
       id,
@@ -42,9 +44,32 @@ export const WORLD_CONNECTIONS = [
     retry: false,
   },
   ...TREE_CONNECTIONS,
+  {
+    id: 'setup-learning',
+    source: 'success',
+    target: 'files',
+    choiceId: 'learning',
+    label: '',
+    retry: false,
+  },
+  ...LEARNING_SCENES.slice(1).map((scene, index) => ({
+    id: `lesson-${scene.id}`,
+    source: LEARNING_SCENES[index].id,
+    target: scene.id,
+    choiceId: 'learning',
+    label: '',
+    retry: false,
+  })),
 ]
 export const WORLD_COPY = {
   brand: 'React Journey',
+  panels: 'תצוגות הלמידה',
+  demo: 'ניסוי חי',
+  code: 'הקוד',
+  check: 'בדיקת הבנה',
+  setup: 'התקנה',
+  learning: 'לומדים React',
+  menuDescription: 'בחירת אזור בעולם אינה מסמנת שלבים כהושלמו.',
   world: 'עולם הלמידה של React',
   scroll: 'גללו כדי להתקדם בעולם',
   branches: 'גללו כדי לחשוף את הנתיבים',

@@ -284,9 +284,11 @@
 - **אימות ביצוע:** feat: center full-screen decisions and replace yes-no clicks with guarded gestures; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### IM03 — הרחבת העולם לכל תוכן ההתקנה והלימוד
-- [ ] **תלויות:** GX03.
+- [x] **תלויות:** GX03.
 - **לבצע:** renderer סצנות וקשרים לגרף הקיים, איחודים, פרטי פקודות, checkpoints, progress ו־persist; להכין חיבור למסלול Hands-on בלי לאבד התקנה רגילה.
 - **קבלה:** מסלולי התקנה קיימים עובדים בסצנות מלאות; מאשרים ידנית בלבד; אין תוכן JSX קשיח.
+
+- **אימות ביצוע:** feat: reconnect installation and learning content as full-screen world scenes; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### IM04 — אווירה, אטום תלת־ממדי וסמן spring
 - [ ] **תלויות:** IM03.

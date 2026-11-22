@@ -4,6 +4,8 @@ import { Button } from '@/components/ui/button'
 import { JOURNEY_COPY } from '@/content/journey'
 import { TROUBLESHOOTING } from '@/content/troubleshooting'
 import { LINKS, TOOL_NAMES } from '@/constants/links'
+import { useWorldStore } from '@/store/world-store'
+import { WORLD_COPY } from '@/constants/world'
 import { SceneConsole } from './SceneConsole'
 export function WorldJourneyScene({
   node,
@@ -95,6 +97,11 @@ export function WorldJourneyScene({
           </div>
           {(node.kind === 'command' || node.kind === 'checkpoint') && (
             <p className="mt-3 text-xs text-muted">{JOURNEY_COPY.manual}</p>
+          )}
+          {node.kind === 'success' && (
+            <Button onClick={() => useWorldStore.getState().navigate('files')}>
+              {WORLD_COPY.learn}
+            </Button>
           )}
         </>
       )}
