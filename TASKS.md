@@ -80,49 +80,63 @@
 - **אימות ביצוע:** feat: create responsive React hero with working journey anchor; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### T07 — טיפוסים, פקודות וקישורים
-- [ ] **תלויות:** T02.
+- [x] **תלויות:** T02.
 - **לבצע:** להגדיר טיפוסים ל־`JourneyNode`, `Choice`, `Command`, `Checkpoint`; להגדיר פקודות התקנה ומטא־דאטה, קישורים רשמיים ל־Node/Vite/React/VS Code/Git, ומזהים יציבים. ההסברים בעברית בקובצי data.
 - **קבצים:** `src/types/journey.ts`, `src/constants/commands.ts`, `src/constants/links.ts`.
 - **קבלה:** הפקודות הן `npm create vite@latest my-app -- --template react-ts`, `cd my-app`, `npm install`, `npm run dev`, וגם `node -v`, `npm -v`; אין `npm i create`.
 
+- **אימות ביצוע:** feat: define journey types and verified installation commands; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
+
 ### T08 — תוכן עץ ההחלטות
-- [ ] **תלויות:** T07.
+- [x] **תלויות:** T07.
 - **לבצע:** ליצור את כל הצמתים והמעברים מ־`REQUIREMENTS.md`: התחלה → Node מותקן? → Windows/macOS → בדיקה → פרויקט קיים/חדש → 4 פקודות → דפדפן עובד? → קבצים. לכלול ענף ״לא רוצה כרגע״, עזרה בשגיאה ואופציות Git/VS Code לא מחייבות.
 - **קבצים:** `src/content/journey.ts`.
 - **קבלה:** לכל תשובה יש `nextNodeId` קיים; תוכן ההתקנה נשלף מה־constants ולא משוכפל.
 
+- **אימות ביצוע:** feat: model every setup branch and recovery route as content; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
+
 ### T09 — מנוע מסלול טהור
-- [ ] **תלויות:** T08.
+- [x] **תלויות:** T08.
 - **לבצע:** ליצור פונקציות טהורות `getActivePath`, `getNextNode`, `reconcileChoices`, `validateJourneyGraph`, עם הגנה ממחזורים ויעדים לא קיימים. שינוי בחירה מוחק רק בחירות/השלמות שכבר אינן במסלול התקף.
 - **קבצים:** `src/lib/journey-engine.ts`, `src/lib/journey-engine.test.ts`.
 - **קבלה:** בדיקות למסלול Windows, macOS, Node קיים, פרויקט קיים, שגיאה, שינוי בחירה וגרף פגום עוברות.
 
+- **אימות ביצוע:** feat: implement pure route reconciliation and graph validation; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
+
 ### T10 — Zustand ושמירה מקומית
-- [ ] **תלויות:** T09.
+- [x] **תלויות:** T09.
 - **לבצע:** store של `choices`, `completedNodeIds`, `currentNodeId`, פעולות בחירה/השלמה/חזרה/איפוס; persist עם מפתח קבוע וגרסת סכמה ל־`localStorage`. לחשב מסלול פעיל מהמנוע, לא לשכפל לוגיקה.
 - **קבצים:** `src/store/journey-store.ts`, `src/constants/storage.ts`, בדיקות store.
 - **קבלה:** רענון שומר התקדמות; שינוי ענף מנקה התקדמות לא רלוונטית; איפוס עובד.
 
+- **אימות ביצוע:** feat: persist reconciled journey progress with Zustand; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
+
 ### T11 — QuestionNode ו־ExplanationNode
-- [ ] **תלויות:** T08, T10.
+- [x] **תלויות:** T08, T10.
 - **לבצע:** לבנות כרטיס שאלה ובחירות נגישות, כרטיס הסבר, סטטוסים נבחר/הושלם/ממתין והודעת אזהרה אם החלפת בחירה מוחקת התקדמות.
 - **קבצים:** `src/components/journey/QuestionNode.tsx`, `ExplanationNode.tsx`, `NodeStatus.tsx`.
 - **קבלה:** אפשר לבחור, לשנות, לחזור; התשובות מגיעות מנתונים; מקלדת ו־focus עובדים.
 
+- **אימות ביצוע:** feat: add accessible decision cards and branch-change confirmation; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
+
 ### T12 — CommandCard
-- [ ] **תלויות:** T07, T11.
+- [x] **תלויות:** T07, T11.
 - **לבצע:** בלוק פקודה LTR עם Copy, הודעת ״הועתק״, הסבר מה הפקודה עושה וכפתורי ״בוצע״ / ״יש שגיאה״. להפריד מזהה פקודה מהצגה.
 - **קבצים:** `src/components/journey/CommandCard.tsx`, `src/components/journey/CommandNode.tsx`.
 - **קבלה:** העתקה מעתיקה בדיוק את הפקודה; ״בוצע״ אינו מופעל בלי אישור משתמש; אין טענה להרצה אוטומטית.
 
+- **אימות ביצוע:** feat: add precise copy-only command cards and manual confirmation; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
+
 ### T13 — בדיקת סביבה ופתרון תקלות
-- [ ] **תלויות:** T12.
+- [x] **תלויות:** T12.
 - **לבצע:** להציג מסלולי Windows/macOS להתקנת Node, הוראות `node -v`, `npm -v`, אישור הצלחה או שגיאה, סיבות נפוצות (פקודה לא מוכרת, גרסה לא תואמת, פורט תפוס, שגיאת npm), וחזרה לשלב בדיקה.
 - **קבצים:** `src/components/journey/CheckpointNode.tsx`, `ErrorHelpNode.tsx`, `src/content/troubleshooting.ts`.
 - **קבלה:** כל תרחיש מאפשר למשתמש להמשיך; האתר לא מתיימר לבדוק מערכת הפעלה/תוכנה בפועל.
 
+- **אימות ביצוע:** feat: implement manual environment checks and actionable recovery help; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
+
 ### T14 — מסלול התקנה מלא בפורמט אנכי
-- [ ] **תלויות:** T11–T13.
+- [x] **תלויות:** T11–T13.
 - **לבצע:** להציג את המסלול הפעיל כרשימת צמתים אנכית עם חיבורי CSS/SVG פשוטים; לשלב בעמוד כך שאפשר להשלים את כל מסלול ההתקנה בלי React Flow או אנימציות.
 - **קבצים:** `src/components/journey/MobileJourney.tsx`, `src/components/journey/JourneySection.tsx`, `src/app/App.tsx`.
 - **קבלה:** אפשר להגיע מתחילת העץ עד ״האתר עולה בדפדפן״ בנתיב החדש וגם הקיים. אין צמתים מתים.
@@ -130,6 +144,8 @@
 ---
 
 ## שלב ג — עץ עשיר, גלילה ואנימציות
+
+- **אימות ביצוע:** feat: connect the complete vertical installation journey; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### T15 — מפת זרימה בדסקטופ
 - [ ] **תלויות:** T14.
