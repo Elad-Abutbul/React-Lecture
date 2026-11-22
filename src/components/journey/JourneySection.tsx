@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { ConfirmationDialog } from '@/components/ui/ConfirmationDialog'
 import { JOURNEY_COPY } from '@/content/journey'
 import { useJourneyStore } from '@/store/journey-store'
-import { MobileJourney } from './MobileJourney'
+import FlowCanvas from './FlowCanvas'
 export function JourneySection() {
   const [resetOpen, setResetOpen] = useState(false)
   const reset = useJourneyStore((s) => s.reset)
@@ -18,7 +18,7 @@ export function JourneySection() {
           {JOURNEY_COPY.reset}
         </Button>
       </div>
-      <MobileJourney />
+      <FlowCanvas />
       <ConfirmationDialog
         open={resetOpen}
         onOpenChange={setResetOpen}

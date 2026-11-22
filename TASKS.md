@@ -148,10 +148,12 @@
 - **אימות ביצוע:** feat: connect the complete vertical installation journey; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### T15 — מפת זרימה בדסקטופ
-- [ ] **תלויות:** T14.
+- [x] **תלויות:** T14.
 - **לבצע:** להשתמש ב־`@xyflow/react` להצגת הצמתים והקשרים בדסקטופ עם custom nodes. לעצב כמפת מסלול *קריאה*; לשמור את כל תוכן ההחלטות וקבלת ההחלטות במנוע הקיים.
 - **קבצים:** `src/components/journey/FlowCanvas.tsx`, `src/lib/flow-layout.ts`, `src/components/journey/flow-nodes/*`.
 - **קבלה:** נתיב נבחר מודגש; כל תשובה עובדת; אין גלילה שנלכדת במפת העץ; אינטראקציה נשמרת גם בתצוגה האנכית.
+
+- **אימות ביצוע:** feat: add custom React Flow route map with shared node details; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### T16 — מעבר רספונסיבי בין תצוגות
 - [ ] **תלויות:** T15.
