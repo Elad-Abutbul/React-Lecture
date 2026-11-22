@@ -1,3 +1,4 @@
+import { FileTreeSection } from '@/components/lessons/FileTreeSection'
 import { WhyReactSection } from '@/components/lessons/WhyReactSection'
 import { AppShell } from '@/components/layout/AppShell'
 import { Hero } from '@/components/layout/Hero'
@@ -8,6 +9,7 @@ export default function App() {
       <Hero />
       <WhyReactSection />
       <JourneySection />
+      <FileTreeSection />
     </AppShell>
   )
 }

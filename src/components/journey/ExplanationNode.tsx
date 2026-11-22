@@ -35,6 +35,11 @@ export function ExplanationNode({ node }: { node: JourneyNode }) {
           </a>
         </nav>
       )}
+      {node.kind === 'success' && (
+        <a href="#files" className="mt-5 inline-block text-react underline">
+          {JOURNEY_COPY.files}
+        </a>
+      )}
     </NodeFrame>
   )
 }

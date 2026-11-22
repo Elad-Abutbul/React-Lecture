@@ -216,10 +216,12 @@
 - **אימות ביצוע:** feat: distinguish React and Vite using shared setup commands; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### T23 — עץ קבצים לחיץ
-- [ ] **תלויות:** T14.
+- [x] **תלויות:** T14.
 - **לבצע:** ליצור עץ פרויקט עם `index.html`, `src/main.tsx`, `src/App.tsx`, `src/components`, `package.json`, קובצי CSS/הגדרות. לחיצה מציגה קוד והסבר; להמחיש `index.html → main.tsx → App.tsx → UI`.
 - **קבצים:** `src/content/files.ts`, `src/components/lessons/FileTreeSection.tsx`, `src/components/lessons/FileDetails.tsx`.
 - **קבלה:** כל קובץ מרכזי נפתח; מסלול טעינה ברור; אין להניח שכל פרויקט מכיל בדיוק אותו מבנה.
+
+- **אימות ביצוע:** feat: add keyboard-accessible project file explorer and load trace; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### T24 — Components ו־JSX/TSX
 - [ ] **תלויות:** T23.
