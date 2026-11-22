@@ -1,3 +1,4 @@
+import { HANDS_ON_GRAPH } from './handsOnGraph'
 import { JOURNEY_NODES } from './journey'
 import { LEARNING_SCENES } from './learningScenes'
 import { FILES } from './files'
@@ -328,6 +329,13 @@ for (const node of learning.filter((n) => n.kind === 'decision'))
       y: node.position.y + GRAPH_NAV.stride,
     }
   })
+const createNode = nodes.find((node) => node.id === 'create')!
+createNode.kind = 'decision'
+createNode.edges = [
+  edge('workshop', 'workshop-plan', GRAPH_COPY.workshop, 'left'),
+  edge('installation', 'create-result', GRAPH_COPY.installation, 'right'),
+]
+nodes.push(...HANDS_ON_GRAPH)
 nodes.push(...learning)
 export const WORLD_GRAPH: readonly WorldNode[] = nodes
 export const GRAPH_BY_ID = Object.fromEntries(

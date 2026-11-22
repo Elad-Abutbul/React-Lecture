@@ -1,3 +1,5 @@
+import { HandsOnEntryCard } from '../hands-on/HandsOnEntryCard'
+import { WorkshopScene } from '../hands-on/WorkshopScene'
 import { GRAPH_COPY } from '@/constants/graphNavigation'
 import type { WorldNode } from '@/types/worldGraph'
 import { SceneConsole } from '../world/SceneConsole'
@@ -32,11 +34,13 @@ export function GraphContent({ node }: { node: WorldNode }) {
   )?.lesson
   const file = FILES.find((file) => file.id === node.sourceId)
   const lab = LAB_STATIONS.find((lab) => lab.id === node.sourceId)
+  if (node.kind === 'workshop') return <WorkshopScene id={node.sourceId!} />
   return (
     <>
       {node.commandIds?.map((id) => (
         <SceneConsole key={id} commandId={id as CommandId} />
       ))}
+      {node.id === 'create' && <HandsOnEntryCard />}
       {node.helpUrl && (
         <a
           href={node.helpUrl}
