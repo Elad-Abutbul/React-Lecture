@@ -320,10 +320,12 @@
 - **אימות ביצוע:** feat: demonstrate readonly parent-to-child props with live input; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### T26 — State ו־useState
-- [ ] **תלויות:** T25.
+- [x] **תלויות:** T25.
 - **לבצע:** מונה שימושי עם `setCount(prev => prev + 1)`, הסבר על שימור מצב בין רינדורים, השוואה למשתנה רגיל.
 - **קבצים:** `src/components/demos/CounterDemo.tsx`, `src/components/lessons/StateSection.tsx`.
 - **קבלה:** המונה עובד; ההבדל בין משתנה רגיל ל־state מוצג נכון.
+
+- **אימות ביצוע:** feat: teach functional state updates versus nonreactive local variables; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### T27 — Snapshot ו־Render/Commit/Paint
 - [ ] **תלויות:** T26.

@@ -123,3 +123,26 @@ export const PROPS_UI = {
   parent: 'הורה',
   child: 'שני מופעים של אותו ילד',
 } as const
+export const STATE: Lesson = {
+  id: 'state',
+  title: 'כדי שהממשק ישתנה, React צריך לדעת שמשהו השתנה.',
+  body: 'useState שומר ערך בין רינדורים. setCount מבקש רינדור חדש עם הערך הבא. שינוי משתנה רגיל לבדו לא מבקש מ־React לעדכן את התצוגה; המשתנה המקומי גם נוצר מחדש ברינדור הבא.',
+  code: "import { useState } from 'react'\n\nfunction Counter() {\n  const [count, setCount] = useState(0)\n  return (\n    <button onClick={() => setCount(prev => prev + 1)}>\n      {count}\n    </button>\n  )\n}",
+  check: {
+    prompt: 'מה מבקש מ־React לרנדר עם ערך חדש?',
+    options: ['שינוי משתנה רגיל', 'קריאה לפונקציית העדכון של State'],
+    answer: 1,
+    explanation:
+      'React שומר את ה־State ומרנדר מחדש בעקבות בקשת עדכון. הוא אינו עוקב אחר כל משתנה JavaScript.',
+  },
+}
+export const STATE_UI = {
+  state: 'עם State',
+  plain: 'משתנה רגיל',
+  addState: 'הוספה ל־State',
+  addPlain: 'שינוי המשתנה הרגיל',
+  stateValue: 'ערך ה־State',
+  plainValue: 'ערך המשתנה בתצוגה',
+  note: 'בכוונה לא רואים עדכון בצד המשתנה הרגיל: שינויו אינו מבקש רינדור. ברינדור הבא הוא נוצר מחדש.',
+  reset: 'איפוס המונה',
+} as const

@@ -1,4 +1,4 @@
-import { WHY_REACT, REACT_VITE, COMPONENTS, JSX, PROPS } from './lessons'
+import { WHY_REACT, REACT_VITE, COMPONENTS, JSX, PROPS, STATE } from './lessons'
 export const LEARNING_SCENES = [
   { id: WHY_REACT.id, title: WHY_REACT.title, lesson: WHY_REACT },
   { id: REACT_VITE.id, title: REACT_VITE.title, lesson: REACT_VITE },
@@ -6,6 +6,7 @@ export const LEARNING_SCENES = [
   { id: COMPONENTS.id, title: COMPONENTS.title, lesson: COMPONENTS },
   { id: JSX.id, title: JSX.title, lesson: JSX },
   { id: PROPS.id, title: PROPS.title, lesson: PROPS },
+  { id: STATE.id, title: STATE.title, lesson: STATE },
 ] as const
 export const LEARNING_POSITIONS: Record<string, { x: number; y: number }> =
   Object.fromEntries(
