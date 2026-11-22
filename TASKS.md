@@ -80,10 +80,12 @@
 - **אימות ביצוע:** feat: create responsive React hero with working journey anchor; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### T07 — טיפוסים, פקודות וקישורים
-- [ ] **תלויות:** T02.
+- [x] **תלויות:** T02.
 - **לבצע:** להגדיר טיפוסים ל־`JourneyNode`, `Choice`, `Command`, `Checkpoint`; להגדיר פקודות התקנה ומטא־דאטה, קישורים רשמיים ל־Node/Vite/React/VS Code/Git, ומזהים יציבים. ההסברים בעברית בקובצי data.
 - **קבצים:** `src/types/journey.ts`, `src/constants/commands.ts`, `src/constants/links.ts`.
 - **קבלה:** הפקודות הן `npm create vite@latest my-app -- --template react-ts`, `cd my-app`, `npm install`, `npm run dev`, וגם `node -v`, `npm -v`; אין `npm i create`.
+
+- **אימות ביצוע:** feat: define journey types and verified installation commands; `pnpm lint`, `pnpm test`, `pnpm build` עברו.
 
 ### T08 — תוכן עץ ההחלטות
 - [ ] **תלויות:** T07.
