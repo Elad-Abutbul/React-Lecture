@@ -219,7 +219,7 @@ test('switching axes never combines unrelated travel into a branch', async ({
   ])
   await at(page, 'node')
 })
-test('diagonals use the dominant physical axis and balanced gestures do not select', async ({
+test('downward diagonals choose physical branches and upward diagonals backtrack', async ({
   page,
 }) => {
   await open(page)
@@ -227,13 +227,13 @@ test('diagonals use the dominant physical axis and balanced gestures do not sele
     [200, 200],
     [100, 100],
   ])
-  await at(page, 'node')
-  await freshWheel(page, 240, 150)
   await at(page, 'verify')
   await freshWheel(page, 0, -240)
   await at(page, 'node')
   await freshWheel(page, -240, 150)
   await at(page, 'os')
+  await freshWheel(page, -240, -240)
+  await at(page, 'node')
 })
 test('vertical-dominant diagonal follows the selected path instead of switching branch', async ({
   page,

@@ -358,3 +358,11 @@ src/
 `graph-store` נועל step/select/jump באופן אטומי. `useGraphCamera` שולט ב־GSAP interpolator מושהה יחיד לפי זמן שעבר בפועל, ללא תלות ב־lag compensation של ticker גלובלי. deadline של אותו controller מסיים snap גם ב־frames איטיים; cleanup מבטל frame/deadline/tween, ו־callback בודק cancellation ו־revision לפני arrive. רק callback תקף קובע קואורדינטות סיום מדויקות ומשחרר נעילה. ScrollTrigger, useWorldCamera, useBranchGesture ו־Motion useScroll ההיסטוריים אינם מורכבים באפליקציה הפעילה; Lenis אינו מותקן. אין document scroll מתחרה. שינויים במיקומי project/tools מתקנים ענפי right ש־x שלהם היה זהה למקור.
 
 ה־world viewport משתמש ב־overflow: clip כדי למנוע גלילת focus/scrollIntoView native, אשר overflow: hidden עדיין מאפשר. משטח graph-reading נשאר overflow-y: auto. בדיקות long-code focus מאמתות גם scrollLeft/scrollTop של העולם, ולא רק קואורדינטות מצלמה.
+
+
+## 24. תיקוני QA — כוונת אלכסון וגבולות קלט
+פרק זה מחליף את ההחלטה הקודמת להתעלם מאלכסונים מאוזנים. מנוע המחוות מקבל הקשר של צומת בחירה ומסווג רכיב אופקי משמעותי באלכסון מטה כבחירה פיזית, בלי להסתמך על hover. המשך אנכי וחזרה מעלה נשארים ברורים; נעילת המחווה והמצלמה ממשיכות למנוע מעבר כפול.
+
+GraphBranches ימדוד את article.graph-reading של הצומת הפעיל בעת הגעה וב־ResizeObserver. הגבול העליון של אזורי הענפים יהיה הגדול מבין הגבול היחסי הקיים לבין תחתית הקריאה בתוספת gap מקבועים. מדידה אינה משנה מיקום טקסט או גודל כרטיס. gesture controller יבדוק גם שיוך DOM וגם קואורדינטות מול מלבן הקריאה לפני פירוש hover כבחירה אנכית.
+
+משוב כוונה קצר משתמש בהדגשת הענף והקו הקיימים ובערך התקדמות; הוא מתאפס בהפסקה, בביטול, במעבר וב־cleanup. אין state ניווט נוסף ואין שינוי במסלול לפני מעבר סף. מקור אזהרת Three.js נבדק בקוד התלות המותקן לפני בחירת תיקון.

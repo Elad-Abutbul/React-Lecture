@@ -112,8 +112,12 @@ export const GRAPH_GESTURE = {
   epsilon: 0.001,
   axisLock: 24,
   threshold: 180,
+  branchThreshold: 120,
+  branchRatio: 0.75,
   axisRatio: 1.25,
   quietMs: 240,
   readingBoundary: 1,
   keyboardPage: 0.7,
 } as const
+
+export const GRAPH_BRANCH_LAYOUT = { topRatio: 0.48, readingGap: 12 } as const

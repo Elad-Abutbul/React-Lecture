@@ -160,3 +160,56 @@ test('held navigation keys are consumed and touches begun during flight cannot l
     'project',
   )
 })
+
+test.each([
+  ['done', 1100],
+  ['error', 600],
+] as const)(
+  'QA-02: a stale %s overlay cannot steal wheel input inside the reader',
+  (edge, x) => {
+    useGraphStore.getState().jump('verify')
+    useGraphStore.getState().arrive()
+    function Overlap() {
+      useGraphGesture()
+      return (
+        <>
+          <div className="graph-node-active">
+            <article className="graph-reading" />
+          </div>
+          <button data-edge-id={edge}>branch overlay</button>
+        </>
+      )
+    }
+    const view = render(<Overlap />),
+      reading = view.container.querySelector<HTMLElement>('.graph-reading')!
+    Object.defineProperties(reading, {
+      clientHeight: { value: 100 },
+      scrollHeight: { value: 500 },
+    })
+    vi.spyOn(reading, 'getBoundingClientRect').mockReturnValue({
+      x: 400,
+      y: 200,
+      left: 400,
+      top: 200,
+      width: 800,
+      height: 300,
+      right: 1200,
+      bottom: 500,
+      toJSON: () => ({}),
+    })
+    fireEvent(
+      view.getByRole('button'),
+      new WheelEvent('wheel', {
+        deltaY: 300,
+        clientX: x,
+        clientY: 420,
+        bubbles: true,
+        cancelable: true,
+      }),
+    )
+    expect(
+      useGraphStore.getState().route[useGraphStore.getState().cursor],
+    ).toBe('verify')
+    expect(reading.scrollTop).toBe(300)
+  },
+)

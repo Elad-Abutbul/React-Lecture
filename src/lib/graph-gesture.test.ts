@@ -15,6 +15,7 @@ function session() {
         transitioning: false,
         canReadUp: false,
         canReadDown: false,
+        branching: true,
         ...extra,
       })
       if (result.kind === 'navigate') engine.commit(result.direction)
@@ -47,9 +48,12 @@ test.each([
 ] as const)('dominant diagonal %s/%s resolves to %s', (x, y, direction) => {
   expect(session().sample(x, y)).toEqual({ kind: 'navigate', direction })
 })
-test('balanced diagonal movement does not choose either axis', () => {
-  const s = session()
-  for (let i = 0; i < 50; i++) expect(s.sample(20, 20).kind).toBe('none')
+test('balanced downward diagonal chooses its horizontal branch once', () => {
+  const s = session(),
+    results = Array.from({ length: 50 }, () => s.sample(20, 20))
+  expect(results.filter((r) => r.kind === 'navigate')).toEqual([
+    { kind: 'navigate', direction: 'right' },
+  ])
 })
 test('one long burst and decaying momentum cannot skip a second stop', () => {
   const s = session()

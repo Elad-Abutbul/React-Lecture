@@ -1,8 +1,13 @@
 import { useEffect } from 'react'
 import { GRAPH_NAV, GRAPH_GESTURE } from '@/constants/graphNavigation'
 import { GRAPH_BY_ID } from '@/content/worldGraph'
+import { readingOwnsWheel } from '@/lib/graph-hit-area'
 import { normalizeWheel } from '@/lib/graph-navigation'
-import { createGraphGesture, type GestureDirection } from '@/lib/graph-gesture'
+import {
+  createGraphGesture,
+  graphGestureAxis,
+  type GestureDirection,
+} from '@/lib/graph-gesture'
 import { useGraphStore } from '@/store/graph-store'
 export function useGraphGesture() {
   useEffect(() => {
@@ -42,7 +47,7 @@ export function useGraphGesture() {
         node = GRAPH_BY_ID[state.route[state.cursor]],
         reading = reader()
       const region =
-        event.target instanceof Element
+        !readingOwnsWheel(reading, event) && event.target instanceof Element
           ? event.target.closest<HTMLElement>('[data-edge-id]')
           : null
       const canRead = !!reading && (!region || node.edges.length < 2)
@@ -58,6 +63,7 @@ export function useGraphGesture() {
         at: performance.now(),
         stop: node.id,
         transitioning: state.transitioning,
+        branching: node.edges.length > 1,
         canReadUp:
           canRead && reading!.scrollTop > GRAPH_GESTURE.readingBoundary,
         canReadDown:
@@ -132,8 +138,11 @@ export function useGraphGesture() {
       // Wheel deltas describe camera travel; touch deltas describe content drag.
       const x = touch.x - event.touches[0].clientX,
         y = touch.y - event.touches[0].clientY
-      const horizontal = Math.abs(x) > Math.abs(y) * GRAPH_GESTURE.axisRatio,
-        vertical = Math.abs(y) > Math.abs(x) * GRAPH_GESTURE.axisRatio
+      const state = useGraphStore.getState(),
+        node = GRAPH_BY_ID[state.route[state.cursor]],
+        axis = graphGestureAxis(x, y, node.edges.length > 1)
+      const horizontal = axis === 'x',
+        vertical = axis === 'y'
       if (
         Math.max(Math.abs(x), Math.abs(y)) < GRAPH_NAV.touchThreshold ||
         (!horizontal && !vertical)
