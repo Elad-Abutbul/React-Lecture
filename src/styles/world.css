@@ -1184,6 +1184,10 @@
   }
 }
 /* Guided stops: one deliberate gesture, one camera target, one reading surface. */
+/* hidden permits focus/scrollIntoView to scroll the world behind the camera. */
+.world-viewport.unified-world {
+  overflow: clip;
+}
 html:has(.unified-world),
 body:has(.unified-world) {
   overflow: hidden;

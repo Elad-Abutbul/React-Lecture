@@ -6,10 +6,6 @@ export const GRAPH_NAV = {
   downKeys: ['ArrowDown', 'PageDown', ' '] as string[],
   upKeys: ['ArrowUp', 'PageUp'] as string[],
   parallax: { x: -70, y: -50, period: 4000 },
-  intentThreshold: 180,
-  minDelta: 2,
-  diagonalRatio: 0.65,
-  quietMs: 240,
   linePixels: 16,
   trailLimit: 4,
   maxHistory: 256,
@@ -77,7 +73,7 @@ export const INSTALL_POSITIONS: Record<string, { x: number; y: number }> = {
   windows: { x: -1600, y: 1800 },
   mac: { x: -200, y: 1800 },
   verify: { x: 900, y: 2700 },
-  project: { x: 900, y: 3600 },
+  project: { x: 1300, y: 3600 },
   create: { x: 0, y: 4500 },
   'create-result': { x: 850, y: 5400 },
   enter: { x: 1250, y: 6300 },
@@ -87,7 +83,7 @@ export const INSTALL_POSITIONS: Record<string, { x: number; y: number }> = {
   scripts: { x: 2200, y: 5400 },
   'existing-run': { x: 2600, y: 7200 },
   browser: { x: 3000, y: 9000 },
-  tools: { x: 3000, y: 10000 },
+  tools: { x: 3400, y: 10000 },
   success: { x: 3000, y: 12000 },
 }
 
@@ -110,3 +106,14 @@ export const COMMAND_OUTCOMES: Record<
     label: 'סקריפט הפיתוח מופיע',
   },
 }
+
+export const GRAPH_GESTURE = {
+  // Threshold applies to accumulated travel, never to individual high-resolution samples.
+  epsilon: 0.001,
+  axisLock: 24,
+  threshold: 180,
+  axisRatio: 1.25,
+  quietMs: 240,
+  readingBoundary: 1,
+  keyboardPage: 0.7,
+} as const

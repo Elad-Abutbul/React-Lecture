@@ -1,124 +1,76 @@
-import { useEffect, useRef } from 'react'
-import { GRAPH_NAV } from '@/constants/graphNavigation'
+import { useEffect } from 'react'
+import { GRAPH_NAV, GRAPH_GESTURE } from '@/constants/graphNavigation'
 import { GRAPH_BY_ID } from '@/content/worldGraph'
 import { normalizeWheel } from '@/lib/graph-navigation'
+import { createGraphGesture, type GestureDirection } from '@/lib/graph-gesture'
 import { useGraphStore } from '@/store/graph-store'
 export function useGraphGesture() {
-  const memory = useRef({
-    sum: 0,
-    last: -GRAPH_NAV.quietMs,
-    locked: false,
-    reading: false,
-    touch: null as { x: number; y: number } | null,
-  })
   useEffect(() => {
-    const m = memory.current
+    const controller = createGraphGesture()
+    let touch: { x: number; y: number } | null = null
     const ignored = (target: EventTarget | null) =>
       target instanceof Element && !!target.closest(GRAPH_NAV.ignore)
-    const direction = (x: number) => {
-      const s = useGraphStore.getState(),
-        node = GRAPH_BY_ID[s.route[s.cursor]],
-        group = node.edges.filter(
-          (e) => e.direction === (x > 0 ? 'right' : 'left'),
+    const reader = () =>
+      document.querySelector<HTMLElement>('.graph-node-active .graph-reading')
+    function navigate(direction: GestureDirection, hovered?: string) {
+      const state = useGraphStore.getState(),
+        node = GRAPH_BY_ID[state.route[state.cursor]]
+      if (state.transitioning) return false
+      if (direction === 'left' || direction === 'right') {
+        const edges = node.edges.filter((edge) => edge.direction === direction),
+          edge = direction === 'right' ? edges.at(-1) : edges[0]
+        if (node.edges.length > 1 && edge) state.select(edge.id)
+      } else if (direction === 'up') state.step(-1)
+      else {
+        const edge = node.edges.find((edge) => edge.id === hovered)
+        if (
+          node.edges.length > 1 &&
+          edge &&
+          state.route[state.cursor + 1] !== edge.target
         )
-      return x > 0 ? group.at(-1) : group[0]
+          state.select(edge.id)
+        else state.step(1)
+      }
+      const accepted = useGraphStore.getState().revision !== state.revision
+      if (accepted) controller.commit(direction)
+      return accepted
     }
     function wheel(event: WheelEvent) {
       if (event.ctrlKey || event.metaKey || ignored(event.target)) return
       event.preventDefault()
-      const now = performance.now(),
-        fresh = now - m.last > GRAPH_NAV.quietMs
-      m.last = now
       const state = useGraphStore.getState(),
-        node = GRAPH_BY_ID[state.route[state.cursor]]
-      if (state.transitioning) {
-        m.locked = true
-        m.sum = 0
-        return
-      }
-      if (m.locked && !fresh) {
-        if (m.reading) {
-          const reader = document.querySelector<HTMLElement>(
-            '.graph-node-active .graph-reading',
-          )
-          const { y } = normalizeWheel(
-            event.deltaX,
-            event.deltaY,
-            event.deltaMode,
-            innerHeight,
-          )
-          if (reader) reader.scrollTop += y
-        }
-        return
-      }
-      if (fresh) {
-        m.locked = false
-        m.reading = false
-        m.sum = 0
-      }
+        node = GRAPH_BY_ID[state.route[state.cursor]],
+        reading = reader()
+      const region =
+        event.target instanceof Element
+          ? event.target.closest<HTMLElement>('[data-edge-id]')
+          : null
+      const canRead = !!reading && (!region || node.edges.length < 2)
       const { x, y } = normalizeWheel(
         event.deltaX,
         event.deltaY,
         event.deltaMode,
         innerHeight,
       )
-      const horizontal =
-        Math.abs(x) >= Math.abs(y) * GRAPH_NAV.diagonalRatio &&
-        Math.abs(x) > GRAPH_NAV.minDelta
-      const region =
-        event.target instanceof Element
-          ? event.target.closest<HTMLElement>('[data-edge-id]')
-          : null
-      // A long node owns one reading surface. Reading consumes the gesture before navigation.
-      const reader = document.querySelector<HTMLElement>(
-        '.graph-node-active .graph-reading',
-      )
-      if (
-        !horizontal &&
-        (!region || node.edges.length < 2) &&
-        reader &&
-        reader.scrollHeight > reader.clientHeight + 1
-      ) {
-        const canRead =
-          y > 0
-            ? reader.scrollTop + reader.clientHeight < reader.scrollHeight - 1
-            : reader.scrollTop > 1
-        if (canRead) {
-          reader.scrollTop += y
-          m.reading = true
-          m.locked = true
-          m.sum = 0
-          return
-        }
-      }
-      const hovered = region
-        ? node.edges.find((e) => e.id === region.dataset.edgeId)
-        : undefined
-      const edge =
-        horizontal && node.edges.length > 1
-          ? direction(x)
-          : y > 0 &&
-              node.edges.length > 1 &&
-              state.route[state.cursor + 1] !== hovered?.target
-            ? hovered
-            : undefined
-      const delta = horizontal ? x : y
-      if (Math.abs(delta) < GRAPH_NAV.minDelta) return
-      m.sum = (Math.sign(delta) === Math.sign(m.sum) ? m.sum : 0) + delta
-      if (Math.abs(m.sum) < GRAPH_NAV.intentThreshold) return
-      if (edge) {
-        state.select(edge.id)
-        m.locked = true
-        m.sum = 0
-      } else if (!horizontal && (y < 0 || state.route[state.cursor + 1])) {
-        state.step(y > 0 ? 1 : -1)
-        m.locked = true
-        m.sum = 0
-      }
+      const result = controller.sample({
+        x,
+        y,
+        at: performance.now(),
+        stop: node.id,
+        transitioning: state.transitioning,
+        canReadUp:
+          canRead && reading!.scrollTop > GRAPH_GESTURE.readingBoundary,
+        canReadDown:
+          canRead &&
+          reading!.scrollTop + reading!.clientHeight <
+            reading!.scrollHeight - GRAPH_GESTURE.readingBoundary,
+      })
+      if (result.kind === 'read' && reading) reading.scrollTop += result.delta
+      else if (result.kind === 'navigate')
+        navigate(result.direction, region?.dataset.edgeId)
     }
     function key(event: KeyboardEvent) {
       if (
-        event.repeat ||
         event.shiftKey ||
         event.ctrlKey ||
         event.metaKey ||
@@ -126,88 +78,99 @@ export function useGraphGesture() {
         ignored(event.target)
       )
         return
-      const s = useGraphStore.getState()
-      if (s.transitioning) return
-      if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
-        const edge = direction(event.key === 'ArrowRight' ? 1 : -1)
-        if (edge) {
-          event.preventDefault()
-          s.select(edge.id)
-        }
-      } else if (
-        GRAPH_NAV.downKeys.includes(event.key) ||
-        GRAPH_NAV.upKeys.includes(event.key)
-      ) {
-        if (
-          event.target instanceof Element &&
-          event.target.closest('button,summary')
-        )
-          return
-        const sign = GRAPH_NAV.downKeys.includes(event.key) ? 1 : -1,
-          reader = document.querySelector<HTMLElement>(
-            '.graph-node-active .graph-reading',
-          )
-        event.preventDefault()
-        if (
-          reader &&
-          (sign > 0
-            ? reader.scrollTop + reader.clientHeight < reader.scrollHeight - 1
-            : reader.scrollTop > 1)
-        ) {
-          reader.scrollTop += sign * reader.clientHeight * 0.7
-          return
-        }
-        s.step(sign)
-      }
-    }
-    function touchStart(event: TouchEvent) {
-      if (event.touches.length === 1 && !ignored(event.target))
-        m.touch = { x: event.touches[0].clientX, y: event.touches[0].clientY }
-    }
-    function touchMove(event: TouchEvent) {
-      if (!m.touch || event.touches.length !== 1 || ignored(event.target))
+      const horizontal =
+        event.key === 'ArrowLeft'
+          ? 'left'
+          : event.key === 'ArrowRight'
+            ? 'right'
+            : null
+      const vertical = GRAPH_NAV.downKeys.includes(event.key)
+        ? 'down'
+        : GRAPH_NAV.upKeys.includes(event.key)
+          ? 'up'
+          : null
+      if (!horizontal && !vertical) return
+      if (
+        vertical &&
+        event.target instanceof Element &&
+        event.target.closest('button,summary')
+      )
         return
       event.preventDefault()
-      const x = m.touch.x - event.touches[0].clientX,
-        y = m.touch.y - event.touches[0].clientY
-      if (Math.hypot(x, y) < GRAPH_NAV.touchThreshold) return
-      const s = useGraphStore.getState()
-      if (s.transitioning) {
-        m.touch = null
+      if (event.repeat || useGraphStore.getState().transitioning) return
+      const reading = reader(),
+        sign = vertical === 'down' ? 1 : -1
+      if (
+        vertical &&
+        reading &&
+        (sign > 0
+          ? reading.scrollTop + reading.clientHeight <
+            reading.scrollHeight - GRAPH_GESTURE.readingBoundary
+          : reading.scrollTop > GRAPH_GESTURE.readingBoundary)
+      ) {
+        reading.scrollTop +=
+          sign * reading.clientHeight * GRAPH_GESTURE.keyboardPage
         return
       }
-      if (Math.abs(x) >= Math.abs(y) * GRAPH_NAV.diagonalRatio) {
-        const edge = direction(x)
-        if (edge) s.select(edge.id)
-      } else {
-        const reader = document.querySelector<HTMLElement>(
-          '.graph-node-active .graph-reading',
-        )
-        if (
-          reader &&
-          (y > 0
-            ? reader.scrollTop + reader.clientHeight < reader.scrollHeight - 1
-            : reader.scrollTop > 1)
-        )
-          reader.scrollTop += y
-        else s.step(y > 0 ? 1 : -1)
+      navigate((horizontal ?? vertical)!)
+    }
+    function touchStart(event: TouchEvent) {
+      touch =
+        event.touches.length === 1 &&
+        !ignored(event.target) &&
+        !useGraphStore.getState().transitioning
+          ? { x: event.touches[0].clientX, y: event.touches[0].clientY }
+          : null
+    }
+    function touchMove(event: TouchEvent) {
+      if (!touch || event.touches.length !== 1 || ignored(event.target)) return
+      event.preventDefault()
+      if (useGraphStore.getState().transitioning) {
+        touch = null
+        return
       }
-      m.touch = null
+      // Wheel deltas describe camera travel; touch deltas describe content drag.
+      const x = touch.x - event.touches[0].clientX,
+        y = touch.y - event.touches[0].clientY
+      const horizontal = Math.abs(x) > Math.abs(y) * GRAPH_GESTURE.axisRatio,
+        vertical = Math.abs(y) > Math.abs(x) * GRAPH_GESTURE.axisRatio
+      if (
+        Math.max(Math.abs(x), Math.abs(y)) < GRAPH_NAV.touchThreshold ||
+        (!horizontal && !vertical)
+      )
+        return
+      touch = null
+      const reading = reader()
+      if (
+        vertical &&
+        reading &&
+        (y > 0
+          ? reading.scrollTop + reading.clientHeight <
+            reading.scrollHeight - GRAPH_GESTURE.readingBoundary
+          : reading.scrollTop > GRAPH_GESTURE.readingBoundary)
+      )
+        reading.scrollTop += y
+      else
+        navigate(
+          horizontal ? (x > 0 ? 'right' : 'left') : y > 0 ? 'down' : 'up',
+        )
     }
     function touchEnd() {
-      m.touch = null
+      touch = null
     }
     window.addEventListener('wheel', wheel, { passive: false })
     window.addEventListener('keydown', key)
     window.addEventListener('touchstart', touchStart, { passive: true })
     window.addEventListener('touchmove', touchMove, { passive: false })
     window.addEventListener('touchend', touchEnd)
+    window.addEventListener('touchcancel', touchEnd)
     return () => {
       window.removeEventListener('wheel', wheel)
       window.removeEventListener('keydown', key)
       window.removeEventListener('touchstart', touchStart)
       window.removeEventListener('touchmove', touchMove)
       window.removeEventListener('touchend', touchEnd)
+      window.removeEventListener('touchcancel', touchEnd)
     }
   }, [])
 }
