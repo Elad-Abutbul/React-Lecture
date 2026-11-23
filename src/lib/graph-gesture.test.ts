@@ -138,3 +138,25 @@ test('QA-03: five short packets form one command, while quiet starts a new inten
   expect(s.engine.preview()?.progress).toBe(2 / 3)
   expect(s.sample(40, 0)).toEqual({ kind: 'navigate', direction: 'right' })
 })
+
+test.each([1, -1])(
+  'QA-03: partial intent survives short pauses without extending the navigation momentum lock (%s)',
+  (sign) => {
+    const s = session()
+    s.sample(sign * 80, 0)
+    expect(s.sample(sign * 40, 0, {}, 350)).toEqual({
+      kind: 'navigate',
+      direction: sign > 0 ? 'right' : 'left',
+    })
+    expect(s.engine.preview()).toBeNull()
+    // An accepted gesture still re-arms after the original short quiet interval.
+    expect(s.sample(sign * 120, 0, {}, 300)).toEqual({
+      kind: 'navigate',
+      direction: sign > 0 ? 'right' : 'left',
+    })
+    const expired = session()
+    expired.sample(sign * 80, 0)
+    expect(expired.sample(sign * 40, 0, {}, 700).kind).toBe('none')
+    expect(expired.engine.preview()?.progress).toBe(1 / 3)
+  },
+)

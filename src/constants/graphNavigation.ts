@@ -118,6 +118,7 @@ export const GRAPH_GESTURE = {
   branchRatio: 0.75,
   axisRatio: 1.25,
   quietMs: 240,
+  intentQuietMs: 650,
   readingBoundary: 1,
   keyboardPage: 0.7,
 } as const

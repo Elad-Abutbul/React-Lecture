@@ -78,7 +78,11 @@ export function createGraphGesture() {
       )
         return none
       branching = input.branching
-      const fresh = input.at - last > GRAPH_GESTURE.quietMs
+      const quiet =
+        mode === 'intent' && axis === 'x' && branching
+          ? GRAPH_GESTURE.intentQuietMs
+          : GRAPH_GESTURE.quietMs
+      const fresh = input.at - last > quiet
       last = input.at
       if (fresh) reset(input.stop)
       else if (owner !== input.stop) {

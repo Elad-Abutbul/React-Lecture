@@ -20,6 +20,7 @@ test.beforeEach(async ({ page }) => {
           x: event.deltaX,
           y: event.deltaY,
           mode: event.deltaMode,
+          trusted: event.isTrusted,
           at: event.timeStamp,
           clientX: event.clientX,
           clientY: event.clientY,
@@ -235,6 +236,10 @@ test('QA-03 short intent is visible, expires cleanly, and five packets select on
   const branch = page.locator('.branch-right')
   await expect(branch).toHaveAttribute('data-gesture-intent', 'true')
   await expect(branch.locator('.graph-intent-feedback')).toContainText('%')
+  await expect(branch.locator('.graph-intent-feedback')).toHaveCSS(
+    'opacity',
+    '1',
+  )
   await screenshot(page, info, 'short-intent-feedback')
   await expect(branch).not.toHaveAttribute('data-gesture-intent', 'true')
   await at(page, 'node')
@@ -317,4 +322,29 @@ test('QA-01 near-diagonal intent ignores the opposite hovered branch', async ({
   await page.locator('[data-edge-id="yes"]').hover()
   await page.mouse.wheel(-300, 350)
   await at(page, 'os')
+})
+
+test('QA-03 controlled short packets accumulate across 350ms pauses and commit once', async ({
+  page,
+}, info) => {
+  await open(page)
+  await ready(page)
+  await page.evaluate(async () => {
+    for (let i = 0; i < 3; i++) {
+      window.dispatchEvent(
+        new WheelEvent('wheel', {
+          deltaX: 40,
+          deltaY: 0,
+          deltaMode: 0,
+          bubbles: true,
+          cancelable: true,
+        }),
+      )
+      if (i < 2) await new Promise((resolve) => setTimeout(resolve, 350))
+    }
+  })
+  await at(page, 'verify')
+  await page.waitForTimeout(300)
+  await at(page, 'verify')
+  await screenshot(page, info, 'paused-intent-committed-once')
 })

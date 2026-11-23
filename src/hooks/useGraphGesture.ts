@@ -47,7 +47,10 @@ export function useGraphGesture() {
       if (label)
         label.textContent = `${text} · ${Math.round(intent.progress * 100)}%`
       if (status && status.textContent !== text) status.textContent = text
-      previewTimer = setTimeout(() => feedback(null), GRAPH_GESTURE.quietMs)
+      previewTimer = setTimeout(
+        () => feedback(null),
+        GRAPH_GESTURE.intentQuietMs,
+      )
     }
     let touch: { x: number; y: number } | null = null
     const ignored = (target: EventTarget | null) =>
