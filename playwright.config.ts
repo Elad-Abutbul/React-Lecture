@@ -23,7 +23,11 @@ export default defineConfig({
     },
     {
       name: 'webkit',
-      testMatch: ['**/gesture-regression.spec.ts', '**/qa-report.spec.ts'],
+      testMatch: [
+        '**/gesture-regression.spec.ts',
+        '**/qa-report.spec.ts',
+        '**/render-clock.spec.ts',
+      ],
       use: { browserName: 'webkit', viewport: { width: 1440, height: 1000 } },
     },
     {
@@ -35,6 +39,7 @@ export default defineConfig({
     },
     {
       name: 'mobile',
+      testIgnore: '**/render-clock.spec.ts',
       use: {
         browserName: 'chromium',
         viewport: { width: 390, height: 844 },
@@ -44,6 +49,7 @@ export default defineConfig({
     },
     {
       name: 'reduced-motion',
+      testIgnore: '**/render-clock.spec.ts',
       use: {
         browserName: 'chromium',
         viewport: { width: 1280, height: 900 },
