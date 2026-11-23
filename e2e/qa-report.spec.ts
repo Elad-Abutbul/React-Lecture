@@ -244,3 +244,77 @@ test('QA-03 short intent is visible, expires cleanly, and five packets select on
   await expect(page.locator('[data-gesture-intent]')).toHaveCount(0)
   await at(page, 'verify')
 })
+
+async function realisticTrace(page: Page, direction: 'right' | 'left' | 'up') {
+  await page.evaluate(async (direction) => {
+    const acceleration = [
+      1.5, 2.5, 5, 9, 14, 20, 28, 35, 40, 36, 28, 20, 12, 8, 4, 2,
+    ]
+    const packets = [
+      ...acceleration,
+      ...Array.from({ length: 80 }, (_, i) => 18 * Math.exp(-i / 25)),
+    ]
+    for (let i = 0; i < packets.length; i++) {
+      const amount = packets[i],
+        x =
+          direction === 'up'
+            ? amount * 0.05
+            : amount * (direction === 'right' ? 1 : -1),
+        y = direction === 'up' ? -amount : amount * (i % 2 ? 1.05 : 0.95)
+      window.dispatchEvent(
+        new WheelEvent('wheel', {
+          deltaX: x,
+          deltaY: y,
+          deltaMode: 0,
+          bubbles: true,
+          cancelable: true,
+        }),
+      )
+      await new Promise((resolve) => setTimeout(resolve, 12))
+    }
+  }, direction)
+}
+test('QA-01/03 realistic packet traces preserve one stop, smooth reversal and branch switching', async ({
+  page,
+}, info) => {
+  await open(page)
+  await ready(page)
+  await realisticTrace(page, 'right')
+  await at(page, 'verify')
+  await ready(page)
+  await expect(page.locator('[data-gesture-intent]')).toHaveCount(0)
+  await page.waitForTimeout(300)
+  await realisticTrace(page, 'up')
+  await at(page, 'node')
+  await ready(page)
+  await page.waitForTimeout(300)
+  await realisticTrace(page, 'left')
+  await at(page, 'os')
+  await ready(page)
+  const state = await page.evaluate(
+    () => JSON.parse(localStorage.getItem('react-world-navigation')!).state,
+  )
+  expect(state.choices.node).toBe('no')
+  expect(state.route).toEqual(['node', 'os'])
+  expect(state.visited).toEqual(
+    expect.arrayContaining(['node', 'verify', 'os']),
+  )
+  await screenshot(page, info, 'realistic-trace-branch-switch')
+})
+
+test('QA-01 near-diagonal intent ignores the opposite hovered branch', async ({
+  page,
+}) => {
+  await open(page)
+  await ready(page)
+  await page.locator('[data-edge-id="no"]').hover()
+  await page.mouse.wheel(300, 350)
+  await at(page, 'verify')
+  await ready(page)
+  await page.keyboard.press('ArrowUp')
+  await at(page, 'node')
+  await ready(page)
+  await page.locator('[data-edge-id="yes"]').hover()
+  await page.mouse.wheel(-300, 350)
+  await at(page, 'os')
+})
