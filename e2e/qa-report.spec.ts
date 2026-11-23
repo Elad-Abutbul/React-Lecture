@@ -167,17 +167,45 @@ test('QA-02 hit boundaries follow content and resize at verify, H05 and pause-2'
       { width: 1280, height: 720 },
     ]) {
       await page.setViewportSize(size)
-      await ready(page)
-      const box = (await page.locator('.graph-reading').boundingBox())!
+      // setViewportSize can resolve before ResizeObserver updates the camera.
+      // A previous "not busy" value must not make a stale layout look settled.
       await expect
         .poll(() =>
-          page
-            .locator('.graph-branch')
-            .evaluateAll((bs) =>
-              Math.min(...bs.map((b) => b.getBoundingClientRect().top)),
-            ),
+          page.locator('.world-stage').evaluate((stage) => {
+            const transform = new DOMMatrix(getComputedStyle(stage).transform)
+            return (
+              stage.getAttribute('data-camera-busy') === 'false' &&
+              Math.abs(
+                transform.m41 +
+                  Number(stage.getAttribute('data-camera-x')) -
+                  innerWidth / 2,
+              ) < 0.1 &&
+              Math.abs(
+                transform.m42 +
+                  Number(stage.getAttribute('data-camera-y')) -
+                  innerHeight / 2,
+              ) < 0.1
+            )
+          }),
         )
-        .toBeGreaterThanOrEqual(box.y + box.height)
+        .toBe(true)
+      await ready(page)
+      await expect
+        .poll(() =>
+          page.evaluate(() => {
+            const bottom = document
+              .querySelector('.graph-reading')!
+              .getBoundingClientRect().bottom
+            const top = Math.min(
+              ...Array.from(
+                document.querySelectorAll('.graph-branch'),
+                (b) => b.getBoundingClientRect().top,
+              ),
+            )
+            return top - bottom
+          }),
+        )
+        .toBeGreaterThanOrEqual(0)
       expect(
         await page.evaluate(
           () =>
