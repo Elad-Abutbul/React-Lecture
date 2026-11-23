@@ -22,6 +22,7 @@ export function GraphBranches({ node }: { node: WorldNode }) {
       aria-label={GRAPH_COPY.branches}
       aria-hidden={busy}
     >
+      <span className="sr-only graph-intent-status" role="status" />
       <svg
         viewBox={`0 0 ${projection.width} ${projection.height}`}
         preserveAspectRatio="none"
@@ -44,6 +45,7 @@ export function GraphBranches({ node }: { node: WorldNode }) {
             disabled={busy}
             key={edge.id}
             data-edge-id={edge.id}
+            data-direction={edge.direction}
             className={`graph-branch branch-${edge.direction}`}
             onClick={(event) => {
               const reading = document.querySelector<HTMLElement>(
@@ -53,6 +55,7 @@ export function GraphBranches({ node }: { node: WorldNode }) {
                 useGraphStore.getState().select(edge.id)
             }}
           >
+            <span className="graph-intent-feedback" aria-hidden="true" />
             <span className="graph-branch-label">
               <span aria-hidden="true" dir="ltr">
                 {edge.direction === 'left'

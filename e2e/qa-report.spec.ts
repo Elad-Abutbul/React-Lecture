@@ -1,6 +1,42 @@
 import { test, expect, type Page, type TestInfo } from '@playwright/test'
 import { join } from 'node:path'
+import { GRAPH_GESTURE } from '../src/constants/graphNavigation'
 import { open, at, settled, seedVisited } from './helpers'
+const errorsByPage = new WeakMap<Page, string[]>()
+test.beforeEach(async ({ page }) => {
+  const errors: string[] = []
+  errorsByPage.set(page, errors)
+  page.on('console', (message) => {
+    if (message.type() === 'error') errors.push(message.text())
+  })
+  page.on('pageerror', (error) => errors.push(error.message))
+  await page.addInitScript(() => {
+    const trace: unknown[] = []
+    Reflect.set(window, 'qaWheelTrace', trace)
+    window.addEventListener(
+      'wheel',
+      (event) =>
+        trace.push({
+          x: event.deltaX,
+          y: event.deltaY,
+          mode: event.deltaMode,
+          at: event.timeStamp,
+          clientX: event.clientX,
+          clientY: event.clientY,
+        }),
+      { passive: true },
+    )
+  })
+})
+test.afterEach(async ({ page }, info) => {
+  await info.attach('actual-wheel-packets', {
+    body: JSON.stringify(
+      await page.evaluate(() => Reflect.get(window, 'qaWheelTrace')),
+    ),
+    contentType: 'application/json',
+  })
+  expect(errorsByPage.get(page)).toEqual([])
+})
 async function ready(page: Page) {
   await settled(page)
   await expect(
@@ -88,6 +124,9 @@ test('QA-02 scrolling over both sides of code reads instructions without selecti
     await visit(page, 'verify')
     const reader = page.locator('.graph-reading'),
       box = (await reader.boundingBox())!
+    await reader.evaluate((element) => {
+      element.scrollTop = 0
+    })
     expect(await reader.evaluate((e) => e.scrollHeight > e.clientHeight)).toBe(
       true,
     )
@@ -149,4 +188,59 @@ test('QA-02 hit boundaries follow content and resize at verify, H05 and pause-2'
     }
   }
   await screenshot(page, info, 'responsive-hit-areas')
+})
+
+for (const [x, target] of [
+  [120, 'verify'],
+  [-120, 'os'],
+] as const) {
+  test(`QA-03 horizontal request ${x} gives intent or selection from actual wheel packets`, async ({
+    page,
+  }) => {
+    await open(page)
+    await ready(page)
+    const brand = (await page.locator('.brand').boundingBox())!
+    await page.mouse.move(brand.x + brand.width / 2, brand.y + brand.height / 2)
+    await page.mouse.wheel(x, 0)
+    await expect
+      .poll(
+        () => page.evaluate(() => Reflect.get(window, 'qaWheelTrace').length),
+        { intervals: [5, 10, 20, 30] },
+      )
+      .toBeGreaterThan(0)
+    const packets = (await page.evaluate(() =>
+      Reflect.get(window, 'qaWheelTrace'),
+    )) as { x: number; mode: number }[]
+    expect(packets.every((packet) => packet.mode === 0)).toBe(true)
+    const travel = packets.reduce((sum, packet) => sum + packet.x, 0)
+    expect(Math.sign(travel)).toBe(Math.sign(x))
+    if (Math.abs(travel) >= GRAPH_GESTURE.branchThreshold)
+      await at(page, target)
+    else {
+      await expect(
+        page.locator(x > 0 ? '.branch-right' : '.branch-left'),
+      ).toHaveAttribute('data-gesture-intent', 'true')
+      await at(page, 'node')
+    }
+  })
+}
+test('QA-03 short intent is visible, expires cleanly, and five packets select only once', async ({
+  page,
+}, info) => {
+  await open(page)
+  await ready(page)
+  const brand = (await page.locator('.brand').boundingBox())!
+  await page.mouse.move(brand.x + brand.width / 2, brand.y + brand.height / 2)
+  await page.mouse.wheel(80, 0)
+  const branch = page.locator('.branch-right')
+  await expect(branch).toHaveAttribute('data-gesture-intent', 'true')
+  await expect(branch.locator('.graph-intent-feedback')).toContainText('%')
+  await screenshot(page, info, 'short-intent-feedback')
+  await expect(branch).not.toHaveAttribute('data-gesture-intent', 'true')
+  await at(page, 'node')
+  for (let i = 0; i < 5; i++) await page.mouse.wheel(80, 0)
+  await at(page, 'verify')
+  await page.waitForTimeout(300)
+  await expect(page.locator('[data-gesture-intent]')).toHaveCount(0)
+  await at(page, 'verify')
 })

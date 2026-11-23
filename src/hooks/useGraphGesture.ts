@@ -1,5 +1,9 @@
 import { useEffect } from 'react'
-import { GRAPH_NAV, GRAPH_GESTURE } from '@/constants/graphNavigation'
+import {
+  GRAPH_NAV,
+  GRAPH_GESTURE,
+  GRAPH_COPY,
+} from '@/constants/graphNavigation'
 import { GRAPH_BY_ID } from '@/content/worldGraph'
 import { readingOwnsWheel } from '@/lib/graph-hit-area'
 import { normalizeWheel } from '@/lib/graph-navigation'
@@ -7,11 +11,44 @@ import {
   createGraphGesture,
   graphGestureAxis,
   type GestureDirection,
+  type BranchIntent,
 } from '@/lib/graph-gesture'
 import { useGraphStore } from '@/store/graph-store'
 export function useGraphGesture() {
   useEffect(() => {
     const controller = createGraphGesture()
+    let previewTimer: ReturnType<typeof setTimeout> | undefined
+    function feedback(intent: BranchIntent | null) {
+      clearTimeout(previewTimer)
+      const aside = document.querySelector<HTMLElement>('.graph-branches')
+      if (!aside) return
+      aside
+        .querySelectorAll<HTMLElement>('[data-gesture-intent]')
+        .forEach((button) => button.removeAttribute('data-gesture-intent'))
+      const status = aside.querySelector('.graph-intent-status')
+      if (!intent) {
+        if (status) status.textContent = ''
+        return
+      }
+      const group = Array.from(
+          aside.querySelectorAll<HTMLElement>(
+            `[data-direction="${intent.direction}"]`,
+          ),
+        ),
+        button = intent.direction === 'right' ? group.at(-1) : group[0]
+      if (!button) return
+      const text =
+        intent.direction === 'right'
+          ? GRAPH_COPY.intentRight
+          : GRAPH_COPY.intentLeft
+      button.setAttribute('data-gesture-intent', 'true')
+      button.style.setProperty('--gesture-progress', String(intent.progress))
+      const label = button.querySelector('.graph-intent-feedback')
+      if (label)
+        label.textContent = `${text} · ${Math.round(intent.progress * 100)}%`
+      if (status && status.textContent !== text) status.textContent = text
+      previewTimer = setTimeout(() => feedback(null), GRAPH_GESTURE.quietMs)
+    }
     let touch: { x: number; y: number } | null = null
     const ignored = (target: EventTarget | null) =>
       target instanceof Element && !!target.closest(GRAPH_NAV.ignore)
@@ -74,6 +111,7 @@ export function useGraphGesture() {
       if (result.kind === 'read' && reading) reading.scrollTop += result.delta
       else if (result.kind === 'navigate')
         navigate(result.direction, region?.dataset.edgeId)
+      feedback(controller.preview())
     }
     function key(event: KeyboardEvent) {
       if (
@@ -118,6 +156,7 @@ export function useGraphGesture() {
           sign * reading.clientHeight * GRAPH_GESTURE.keyboardPage
         return
       }
+      feedback(null)
       navigate((horizontal ?? vertical)!)
     }
     function touchStart(event: TouchEvent) {
@@ -146,8 +185,18 @@ export function useGraphGesture() {
       if (
         Math.max(Math.abs(x), Math.abs(y)) < GRAPH_NAV.touchThreshold ||
         (!horizontal && !vertical)
-      )
+      ) {
+        feedback(
+          horizontal && node.edges.length > 1
+            ? {
+                direction: x > 0 ? 'right' : 'left',
+                progress: Math.min(1, Math.abs(x) / GRAPH_NAV.touchThreshold),
+              }
+            : null,
+        )
         return
+      }
+      feedback(null)
       touch = null
       const reading = reader()
       if (
@@ -165,6 +214,7 @@ export function useGraphGesture() {
         )
     }
     function touchEnd() {
+      feedback(null)
       touch = null
     }
     window.addEventListener('wheel', wheel, { passive: false })
@@ -174,6 +224,8 @@ export function useGraphGesture() {
     window.addEventListener('touchend', touchEnd)
     window.addEventListener('touchcancel', touchEnd)
     return () => {
+      feedback(null)
+      clearTimeout(previewTimer)
       window.removeEventListener('wheel', wheel)
       window.removeEventListener('keydown', key)
       window.removeEventListener('touchstart', touchStart)

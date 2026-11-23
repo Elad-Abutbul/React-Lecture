@@ -120,3 +120,21 @@ test('zero and invalid samples never prolong momentum lock', () => {
   expect(s.sample(NaN, 0, {}, 20).kind).toBe('none')
   expect(s.sample(240, 0, {}, 30).kind).toBe('navigate')
 })
+
+test('QA-03: short travel exposes progress and a deliberate opposite direction resets intent', () => {
+  const s = session()
+  expect(s.sample(80, 0).kind).toBe('none')
+  expect(s.engine.preview()).toEqual({ direction: 'right', progress: 2 / 3 })
+  expect(s.sample(-40, 0).kind).toBe('none')
+  expect(s.engine.preview()).toEqual({ direction: 'left', progress: 1 / 3 })
+  expect(s.sample(-80, 0)).toEqual({ kind: 'navigate', direction: 'left' })
+  expect(s.engine.preview()).toBeNull()
+})
+test('QA-03: five short packets form one command, while quiet starts a new intent', () => {
+  const s = session(),
+    results = Array.from({ length: 5 }, () => s.sample(80, 0))
+  expect(results.filter((r) => r.kind === 'navigate')).toHaveLength(1)
+  expect(s.sample(80, 0, {}, 300).kind).toBe('none')
+  expect(s.engine.preview()?.progress).toBe(2 / 3)
+  expect(s.sample(40, 0)).toEqual({ kind: 'navigate', direction: 'right' })
+})
