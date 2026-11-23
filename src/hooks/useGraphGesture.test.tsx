@@ -213,3 +213,18 @@ test.each([
     expect(reading.scrollTop).toBe(300)
   },
 )
+
+test('QA-01/03: a keyboard return preserves wheel momentum ownership without blocking the opposite branch', () => {
+  render(<Controller />)
+  wheel(240, 0)
+  useGraphStore.getState().arrive()
+  fireEvent.keyDown(window, { key: 'ArrowUp' })
+  useGraphStore.getState().arrive()
+  expect(useGraphStore.getState().cursor).toBe(0)
+  wheel(240, 0)
+  expect(useGraphStore.getState().cursor).toBe(0)
+  wheel(-300, 350)
+  expect(useGraphStore.getState().route[useGraphStore.getState().cursor]).toBe(
+    'os',
+  )
+})

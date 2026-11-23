@@ -57,7 +57,11 @@ export function useGraphGesture() {
       target instanceof Element && !!target.closest(GRAPH_NAV.ignore)
     const reader = () =>
       document.querySelector<HTMLElement>('.graph-node-active .graph-reading')
-    function navigate(direction: GestureDirection, hovered?: string) {
+    function navigate(
+      direction: GestureDirection,
+      hovered?: string,
+      fromWheel = true,
+    ) {
       const state = useGraphStore.getState(),
         node = GRAPH_BY_ID[state.route[state.cursor]]
       if (state.transitioning) return false
@@ -77,7 +81,8 @@ export function useGraphGesture() {
         else state.step(1)
       }
       const accepted = useGraphStore.getState().revision !== state.revision
-      if (accepted) controller.commit(direction)
+      // Discrete keys/touches must not relabel an in-flight wheel gesture.
+      if (accepted && fromWheel) controller.commit(direction)
       return accepted
     }
     function wheel(event: WheelEvent) {
@@ -160,7 +165,7 @@ export function useGraphGesture() {
         return
       }
       feedback(null)
-      navigate((horizontal ?? vertical)!)
+      navigate((horizontal ?? vertical)!, undefined, false)
     }
     function touchStart(event: TouchEvent) {
       touch =
@@ -214,6 +219,8 @@ export function useGraphGesture() {
       else
         navigate(
           horizontal ? (x > 0 ? 'right' : 'left') : y > 0 ? 'down' : 'up',
+          undefined,
+          false,
         )
     }
     function touchEnd() {
