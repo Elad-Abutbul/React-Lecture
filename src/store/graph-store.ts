@@ -14,7 +14,7 @@ type GraphStore = GraphState & {
   revision: number
   transitioning: boolean
   beginTransition: () => void
-  arrive: () => void
+  arrive: (revision?: number) => void
   step: (direction: number) => void
   visit: (index: number) => void
   select: (edgeId: string) => void
@@ -111,7 +111,12 @@ export const useGraphStore = create<GraphStore>()(
       revision: 0,
       transitioning: false,
       beginTransition: () => set({ transitioning: true }),
-      arrive: () => set({ transitioning: false }),
+      arrive: (revision) =>
+        set((state) =>
+          revision === undefined || revision === state.revision
+            ? { transitioning: false }
+            : state,
+        ),
       step: (direction) =>
         set((state) => {
           if (state.transitioning) return state
@@ -198,14 +203,18 @@ export const useGraphStore = create<GraphStore>()(
         const state = get(),
           index = state.route.indexOf(id)
         if (index >= 0) {
-          set({ cursor: index, revision: state.revision + 1 })
+          set({
+            cursor: index,
+            transitioning: true,
+            revision: state.revision + 1,
+          })
           return
         }
         if (!GRAPH_BY_ID[id]) return
         const prefix = pathTo(id),
           route = extendPath(prefix),
           clean = sanitizeGraph({ ...state, route, cursor: prefix.length - 1 })
-        set({ ...clean, revision: state.revision + 1 })
+        set({ ...clean, transitioning: true, revision: state.revision + 1 })
       },
       reset: () =>
         set((state) => ({

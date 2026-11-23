@@ -93,3 +93,27 @@ test('large step requests and in-flight repeats never skip a logical stop', () =
   store().step(1)
   expect(store().route[store().cursor]).toBe('scripts-result')
 })
+test('every directional edge actually moves the camera in its labelled direction', () => {
+  for (const node of WORLD_GRAPH)
+    for (const edge of node.edges) {
+      if (edge.direction === 'forward') continue
+      const dx = GRAPH_BY_ID[edge.target].position.x - node.position.x
+      expect(Math.sign(dx), `${node.id} -> ${edge.target}`).toBe(
+        edge.direction === 'right' ? 1 : -1,
+      )
+    }
+})
+test('jumps lock atomically and late arrival cannot unlock a newer transition', () => {
+  const store = () => useGraphStore.getState()
+  store().reset()
+  store().jump('verify')
+  const first = store().revision
+  expect(store().transitioning).toBe(true)
+  store().step(1)
+  expect(store().revision).toBe(first)
+  store().jump('project')
+  store().arrive(first)
+  expect(store().transitioning).toBe(true)
+  store().arrive(store().revision)
+  expect(store().transitioning).toBe(false)
+})

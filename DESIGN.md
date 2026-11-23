@@ -348,3 +348,13 @@ src/
 `graph-store` בגרסה 2 שומר גם traversed edges. חזרה מתקלות מצמצמת לולאה אל מופע הצומת המקורי, ו־sanitize מרחיב שרשרת יחידה שנוספה בעדכון כדי למנוע dead end בנתונים ישנים. שכבת SVG מציירת תמיד את הקשת הבסיסית, ומעליה התקדמות פעילה; בקשתות שכבר ביקרו בהן נשמר אור עדין גם בגלילה לאחור.
 
 מיקומי הסדנה, offsets של תקלות/שיעורים, projection, משכי הגעה והמצלמה מרוכזים בקבועים. Parallax מחזורי וחסום שומר את האטמוספירה גם בקצה העולם. לאחר בחירה או מעבר מכוון, focus מגיע למשטח הקריאה; מפה שמבוטלת מחזירה את הטריגר. שמות נגישים של ענפים משתמשים בתוכן הטבעי של הכפתור. בדיקות axe מכסות את השורש, הסדנה והמפה. קוד סדנה מלא ניתן לקריאה במשטח היחיד; מצב מרצה כולל חשיפה מפורשת של פתרון ושאלה ללא ניווט אוטומטי.
+
+## 23. תיקון controller מחוות — הארכיטקטורה הפעילה
+
+`lib/graph-gesture.ts` מפריד בין intent, reading ו־navigation בתוך סשן מחווה. x/y מצטברים בנפרד; יחס דומיננטיות וסף axis-lock מונעים בחירת ענף מאלכסון מאוזן או jitter. מצב navigation צורך מומנטום באותו כיוון גם לאחר נחיתה; שקט מאפס סשן, והיפוך מלא לאחר נחיתה מאפשר חזרה בלי עיכוב מלאכותי. מחוות קריאה אינן גולשות לניווט באותו רצף, אבל כוונה אופקית מכוונת יוצאת ממצב קריאה. החלפת node בזמן רצף אינה מעבירה את נעילת הקריאה לצומת הבא.
+
+`useGraphGesture` רושם controller יחיד ב־effect ומנקה את כל listeners, כולל touchcancel. הוא קורא getState בזמן האירוע, מנרמל יחידות wheel וממפה חצים פיזיים ללא היפוך RTL. פקדי תוכן ומפה שומרים קלט מקומי. כל הספים ב־GRAPH_GESTURE/GRAPH_NAV; אין mutation של מצב הניווט מתוך renderer.
+
+`graph-store` נועל step/select/jump באופן אטומי. `useGraphCamera` שולט ב־GSAP interpolator מושהה יחיד לפי זמן שעבר בפועל, ללא תלות ב־lag compensation של ticker גלובלי. deadline של אותו controller מסיים snap גם ב־frames איטיים; cleanup מבטל frame/deadline/tween, ו־callback בודק cancellation ו־revision לפני arrive. רק callback תקף קובע קואורדינטות סיום מדויקות ומשחרר נעילה. ScrollTrigger, useWorldCamera, useBranchGesture ו־Motion useScroll ההיסטוריים אינם מורכבים באפליקציה הפעילה; Lenis אינו מותקן. אין document scroll מתחרה. שינויים במיקומי project/tools מתקנים ענפי right ש־x שלהם היה זהה למקור.
+
+ה־world viewport משתמש ב־overflow: clip כדי למנוע גלילת focus/scrollIntoView native, אשר overflow: hidden עדיין מאפשר. משטח graph-reading נשאר overflow-y: auto. בדיקות long-code focus מאמתות גם scrollLeft/scrollTop של העולם, ולא רק קואורדינטות מצלמה.
