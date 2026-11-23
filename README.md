@@ -130,11 +130,19 @@ each complete H04–H11 snapshot and runs strict TypeScript plus a Vite producti
 build for each.
 
 Playwright uses a production preview on port 5176 with desktop, mobile, and reduced
-motion Chromium profiles. It checks wheel-only installation, diagonal gestures,
+motion Chromium profiles, plus WebKit navigation regressions. Install browser
+binaries with `pnpm exec playwright install chromium webkit`. It checks wheel-only
+installation, diagonal gestures,
 momentum, backward navigation, branch switching, commands, existing projects,
 workshop entry, source copying, persistence, long reading, SVG alignment, resizing,
 keyboard focus, RTL overflow, and automated WCAG checks through axe.
 
+Navigation regression evidence and the physical macOS trackpad checklist are in
+[docs/navigation-debug.md](docs/navigation-debug.md). Synthetic traces and browser
+wheel injection do not verify physical trackpad hardware.
+
+Set `NAVIGATION_SCREENSHOT_DIR` to export before/after screenshots for right, left,
+forward, backward and the long reading surface across browser profiles.
 Set `SCREENSHOT_DIR` when running Playwright to export the verified desktop and
 mobile decision views. Browser tests create their own isolated storage; they do not
 reset the user's development preview.

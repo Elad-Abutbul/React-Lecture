@@ -582,3 +582,25 @@
 - **אימות מסירה T34–T37 / HO18 / UN03:** `pnpm format:check`, `pnpm lint`, `pnpm test` (57 בדיקות), `pnpm build`, `pnpm test:workshop` (16 בדיקות strict TypeScript/build) ו־Playwright (60 תרחישי Chromium בדסקטופ, מובייל ו־reduced motion) עברו. axe, focus, SVG endpoints ו־resize, גלילה/מחוות/לחיצה, חזרה ושינוי ענף, קריאת קוד מלא ו־persistence נבדקו. תמונות desktop/mobile נבדקו חזותית.
 
 - **אימות GX06 / UN04:** כל 57 בדיקות היחידה, 60 תרחישי הדפדפן ו־16 בדיקות קוד הסדנה עברו; lint/format/build תקינים. ענפי unified-scroll-tree, hands-on-workshop ו־quality-and-accessibility מוזגו ל־main ונדחפו ללא force. GitHub API אישר את commit `27edf61c5455093f530282004d2c59ea359a1a96` ואת README המעודכן; local/origin SHA אומת לאחר כל push. ללא משימות או תקלות ידועות שנותרו פתוחות.
+
+## NAV01–NAV03 — תיקון רגרסיית ניווט בלבד (2026-11-23)
+
+אין שינוי עיצוב או תוכן. האימות הקודם השתמש בעיקר ב־wheel deltas גדולים ולא הוכיח שימוש ב־trackpad פיזי. הרגרסיה הנוכחית משוחזרת לפני תיקון ב־Vitest וב־Chromium/WebKit: deltas אופקיים של 1.5px נזרקים; צירי x/y חולקים accumulator; נעילת קריאה בולעת שינוי ציר מכוון. שני ענפי right מצביעים לאותו x של המקור. רגרסיה נוספת עם frames במרווח 650ms משחזרת נעילת מצלמה ארוכה בגלל GSAP lag compensation. חזרות מדודות של תוכן ארוך מצאו גם גלילה native של world-viewport (x=-200, y=578) בזמן focus, למרות camera target תקין.
+
+### NAV01 — אבחון ושחזור לפני שינוי
+
+- [x] **לבצע:** לבדוק handlers/import graph, לשחזר כשל ימינה ושינוי ציר ב־Vitest ובדפדפנים, לשמור evidence לפני תיקון.
+- **אימות:** ארבע בדיקות Vitest ושני מקרי דפדפן בכל אחד מ־Chromium/WebKit נכשלים ביישום המקורי כצפוי. App מרכיב controller גלילה אחד ו־GSAP camera אחד; הקוד ההיסטורי של ScrollTrigger/Motion scroll אינו מורכב; Lenis אינו מותקן.
+
+### NAV02 — תיקון controller ומחזור חיי מצלמה
+
+- [x] **לבצע:** צבירת fractional deltas לפי ציר, נעילת axis/gesture מפורשת, הפרדת קריאה מניווט, שחרור לאחר שקט/היפוך מכוון, שמירת מצב יחיד, snap לפי זמן בפועל עם deadline מוגן מפני callbacks ישנים, וחסימת גלילת focus של העולם באמצעות overflow: clip.
+- **קבלה:** כיוונים יציבים ב־RTL; אין דילוגים ממומנטום; אין נעילה קבועה; ללא שינוי עיצוב.
+
+### NAV03 — אימות ומסירה
+
+- [x] **לבצע:** כל 12 מקרי הרגרסיה, דפדפני Chromium/WebKit, צילומי before/after לארבעת הכיוונים, lint/typecheck/unit/build וכל הבדיקות הקיימות.
+- **קבלה:** הכול עובר לפני commit/push; יש לציין שבדיקות synthetic/native browser wheel אינן אימות של trackpad Mac פיזי, ולצרף checklist ידני קצר.
+
+
+- **אימות NAV02/NAV03:** `pnpm format:check`, `pnpm lint`, `pnpm exec tsc -b`, בדיקת TypeScript strict לקובצי Playwright, `pnpm test` (82 בדיקות), `pnpm build`, `pnpm test:workshop` (16) ו־Playwright (128 תרחישים: Chromium desktop/mobile/reduced-motion + WebKit navigation) עברו. צילומי before/after לארבעת הכיוונים נבדקו בדסקטופ ובמובייל; ה־camera נוחת בקואורדינטות מדויקות, ה־SVG נשאר מחובר וה־world אינו נגלל ב־focus. תיקון ניווט בלבד, ללא שינוי עיצוב/תוכן. אימות trackpad Mac פיזי לא בוצע; checklist וממצאי השורש ב־[docs/navigation-debug.md](docs/navigation-debug.md).
