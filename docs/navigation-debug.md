@@ -1,5 +1,9 @@
 # Navigation regression investigation — 2026-11-23
 
+> Historical investigation. The later [QA follow-up](qa-navigation-followup.md)
+> supersedes the balanced-diagonal policy below and contains the current acceptance
+> checklist.
+
 Scope: repair navigation without changing the layout, theme, content, or workshop.
 Baseline: main commit `75594ba6bc198166be82d07a4384c0c5d6825058`.
 
