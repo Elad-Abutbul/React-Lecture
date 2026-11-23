@@ -26,8 +26,10 @@ pnpm preview
   return one stop. Camera travel and a quiet interval suppress repeated transitions
   from a single gesture or its momentum.
 - At a decision, a horizontal or diagonal trackpad gesture chooses the physical
-  left or right branch. Mouse-wheel users can place the pointer over a branch
-  region and scroll down. Clicking the region is optional.
+  left or right branch, including balanced downward diagonals. Mouse-wheel users
+  can place the pointer over a branch region and scroll down. Clicking the region
+  is optional.
+  Short input previews its direction/progress before committing.
 - Arrow keys and Enter/Space on a focused branch offer keyboard alternatives.
   Up/Down and PageUp/PageDown support reading and movement. Touch supports swipes
   and branch taps.
@@ -137,9 +139,11 @@ momentum, backward navigation, branch switching, commands, existing projects,
 workshop entry, source copying, persistence, long reading, SVG alignment, resizing,
 keyboard focus, RTL overflow, and automated WCAG checks through axe.
 
-Navigation regression evidence and the physical macOS trackpad checklist are in
-[docs/navigation-debug.md](docs/navigation-debug.md). Synthetic traces and browser
-wheel injection do not verify physical trackpad hardware.
+Current QA fixes and the physical macOS trackpad checklist are in
+[docs/qa-navigation-followup.md](docs/qa-navigation-followup.md). The earlier
+[regression investigation](docs/navigation-debug.md) is retained as history.
+Synthetic traces and browser wheel injection do not verify physical trackpad
+hardware.
 
 Set `NAVIGATION_SCREENSHOT_DIR` to export before/after screenshots for right, left,
 forward, backward and the long reading surface across browser profiles.
@@ -158,3 +162,6 @@ Use a dedicated feature branch for each phase and Conventional Commits. Validate
 before merging locally into `main`, then push the validated merge to `origin` as
 authorized. Fetch remote changes first and preserve history; never force push or
 commit secrets.
+
+The pinned Fiber Timer compatibility patch in `patches/` is applied by pnpm
+through `pnpm-workspace.yaml`; use `pnpm install --frozen-lockfile` to reproduce it.

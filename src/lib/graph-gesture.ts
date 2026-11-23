@@ -10,18 +10,42 @@ export type WheelSample = {
   transitioning: boolean
   canReadUp: boolean
   canReadDown: boolean
+  branching: boolean
 }
+export type BranchIntent = { direction: 'left' | 'right'; progress: number }
 export type GestureResult =
   | { kind: 'none' }
   | { kind: 'read'; delta: number }
   | { kind: 'navigate'; direction: GestureDirection }
 const none: GestureResult = { kind: 'none' }
-const axisOf = (x: number, y: number): Axis | null =>
-  Math.abs(x) > Math.abs(y) * GRAPH_GESTURE.axisRatio
+export function graphGestureAxis(
+  x: number,
+  y: number,
+  branching: boolean,
+): Axis | null {
+  const horizontal = Math.abs(x),
+    vertical = Math.abs(y)
+  // Downward diagonals at decisions follow their physical horizontal sign.
+  // Upward diagonals return along the path; single paths favor vertical travel.
+  if (
+    branching &&
+    y >= 0 &&
+    horizontal > GRAPH_GESTURE.epsilon &&
+    horizontal >= vertical * GRAPH_GESTURE.branchRatio
+  )
+    return 'x'
+  if (
+    (!branching || y < 0) &&
+    vertical > GRAPH_GESTURE.epsilon &&
+    vertical >= horizontal * GRAPH_GESTURE.branchRatio
+  )
+    return 'y'
+  return horizontal > vertical * GRAPH_GESTURE.axisRatio
     ? 'x'
-    : Math.abs(y) > Math.abs(x) * GRAPH_GESTURE.axisRatio
+    : vertical > horizontal * GRAPH_GESTURE.axisRatio
       ? 'y'
       : null
+}
 const directionOf = (axis: Axis, value: number): GestureDirection =>
   axis === 'x' ? (value > 0 ? 'right' : 'left') : value > 0 ? 'down' : 'up'
 export function createGraphGesture() {
@@ -33,7 +57,8 @@ export function createGraphGesture() {
     sign = 0,
     mode: Mode = 'intent',
     reverse = 0,
-    cross = 0
+    cross = 0,
+    branching = false
   function reset(stop: string) {
     owner = stop
     axis = null
@@ -52,7 +77,12 @@ export function createGraphGesture() {
         Math.max(Math.abs(input.x), Math.abs(input.y)) < GRAPH_GESTURE.epsilon
       )
         return none
-      const fresh = input.at - last > GRAPH_GESTURE.quietMs
+      branching = input.branching
+      const quiet =
+        mode === 'intent' && axis === 'x' && branching
+          ? GRAPH_GESTURE.intentQuietMs
+          : GRAPH_GESTURE.quietMs
+      const fresh = input.at - last > quiet
       last = input.at
       if (fresh) reset(input.stop)
       else if (owner !== input.stop) {
@@ -62,7 +92,7 @@ export function createGraphGesture() {
         y = 0
         reverse = 0
       }
-      const dominant = axisOf(input.x, input.y)
+      const dominant = graphGestureAxis(input.x, input.y, input.branching)
       if (input.transitioning) {
         mode = 'navigation'
         axis = axis ?? dominant
@@ -103,6 +133,21 @@ export function createGraphGesture() {
           switched = true
         }
       } else if (dominant === axis) cross = 0
+      if (
+        !switched &&
+        mode === 'intent' &&
+        axis === 'x' &&
+        dominant === 'x' &&
+        Math.sign(input.x) === -Math.sign(x)
+      ) {
+        reverse += Math.abs(input.x)
+        if (reverse >= GRAPH_GESTURE.axisLock) {
+          x = Math.sign(input.x) * reverse
+          y = 0
+          reverse = 0
+          switched = true
+        }
+      } else if (mode === 'intent') reverse = 0
       if (!switched) {
         x += input.x
         y += input.y
@@ -110,7 +155,7 @@ export function createGraphGesture() {
       axis =
         axis ??
         (Math.max(Math.abs(x), Math.abs(y)) >= GRAPH_GESTURE.axisLock
-          ? axisOf(x, y)
+          ? graphGestureAxis(x, y, input.branching)
           : null)
       if (!axis) return none
       const value = axis === 'x' ? x : y
@@ -123,10 +168,27 @@ export function createGraphGesture() {
         }
       }
       const distance = axis === 'x' ? x : y
-      if (Math.abs(distance) < GRAPH_GESTURE.threshold || axisOf(x, y) !== axis)
+      if (
+        Math.abs(distance) <
+          (axis === 'x' && input.branching
+            ? GRAPH_GESTURE.branchThreshold
+            : GRAPH_GESTURE.threshold) ||
+        graphGestureAxis(x, y, input.branching) !== axis
+      )
         return none
       sign = Math.sign(distance)
       return { kind: 'navigate', direction: directionOf(axis, distance) }
+    },
+    preview(): BranchIntent | null {
+      return branching &&
+        mode === 'intent' &&
+        axis === 'x' &&
+        Math.abs(x) >= GRAPH_GESTURE.axisLock
+        ? {
+            direction: x > 0 ? 'right' : 'left',
+            progress: Math.min(1, Math.abs(x) / GRAPH_GESTURE.branchThreshold),
+          }
+        : null
     },
     commit(direction: GestureDirection) {
       mode = 'navigation'

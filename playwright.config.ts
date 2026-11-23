@@ -13,8 +13,21 @@ export default defineConfig({
   },
   projects: [
     {
+      name: 'qa-report',
+      testMatch: '**/qa-report.spec.ts',
+      use: {
+        browserName: 'chromium',
+        viewport: { width: 1789, height: 819 },
+        deviceScaleFactor: 1.5,
+      },
+    },
+    {
       name: 'webkit',
-      testMatch: '**/gesture-regression.spec.ts',
+      testMatch: [
+        '**/gesture-regression.spec.ts',
+        '**/qa-report.spec.ts',
+        '**/render-clock.spec.ts',
+      ],
       use: { browserName: 'webkit', viewport: { width: 1440, height: 1000 } },
     },
     {
@@ -26,6 +39,7 @@ export default defineConfig({
     },
     {
       name: 'mobile',
+      testIgnore: '**/render-clock.spec.ts',
       use: {
         browserName: 'chromium',
         viewport: { width: 390, height: 844 },
@@ -35,6 +49,7 @@ export default defineConfig({
     },
     {
       name: 'reduced-motion',
+      testIgnore: '**/render-clock.spec.ts',
       use: {
         browserName: 'chromium',
         viewport: { width: 1280, height: 900 },

@@ -1,0 +1,189 @@
+diff --git a/dist/events-0dab3c53.cjs.dev.js b/dist/events-0dab3c53.cjs.dev.js
+index 705fbd514d4207a07fb3c6c28e631903746d5789..e93a793e7486295a35464f7ab6e901ad2aed92cb 100644
+--- a/dist/events-0dab3c53.cjs.dev.js
++++ b/dist/events-0dab3c53.cjs.dev.js
+@@ -1161,6 +1161,49 @@ function attempt$1(step) {
+ }
+ 
+ const context = /* @__PURE__ */React__namespace.createContext(null);
++// Timer-backed compatibility surface for the renderer's legacy clock API.
++// Keep writable elapsedTime/oldTime for frameloop="never" and external consumers.
++function createTimerClock() {
++  let timer;
++  return {
++    autoStart: true,
++    startTime: 0,
++    oldTime: 0,
++    elapsedTime: 0,
++    running: false,
++    start() {
++      if (timer) timer.dispose();
++      timer = new THREE__namespace.Timer();
++      this.startTime = performance.now();
++      this.oldTime = this.startTime;
++      this.elapsedTime = 0;
++      this.running = true;
++    },
++    stop() {
++      this.getElapsedTime();
++      this.running = false;
++      this.autoStart = false;
++    },
++    getDelta() {
++      if (this.autoStart && !this.running) {
++        this.start();
++        return 0;
++      }
++      if (!this.running) return 0;
++      const now = performance.now();
++      timer.update(now);
++      const delta = timer.getDelta();
++      this.oldTime = now;
++      this.elapsedTime += delta;
++      return delta;
++    },
++    getElapsedTime() {
++      this.getDelta();
++      return this.elapsedTime;
++    }
++  };
++}
++
+ const createStore = (invalidate, advance) => {
+   const rootStore = traditional.createWithEqualityFn((set, get) => {
+     const position = new THREE__namespace.Vector3();
+@@ -1229,7 +1272,7 @@ const createStore = (invalidate, advance) => {
+       linear: false,
+       flat: false,
+       controls: null,
+-      clock: new THREE__namespace.Clock(),
++      clock: createTimerClock(),
+       pointer,
+       mouse: pointer,
+       frameloop: 'always',
+diff --git a/dist/events-98e95d43.cjs.prod.js b/dist/events-98e95d43.cjs.prod.js
+index c265e9e358f1fd6d7155216b013471ab445b9ce4..9cad0c25cd126dd9d0a9dbf963e4eeda379b84ec 100644
+--- a/dist/events-98e95d43.cjs.prod.js
++++ b/dist/events-98e95d43.cjs.prod.js
+@@ -1161,6 +1161,49 @@ function attempt$1(step) {
+ }
+ 
+ const context = /* @__PURE__ */React__namespace.createContext(null);
++// Timer-backed compatibility surface for the renderer's legacy clock API.
++// Keep writable elapsedTime/oldTime for frameloop="never" and external consumers.
++function createTimerClock() {
++  let timer;
++  return {
++    autoStart: true,
++    startTime: 0,
++    oldTime: 0,
++    elapsedTime: 0,
++    running: false,
++    start() {
++      if (timer) timer.dispose();
++      timer = new THREE__namespace.Timer();
++      this.startTime = performance.now();
++      this.oldTime = this.startTime;
++      this.elapsedTime = 0;
++      this.running = true;
++    },
++    stop() {
++      this.getElapsedTime();
++      this.running = false;
++      this.autoStart = false;
++    },
++    getDelta() {
++      if (this.autoStart && !this.running) {
++        this.start();
++        return 0;
++      }
++      if (!this.running) return 0;
++      const now = performance.now();
++      timer.update(now);
++      const delta = timer.getDelta();
++      this.oldTime = now;
++      this.elapsedTime += delta;
++      return delta;
++    },
++    getElapsedTime() {
++      this.getDelta();
++      return this.elapsedTime;
++    }
++  };
++}
++
+ const createStore = (invalidate, advance) => {
+   const rootStore = traditional.createWithEqualityFn((set, get) => {
+     const position = new THREE__namespace.Vector3();
+@@ -1229,7 +1272,7 @@ const createStore = (invalidate, advance) => {
+       linear: false,
+       flat: false,
+       controls: null,
+-      clock: new THREE__namespace.Clock(),
++      clock: createTimerClock(),
+       pointer,
+       mouse: pointer,
+       frameloop: 'always',
+diff --git a/dist/events-e51d7528.esm.js b/dist/events-e51d7528.esm.js
+index 6c801a280936890feb78c502a0bf47cd2b478e15..e0951136ea451d7296a6e2298093698555868455 100644
+--- a/dist/events-e51d7528.esm.js
++++ b/dist/events-e51d7528.esm.js
+@@ -1136,6 +1136,49 @@ function attempt$1(step) {
+ }
+ 
+ const context = /* @__PURE__ */React.createContext(null);
++// Timer-backed compatibility surface for the renderer's legacy clock API.
++// Keep writable elapsedTime/oldTime for frameloop="never" and external consumers.
++function createTimerClock() {
++  let timer;
++  return {
++    autoStart: true,
++    startTime: 0,
++    oldTime: 0,
++    elapsedTime: 0,
++    running: false,
++    start() {
++      if (timer) timer.dispose();
++      timer = new THREE.Timer();
++      this.startTime = performance.now();
++      this.oldTime = this.startTime;
++      this.elapsedTime = 0;
++      this.running = true;
++    },
++    stop() {
++      this.getElapsedTime();
++      this.running = false;
++      this.autoStart = false;
++    },
++    getDelta() {
++      if (this.autoStart && !this.running) {
++        this.start();
++        return 0;
++      }
++      if (!this.running) return 0;
++      const now = performance.now();
++      timer.update(now);
++      const delta = timer.getDelta();
++      this.oldTime = now;
++      this.elapsedTime += delta;
++      return delta;
++    },
++    getElapsedTime() {
++      this.getDelta();
++      return this.elapsedTime;
++    }
++  };
++}
++
+ const createStore = (invalidate, advance) => {
+   const rootStore = createWithEqualityFn((set, get) => {
+     const position = new THREE.Vector3();
+@@ -1204,7 +1247,7 @@ const createStore = (invalidate, advance) => {
+       linear: false,
+       flat: false,
+       controls: null,
+-      clock: new THREE.Clock(),
++      clock: createTimerClock(),
+       pointer,
+       mouse: pointer,
+       frameloop: 'always',

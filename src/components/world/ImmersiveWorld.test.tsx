@@ -27,3 +27,23 @@ test('single-path commands expose copy utilities without progression buttons', (
   ).toBeVisible()
   expect(screen.queryByRole('button', { name: 'בוצע' })).not.toBeInTheDocument()
 })
+
+test('short horizontal intent highlights its branch without changing the route', () => {
+  const view = render(<ImmersiveWorld />)
+  fireEvent(
+    window,
+    new WheelEvent('wheel', { deltaX: 80, bubbles: true, cancelable: true }),
+  )
+  const button = view.container.querySelector('.branch-right')!
+  expect(button).toHaveAttribute('data-gesture-intent', 'true')
+  expect(button).toHaveTextContent('67%')
+  expect(useGraphStore.getState().cursor).toBe(0)
+  fireEvent(
+    window,
+    new WheelEvent('wheel', { deltaX: 80, bubbles: true, cancelable: true }),
+  )
+  expect(useGraphStore.getState().route[useGraphStore.getState().cursor]).toBe(
+    'verify',
+  )
+  expect(view.container.querySelector('[data-gesture-intent]')).toBeNull()
+})

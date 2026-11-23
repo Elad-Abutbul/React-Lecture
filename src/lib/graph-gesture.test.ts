@@ -15,6 +15,7 @@ function session() {
         transitioning: false,
         canReadUp: false,
         canReadDown: false,
+        branching: true,
         ...extra,
       })
       if (result.kind === 'navigate') engine.commit(result.direction)
@@ -47,9 +48,12 @@ test.each([
 ] as const)('dominant diagonal %s/%s resolves to %s', (x, y, direction) => {
   expect(session().sample(x, y)).toEqual({ kind: 'navigate', direction })
 })
-test('balanced diagonal movement does not choose either axis', () => {
-  const s = session()
-  for (let i = 0; i < 50; i++) expect(s.sample(20, 20).kind).toBe('none')
+test('balanced downward diagonal chooses its horizontal branch once', () => {
+  const s = session(),
+    results = Array.from({ length: 50 }, () => s.sample(20, 20))
+  expect(results.filter((r) => r.kind === 'navigate')).toEqual([
+    { kind: 'navigate', direction: 'right' },
+  ])
 })
 test('one long burst and decaying momentum cannot skip a second stop', () => {
   const s = session()
@@ -116,3 +120,43 @@ test('zero and invalid samples never prolong momentum lock', () => {
   expect(s.sample(NaN, 0, {}, 20).kind).toBe('none')
   expect(s.sample(240, 0, {}, 30).kind).toBe('navigate')
 })
+
+test('QA-03: short travel exposes progress and a deliberate opposite direction resets intent', () => {
+  const s = session()
+  expect(s.sample(80, 0).kind).toBe('none')
+  expect(s.engine.preview()).toEqual({ direction: 'right', progress: 2 / 3 })
+  expect(s.sample(-40, 0).kind).toBe('none')
+  expect(s.engine.preview()).toEqual({ direction: 'left', progress: 1 / 3 })
+  expect(s.sample(-80, 0)).toEqual({ kind: 'navigate', direction: 'left' })
+  expect(s.engine.preview()).toBeNull()
+})
+test('QA-03: five short packets form one command, while quiet starts a new intent', () => {
+  const s = session(),
+    results = Array.from({ length: 5 }, () => s.sample(80, 0))
+  expect(results.filter((r) => r.kind === 'navigate')).toHaveLength(1)
+  expect(s.sample(80, 0, {}, 300).kind).toBe('none')
+  expect(s.engine.preview()?.progress).toBe(2 / 3)
+  expect(s.sample(40, 0)).toEqual({ kind: 'navigate', direction: 'right' })
+})
+
+test.each([1, -1])(
+  'QA-03: partial intent survives short pauses without extending the navigation momentum lock (%s)',
+  (sign) => {
+    const s = session()
+    s.sample(sign * 80, 0)
+    expect(s.sample(sign * 40, 0, {}, 350)).toEqual({
+      kind: 'navigate',
+      direction: sign > 0 ? 'right' : 'left',
+    })
+    expect(s.engine.preview()).toBeNull()
+    // An accepted gesture still re-arms after the original short quiet interval.
+    expect(s.sample(sign * 120, 0, {}, 300)).toEqual({
+      kind: 'navigate',
+      direction: sign > 0 ? 'right' : 'left',
+    })
+    const expired = session()
+    expired.sample(sign * 80, 0)
+    expect(expired.sample(sign * 40, 0, {}, 700).kind).toBe('none')
+    expect(expired.engine.preview()?.progress).toBe(1 / 3)
+  },
+)

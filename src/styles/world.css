@@ -1446,3 +1446,55 @@ body:has(.unified-world) {
 .world-stage[data-camera-busy='false'] .world-path-selected {
   animation-duration: var(--path-pulse, 1.4s);
 }
+
+/* Intent feedback decorates the existing branch; it never changes its hit box. */
+.graph-branch {
+  position: relative;
+}
+.graph-intent-feedback {
+  position: absolute;
+  inset-inline: 0.5rem;
+  top: 0.5rem;
+  color: var(--color-react);
+  font-size: 0.8rem;
+  opacity: 0;
+  transition: opacity 0.15s;
+  pointer-events: none;
+}
+.branch-left .graph-intent-feedback {
+  color: var(--color-violet);
+}
+.graph-branch[data-gesture-intent] {
+  background: radial-gradient(ellipse at 50% 100%, #61dafb20, transparent 75%);
+}
+.graph-branch.branch-left[data-gesture-intent] {
+  background: radial-gradient(ellipse at 50% 100%, #a78bfa26, transparent 75%);
+}
+.graph-branch[data-gesture-intent] .graph-intent-feedback {
+  opacity: 1;
+}
+.graph-branch::after {
+  content: '';
+  position: absolute;
+  inset-inline: 1rem;
+  bottom: 0.3rem;
+  height: 3px;
+  border-radius: 3px;
+  background: var(--color-react);
+  transform: scaleX(0);
+  transform-origin: center;
+  opacity: 0;
+  pointer-events: none;
+}
+.graph-branch[data-gesture-intent]::after {
+  transform: scaleX(var(--gesture-progress));
+  opacity: 0.8;
+}
+.branch-left::after {
+  background: var(--color-violet);
+}
+@media (prefers-reduced-motion: reduce) {
+  .graph-intent-feedback {
+    transition: none;
+  }
+}

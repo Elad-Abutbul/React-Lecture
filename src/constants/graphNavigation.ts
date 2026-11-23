@@ -35,6 +35,8 @@ export const GRAPH_COPY = {
   scroll: 'גלילה מכוונת: עצירה אחת למטה · עצירה אחת למעלה',
   branch: 'בחרו ענף: החליקו לכיוונו, או מקמו עליו את הסמן וגללו למטה',
   touch: 'החליקו לכיוון הענף או געו באזור שלו',
+  intentRight: 'ממשיכים להחליק ימינה',
+  intentLeft: 'ממשיכים להחליק שמאלה',
   small: 'נדרשת גלילה מכוונת; תנועה קטנה לא משנה נתיב',
   branches: 'הענפים הזמינים',
   path: 'הנתיב שבחרת',
@@ -112,8 +114,13 @@ export const GRAPH_GESTURE = {
   epsilon: 0.001,
   axisLock: 24,
   threshold: 180,
+  branchThreshold: 120,
+  branchRatio: 0.75,
   axisRatio: 1.25,
   quietMs: 240,
+  intentQuietMs: 650,
   readingBoundary: 1,
   keyboardPage: 0.7,
 } as const
+
+export const GRAPH_BRANCH_LAYOUT = { topRatio: 0.48, readingGap: 12 } as const
