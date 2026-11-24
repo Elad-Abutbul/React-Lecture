@@ -1,5 +1,10 @@
 # React Lecture
 
+The opening decision is **מה תרצו לעשות?**: **הרצאה** diagonally left and
+**סדנה מעשית** diagonally right. The vertical lecture covers L00–L11 and continues
+into the W00–W10 workshop, also reachable directly from home. Installation belongs
+inside L01. Both entrances share exercise content, hints, and manual checks.
+
 A Hebrew RTL React learning world. Installation instructions, troubleshooting,
 presentation lessons, code, live experiments, quizzes, and the hands-on workshop
 share one spatial graph and one guided camera.
@@ -171,3 +176,34 @@ commit secrets.
 
 The pinned Fiber Timer compatibility patch in `patches/` is applied by pnpm
 through `pnpm-workspace.yaml`; use `pnpm install --frozen-lockfile` to reproduce it.
+
+## Lecture and workshop
+
+The homepage asks **מה תרצו לעשות?** with exactly two diagonal branches: lecture
+on the left and hands-on workshop on the right. L00–L11 follow the supplied
+LECTURE_AND_WORKSHOP.md in vertical order. L01 contains the complete optional
+installation guide and troubleshooting. The lecture continues into W00–W10; the
+same exercises, hints, and manual checks are also accessible directly from home.
+Workshop content has two spatial entrances using shared content/progress, avoiding
+long empty connections while retaining immutable world coordinates.
+
+React Tasks follows the supplied reference: a light interface, three summary
+cards, creation/editing/completion/deletion, title search, status filters, and an
+opt-in category/storage bonus. First hints contain no code; full hints expose
+complete working files progressively. The final example uses the same source as
+the displayed solution. Lecture demos cover JSX, Props, State, snapshots, Tailwind,
+Effects and Cleanup. Manual checks are personal reports, not execution of student
+code. Previous installation/learning/workshop content remains in the reference
+area and the map; upgrading existing progress opens the new homepage and retains
+visited steps and exercise checks.
+
+Run `pnpm test:course` to check source synchronization and all eleven standalone
+React + TypeScript + Tailwind student builds (22 compiler/build checks). After
+editing `src/components/react-tasks`, regenerate the displayed sources with
+`node scripts/generate-course-sources.mjs`.
+
+Current course delivery validation: 144 unit tests, 255 Playwright scenarios
+(Chromium/WebKit, desktop/mobile/reduced motion, no retries), 22 new student
+compiler/Tailwind-build checks and 16 original workshop source checks passed.
+Formatting, lint, application/E2E typechecks and the production build passed.
+Physical Mac trackpad validation remains a separate manual check.
