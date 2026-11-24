@@ -1,3 +1,5 @@
+import { COURSE_IDS } from '@/content/courseGraph'
+import { CourseNode } from '../course/CourseNode'
 import { HandsOnEntryCard } from '../hands-on/HandsOnEntryCard'
 import { WorkshopScene } from '../hands-on/WorkshopScene'
 import { GRAPH_COPY } from '@/constants/graphNavigation'
@@ -29,6 +31,8 @@ export function GraphContent({
   node: WorldNode
   active?: boolean
 }) {
+  if (COURSE_IDS.has(node.id))
+    return <CourseNode id={node.sourceId ?? node.id} active={active} />
   const Demo =
     node.kind === 'lab'
       ? LAB_DEMOS[node.sourceId!]

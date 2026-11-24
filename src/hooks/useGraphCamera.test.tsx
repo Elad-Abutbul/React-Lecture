@@ -1,3 +1,4 @@
+import { resetLegacyGraph } from '@/test/legacyGraph'
 import { beforeEach, afterEach, test, expect, vi } from 'vitest'
 import { useRef } from 'react'
 import { render, act } from '@testing-library/react'
@@ -33,7 +34,7 @@ beforeEach(() => {
     return next
   })
   vi.stubGlobal('cancelAnimationFrame', (id: number) => callbacks.delete(id))
-  useGraphStore.getState().reset()
+  resetLegacyGraph()
 })
 afterEach(() => {
   vi.useRealTimers()

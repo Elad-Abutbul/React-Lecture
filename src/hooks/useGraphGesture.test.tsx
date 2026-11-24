@@ -1,3 +1,4 @@
+import { resetLegacyGraph } from '@/test/legacyGraph'
 import { beforeEach, afterEach, test, expect, vi } from 'vitest'
 import { render, fireEvent } from '@testing-library/react'
 import { StrictMode } from 'react'
@@ -22,7 +23,7 @@ function wheel(x: number, y: number, ms = 8) {
 beforeEach(() => {
   vi.useFakeTimers({ toFake: ['performance'] })
   localStorage.clear()
-  useGraphStore.getState().reset()
+  resetLegacyGraph()
 })
 afterEach(() => vi.useRealTimers())
 test('accumulates positive sub-two-pixel wheel samples into a RIGHT branch selection', () => {

@@ -1,3 +1,5 @@
+import { COURSE_GRAPH } from './courseGraph'
+import { COURSE_CONFIG } from '@/constants/course'
 import { HANDS_ON_GRAPH } from './handsOnGraph'
 import { JOURNEY_NODES } from './journey'
 import { LEARNING_SCENES } from './learningScenes'
@@ -332,7 +334,18 @@ createNode.edges = [
 ]
 nodes.push(...HANDS_ON_GRAPH)
 nodes.push(...learning)
-export const WORLD_GRAPH: readonly WorldNode[] = nodes
+export const LEGACY_GRAPH: readonly WorldNode[] = nodes.map((node) => ({
+  ...node,
+  position: {
+    x: node.position.x + COURSE_CONFIG.legacy.x,
+    y: node.position.y + COURSE_CONFIG.legacy.y,
+  },
+}))
+export const LEGACY_IDS = new Set(LEGACY_GRAPH.map((node) => node.id))
+export const WORLD_GRAPH: readonly WorldNode[] = [
+  ...COURSE_GRAPH,
+  ...LEGACY_GRAPH,
+]
 export const GRAPH_BY_ID = Object.fromEntries(
   WORLD_GRAPH.map((node) => [node.id, node]),
 )

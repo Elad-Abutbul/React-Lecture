@@ -24,7 +24,15 @@ export async function at(page: Page, id: string) {
 }
 export async function open(page: Page) {
   await page.goto('/')
+  await at(page, 'home')
+  // Exercise the preserved reference subgraph through the public map.
+  await revisit(page, 'יש לך Node.js מותקן?')
   await at(page, 'node')
+  // This is a public map arrival now; visual comparisons need a settled baseline.
+  await expect(page.locator('.graph-node-active .graph-reading')).toHaveCSS(
+    'opacity',
+    '1',
+  )
 }
 export async function travelTo(page: Page, id: string, direction = 1) {
   await expect

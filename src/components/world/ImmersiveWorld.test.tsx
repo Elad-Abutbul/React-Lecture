@@ -1,3 +1,4 @@
+import { resetLegacyGraph } from '@/test/legacyGraph'
 import { beforeEach, test, expect, vi } from 'vitest'
 import { render, screen, fireEvent, act } from '@testing-library/react'
 import { ImmersiveWorld } from './ImmersiveWorld'
@@ -5,7 +6,7 @@ import { useGraphStore } from '@/store/graph-store'
 vi.mock('@/hooks/useGraphCamera', () => ({ useGraphCamera: () => undefined }))
 beforeEach(() => {
   localStorage.clear()
-  useGraphStore.getState().reset()
+  resetLegacyGraph()
 })
 test('decisions use the same state machine without blocking warnings', () => {
   render(<ImmersiveWorld />)

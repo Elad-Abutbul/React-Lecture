@@ -62,7 +62,9 @@ export function sanitizeGraph(raw: unknown): GraphState {
       if (
         typeof id !== 'string' ||
         !GRAPH_BY_ID[id] ||
-        (!prefix.length && id !== GRAPH_NAV.start) ||
+        (!prefix.length &&
+          id !== GRAPH_NAV.start &&
+          id !== GRAPH_NAV.referenceStart) ||
         (prefix.length &&
           !GRAPH_BY_ID[prefix.at(-1)!].edges.some((edge) => edge.target === id))
       )
@@ -309,7 +311,13 @@ export const useGraphStore = create<GraphStore>()(
         observedPosition = motion.position
         return { ...current, ...clean }
       },
-      migrate: sanitizeGraph,
+      migrate: (raw) =>
+        sanitizeGraph({
+          ...(raw && typeof raw === 'object' ? raw : {}),
+          route: [GRAPH_NAV.start],
+          cursor: 0,
+          pendingChoices: [],
+        }),
     },
   ),
 )

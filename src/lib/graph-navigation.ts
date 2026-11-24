@@ -1,4 +1,4 @@
-import { GRAPH_BY_ID } from '@/content/worldGraph'
+import { GRAPH_BY_ID, LEGACY_IDS } from '@/content/worldGraph'
 import { GRAPH_NAV } from '@/constants/graphNavigation'
 export function extendPath(
   prefix: readonly string[],
@@ -21,7 +21,11 @@ export function extendPath(
   return route
 }
 export function pathTo(target: string) {
-  const queue = [[GRAPH_NAV.start] as string[]],
+  const queue = [
+      [
+        LEGACY_IDS.has(target) ? GRAPH_NAV.referenceStart : GRAPH_NAV.start,
+      ] as string[],
+    ],
     seen = new Set<string>()
   while (queue.length) {
     const route = queue.shift()!,

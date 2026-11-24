@@ -145,7 +145,11 @@ test('quiz choices are branches, explanatory feedback merges back, and reset rem
   await expect(page.locator('.graph-node-active')).toContainText('ההורה')
   await advance(page, 'quiz-snapshot')
   await page.getByRole('button', { name: 'איפוס הביקורים המקומיים' }).click()
-  await at(page, 'node')
+  await at(page, 'home')
+  await expect(page.locator('.graph-node-active h1')).toHaveText(
+    'מה תרצו לעשות?',
+  )
+  await expect(page.locator('.graph-branch')).toHaveCount(2)
   await expect(page.getByRole('dialog')).toHaveCount(0)
 })
 test('desktop and mobile cinematic stops remain readable with visible branch connections', async ({
