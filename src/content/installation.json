@@ -1,0 +1,27 @@
+[
+  {
+    "id": "I01",
+    "title": "מה צריך בכלל?",
+    "body": "- **VS Code** — עורך הקוד, המקום שבו כותבים קבצים.\n- **Terminal** — חלון להרצת פקודות, לא שפת תכנות.\n- **Node.js** — סביבת הרצה של JavaScript מחוץ לדפדפן, נדרשת לכלי הפיתוח.\n- **npm** — מנהל החבילות שמגיע בדרך כלל עם Node.js.\n- **Vite** — כלי שמייצר ומריץ פרויקט פיתוח; **React** היא הספרייה שבונה את הממשק.\nב־VS Code עץ הקבצים נמצא בצד, עורך הקוד במרכז והטרמינל בתחתית. פותחים אותו בתפריט Terminal → New Terminal."
+  },
+  {
+    "id": "I02",
+    "title": "בדיקת התקנה",
+    "body": "```bash\nnode -v\nnpm -v\n```\n\nהדגל `-v` מבקש מספר גרסה. אם מתקבלת שגיאת command not found / not recognized, התקינו Node.js LTS מהאתר הרשמי, סגרו ופתחו את הטרמינל ובדקו שוב.\n\nבפרויקט ההדגמה מותקן Vite 8.3.8, שמצהיר על דרישת Node הבאה:\n\n```text\n^20.19.0 || >=22.12.0\n```\n\nהסימן `||` מציין חלופות; תבנית `vite@latest` עשויה לדרוש גרסה שונה. בדקו את הדרישה העדכנית ב[מדריך Vite](https://vite.dev/guide/), והורידו גרסה מתאימה מ[אתר Node.js](https://nodejs.org/)."
+  },
+  {
+    "id": "I03",
+    "title": "פותחים תיקייה ויוצרים פרויקט React + TypeScript",
+    "body": "```bash\nnpm create vite@latest my-react-app -- --template react-ts\ncd my-react-app\nnpm install\nnpm run dev\n```\n\n**להסביר פקודה־פקודה, לא להציג ארבע פקודות בלי הסבר:**\n\n- `npm create vite@latest ...` — יוצר שלד פרויקט מתוך תבנית React ו־TypeScript.\n- `my-react-app` — שם התיקייה החדשה; אפשר לבחור שם אחר.\n- `-- --template react-ts` — מעביר ל־Vite בקשה להשתמש בתבנית React + TypeScript.\n- `cd my-react-app` — נכנסים לתיקיית הפרויקט.\n- `npm install` — קוראים את רשימת התלויות מ־`package.json` ומתקינים אותן ל־`node_modules`.\n- `npm run dev` — מפעילים שרת פיתוח. פותחים בדפדפן **את הכתובת שהטרמינל מציג**, בדרך כלל `http://localhost:5173`.\n- להפסיק את השרת: `Ctrl+C` בטרמינל שבו הוא פועל.\n\n**לא ללמד `npm i create`:** זו אינה הפקודה ליצירת פרויקט. `npm i` הוא קיצור של `npm install`.\n\n**תחנת עצירה:** ״אתם רואים את עמוד Vite + React?״ — המשתתף מסמן לעצמו בלבד. במסלול של בעיה: תיקיית עבודה שגויה, Node חסר/ישן, פורט תפוס, שגיאת הקלדה, קונסול שגיאות. הפתרונות מופיעים כהסבר, לא מבטיחים לתקן מחשב מרחוק."
+  },
+  {
+    "id": "I04",
+    "title": "מוסיפים Tailwind CSS v4",
+    "body": "```bash\nnpm install tailwindcss @tailwindcss/vite\n```\n\nבקובץ `vite.config.ts` מוסיפים את הפלאגין לצד פלאגין React:\n\n```ts\nimport { defineConfig } from 'vite'\nimport react from '@vitejs/plugin-react'\nimport tailwindcss from '@tailwindcss/vite'\n\nexport default defineConfig({\n  plugins: [react(), tailwindcss()],\n})\n```\n\nבקובץ `src/index.css`:\n\n```css\n@import \"tailwindcss\";\n```\n\nחשוב לוודא ש־`main.tsx` מייבא את `./index.css`. לבצע ריסטארט לשרת אם שינוי הגדרות Vite אינו נטען. אין ללמד `npx tailwindcss init -p` כשלב חובה ב־Tailwind v4: זה מתכון ישן שמתאים בעיקר לגרסאות קודמות.\n\n**בדיקת עשייה:** להחליף זמנית ב־`App.tsx`:\n\n```tsx\nexport default function App() {\n  return <h1 className=\"text-4xl font-bold text-cyan-500\">React עובד!</h1>\n}\n```\n\nאם הכותרת גדולה וציאנית, גם React וגם Tailwind עובדים. לאחר מכן ממשיכים עם אותו פרויקט להרצאה ולמעבדה."
+  },
+  {
+    "id": "I05",
+    "title": "מסיימים ומתחברים למסלול ההרצאה",
+    "body": "בדקו: node -v ו־npm -v מחזירים גרסאות; שרת הפיתוח מציג כתובת Local; כותרת Tailwind גדולה וציאנית. סגרו את ההדרכה והמשיכו בגלילה ל־L02 באותו מסלול. אין צורך ליצור פרויקט שוב."
+  }
+]

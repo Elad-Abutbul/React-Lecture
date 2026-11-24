@@ -1,7 +1,8 @@
+import { resetLegacyGraph } from '@/test/legacyGraph'
 import { beforeEach, test, expect } from 'vitest'
 import { useGraphStore, sanitizeGraph } from './graph-store'
 const store = () => useGraphStore.getState()
-beforeEach(() => store().reset())
+beforeEach(() => resetLegacyGraph())
 function backToStart() {
   let now = 0
   for (let n = 0; n < 12 && store().motion.position > 0; n++) {

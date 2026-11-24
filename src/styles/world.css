@@ -1464,3 +1464,86 @@ body:has(.unified-world) {
 .graph-branch[data-previous-choice='true'] {
   box-shadow: inset 0 0 0 1px #61dafb20;
 }
+
+/* Course content uses the existing world frame and its single reading surface. */
+.course-node {
+  display: grid;
+  gap: 1.25rem;
+  line-height: 1.8;
+  font-size: 1rem;
+}
+.course-node h2 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--color-react);
+  margin-bottom: 0.5rem;
+}
+.course-node ol,
+.course-node ul {
+  padding-inline-start: 1.5rem;
+}
+.course-node ol {
+  list-style: decimal;
+}
+.course-node ul {
+  list-style: disc;
+}
+.course-node details {
+  border: 1px solid #61dafb35;
+  padding: 0.8rem 1rem;
+  border-radius: 0.8rem;
+}
+.course-node summary {
+  cursor: pointer;
+  color: var(--color-violet);
+  padding: 0.3rem;
+}
+.course-node details[open] summary {
+  margin-bottom: 0.8rem;
+}
+.course-prose {
+  display: grid;
+  gap: 1rem;
+  overflow-wrap: anywhere;
+}
+.course-prose code {
+  color: var(--color-react);
+}
+.course-target {
+  margin: 0;
+}
+.course-target figcaption {
+  color: var(--color-muted);
+  font-size: 0.75rem;
+}
+.course-image-dialog {
+  position: fixed;
+  z-index: 60;
+  inset: 4vh 3vw;
+  background: var(--color-bg);
+  border: 1px solid #61dafb60;
+  border-radius: 1rem;
+  padding: 1rem;
+  overflow: auto;
+}
+.course-image-dialog img {
+  width: 100%;
+  max-height: 75vh;
+  object-fit: contain;
+}
+.task-manager h2,
+.task-manager h3 {
+  color: inherit;
+  margin: 0;
+}
+.task-manager button:focus-visible,
+.task-manager input:focus-visible,
+.task-manager select:focus-visible {
+  outline: 2px solid #6d28d9;
+  outline-offset: 3px;
+}
+.course-target {
+  width: 100%;
+  max-width: 32rem;
+  margin-inline: auto;
+}

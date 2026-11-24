@@ -1,7 +1,8 @@
 export const GRAPH_NAV = {
   bounds: { width: 120000, height: 160000 },
-  start: 'node',
-  storage: { key: 'react-world-navigation', version: 2 },
+  start: 'home',
+  referenceStart: 'node',
+  storage: { key: 'react-world-navigation', version: 3 },
   touchThreshold: 70,
   downKeys: ['ArrowDown', 'PageDown', ' '] as string[],
   upKeys: ['ArrowUp', 'PageUp'] as string[],

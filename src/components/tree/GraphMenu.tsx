@@ -1,3 +1,5 @@
+import { COURSE_GRAPH } from '@/content/courseGraph'
+import { COURSE_CONFIG } from '@/constants/course'
 import { useState, useRef } from 'react'
 import { Dialog } from 'radix-ui'
 import { GRAPH_BY_ID } from '@/content/worldGraph'
@@ -14,6 +16,17 @@ export function GraphMenu({
   const [query, setQuery] = useState('')
   const selected = useRef(false)
   const visited = useGraphStore((s) => s.visited)
+  const available = [
+    ...new Set([
+      ...COURSE_GRAPH.filter(
+        (node) => !node.id.startsWith(COURSE_CONFIG.lectureWorkshopPrefix),
+      ).map((node) => node.id),
+      COURSE_CONFIG.referenceEntry,
+      ...visited.filter(
+        (id) => !id.startsWith(COURSE_CONFIG.lectureWorkshopPrefix),
+      ),
+    ]),
+  ]
   return (
     <Dialog.Root
       open={open}
@@ -53,13 +66,13 @@ export function GraphMenu({
             />
           </label>
           <div className="graph-map-list">
-            {visited
+            {available
               .filter((id) =>
                 GRAPH_BY_ID[id]?.title
                   .toLowerCase()
                   .includes(query.toLowerCase()),
               )
-              .slice(-12)
+              .slice(0, 80)
               .map((id) => (
                 <Button
                   variant="outline"

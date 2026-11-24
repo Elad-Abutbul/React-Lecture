@@ -1,3 +1,4 @@
+import { resetLegacyGraph } from '@/test/legacyGraph'
 import { test, expect } from 'vitest'
 import {
   extendPath,
@@ -26,7 +27,7 @@ test('wheel line/page modes normalize without changing the physical direction', 
 })
 test('branch changes preserve visited history while replacing the active suffix, with safe corruption handling', () => {
   const store = () => useGraphStore.getState()
-  store().reset()
+  resetLegacyGraph()
   store().select('yes')
   store().jump('verify')
   store().select('done')
@@ -53,7 +54,7 @@ test('troubleshooting rejoins its original command and does not create a dead en
 })
 test('repeated retries rejoin the original stop without unbounded history or lost visited paths', () => {
   const store = () => useGraphStore.getState()
-  store().reset()
+  resetLegacyGraph()
   store().select('yes')
   store().jump('verify')
   for (let i = 0; i < 10; i++) {
@@ -88,7 +89,7 @@ test('migration expands a newly introduced single path rather than leaving a nav
 })
 test('selecting a branch only configures a path, without moving or visiting its target', () => {
   const store = () => useGraphStore.getState()
-  store().reset()
+  resetLegacyGraph()
   const before = store().motion.point
   store().select('yes')
   expect(store().cursor).toBe(0)
@@ -110,11 +111,11 @@ test('every directional edge actually moves the camera in its labelled direction
 })
 test('explicit map jumps and reset share the same continuous position without stale animations', () => {
   const store = () => useGraphStore.getState()
-  store().reset()
+  resetLegacyGraph()
   store().jump('verify')
   expect(store().motion.point.x).toBe(GRAPH_BY_ID.verify.position.x)
   store().jump('project')
   expect(store().motion.point.y).toBe(GRAPH_BY_ID.project.position.y)
-  store().reset()
+  resetLegacyGraph()
   expect(store().motion.position).toBe(0)
 })

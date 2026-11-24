@@ -1,3 +1,4 @@
+import { courseProgress } from '@/lib/course-progress'
 import { useLayoutEffect, useRef, type RefObject } from 'react'
 import { GRAPH_NAV } from '@/constants/graphNavigation'
 import { GRAPH_MOTION as C } from '@/constants/graphMotion'
@@ -114,9 +115,12 @@ export function useGraphCamera(
         '--path-glow',
         `${C.pathGlowMin + activeFocus * C.pathGlowRange}px`,
       )
-      const ratio = motion.path.length
-          ? motion.position / motion.path.length
-          : 0,
+      const ratio = courseProgress(
+          state.route,
+          motion.path.stops,
+          motion.position,
+          state.cursor,
+        ),
         percent = Math.round(ratio * 100)
       progress.current?.style.setProperty('--route-position', String(ratio))
       progress.current
