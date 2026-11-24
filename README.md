@@ -22,22 +22,26 @@ pnpm preview
 
 ## Navigation
 
-- A deliberate downward wheel gesture advances one logical stop. Upward gestures
-  return one stop. Camera travel and a quiet interval suppress repeated transitions
-  from a single gesture or its momentum.
+- Scroll input moves the camera proportionally along the selected path. Small
+  input moves a short distance; upward input reverses from the current position.
+  Only nearby content attracts the camera gently after input slows or stops;
+  incidental jitter holds the reader steady and deliberate input releases the stop.
 - At a decision, a horizontal or diagonal trackpad gesture chooses the physical
   left or right branch, including balanced downward diagonals. Mouse-wheel users
   can place the pointer over a branch region and scroll down. Clicking the region
   is optional.
-  Short input previews its direction/progress before committing.
+  Short input previews its direction/progress before choosing. A choice configures
+  the path without starting a flight; further scrolling controls travel.
 - Arrow keys and Enter/Space on a focused branch offer keyboard alternatives.
   Up/Down and PageUp/PageDown support reading and movement. Touch supports swipes
   and branch taps.
 - Long content has one focusable reading surface. Scroll through it first; a new
-  deliberate gesture at its boundary changes the stop. The document itself does
+  deliberate gesture at its boundary continues movement. The document itself does
   not compete for scrolling.
 - The compact trail identifies the current path. The searchable map can revisit
   older explored branches. Choices change freely without confirmation dialogs.
+  Returning to a decision restores the full original question and both branches;
+  its previous choice is highlighted but requires a fresh selection to continue.
 - The bottom bar measures camera position in the exposed path. Visits and
   scrolling do **not** certify that commands or exercises worked on another computer.
 
@@ -139,7 +143,9 @@ momentum, backward navigation, branch switching, commands, existing projects,
 workshop entry, source copying, persistence, long reading, SVG alignment, resizing,
 keyboard focus, RTL overflow, and automated WCAG checks through axe.
 
-Current QA fixes and the physical macOS trackpad checklist are in
+Continuous movement and proximity-driven text arrival are documented in
+[docs/continuous-navigation.md](docs/continuous-navigation.md). Historical
+QA fixes and the physical macOS trackpad checklist are in
 [docs/qa-navigation-followup.md](docs/qa-navigation-followup.md). The earlier
 [regression investigation](docs/navigation-debug.md) is retained as history.
 Synthetic traces and browser wheel injection do not verify physical trackpad
