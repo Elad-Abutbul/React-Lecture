@@ -35,7 +35,9 @@ test('file steps and official resources have no horizontal overflow or nested sc
       () => document.documentElement.scrollWidth <= innerWidth,
     ),
   ).toBe(true)
-  expect(await page.locator('.graph-reading').count()).toBe(1)
+  expect(await page.locator('.graph-node-active .graph-reading').count()).toBe(
+    1,
+  )
   await revisit(page, 'מכאן ממשיכים לבנות')
   await at(page, 'resources')
   await expect(

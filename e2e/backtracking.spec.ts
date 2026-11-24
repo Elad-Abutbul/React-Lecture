@@ -7,6 +7,7 @@ import {
   settled,
   seedVisited,
   revisit,
+  travelTo,
 } from './helpers'
 test('backtracking reverses the camera and progress, and branch changes retain the visited archive', async ({
   page,
@@ -56,6 +57,7 @@ test('single-path nodes advance and return by native scrolling without changing 
   await branch(page, 'mac')
   await at(page, 'mac')
   await roll(page)
+  await travelTo(page, 'verify')
   await at(page, 'verify')
   await roll(page, -1)
   await at(page, 'mac')
@@ -63,29 +65,34 @@ test('single-path nodes advance and return by native scrolling without changing 
   await settled(page)
   await at(page, 'mac')
 })
-test('a rapid wheel stream moves exactly one stop and the next deliberate gesture can return', async ({
+test('a rapid wheel stream follows the configured path without creating a choice beyond its endpoint', async ({
   page,
 }) => {
   await seedVisited(page, ['existing'])
   await open(page)
   await revisit(page, 'פותחים את הפרויקט הקיים')
-  await at(page, 'existing')
-  await page.mouse.move(
-    page.viewportSize()!.width / 2,
-    page.viewportSize()!.height * 0.3,
-  )
-  await page.mouse.wheel(0, 1400)
-  await page.evaluate(() => {
-    for (let i = 0; i < 20; i++)
+  await page.evaluate(async () => {
+    for (let i = 0; i < 12; i++) {
       window.dispatchEvent(
         new WheelEvent('wheel', {
-          deltaY: 1400,
+          deltaY: 80,
           bubbles: true,
           cancelable: true,
         }),
       )
+      await new Promise((r) => setTimeout(r, 16))
+    }
   })
-  await at(page, 'scripts')
+  const distance = Number(
+    await page.locator('.world-stage').getAttribute('data-camera-distance'),
+  )
+  await page.waitForTimeout(150)
+  expect(
+    Number(
+      await page.locator('.world-stage').getAttribute('data-camera-distance'),
+    ),
+  ).toBeGreaterThanOrEqual(distance)
+  await travelTo(page, 'scripts')
   await roll(page, -1)
   await at(page, 'existing')
 })
@@ -102,11 +109,13 @@ test('touch swipe and keyboard alternatives use the same graph', async ({
     })
     await page.dispatchEvent('main', 'touchend', { touches: [] })
   } else await page.keyboard.press('ArrowRight')
+  await travelTo(page, 'verify')
   await at(page, 'verify')
   await roll(page, -1)
   await at(page, 'node')
   await page.getByRole('button', { name: /^לא · התקנת Node.js/ }).focus()
   await page.keyboard.press('Enter')
+  await travelTo(page, 'os')
   await at(page, 'os')
 })
 test('troubleshooting reconnects to the exact failed command through a continuous path', async ({
@@ -121,7 +130,7 @@ test('troubleshooting reconnects to the exact failed command through a continuou
   await at(page, 'verify-help-1')
   await roll(page)
   await at(page, 'verify')
-  await expect(page.locator('[data-command="NODE_VERSION"] code')).toHaveText(
-    'node -v',
-  )
+  await expect(
+    page.locator('.graph-node-active [data-command="NODE_VERSION"] code'),
+  ).toHaveText('node -v')
 })

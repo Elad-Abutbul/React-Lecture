@@ -1,7 +1,7 @@
 import { test, expect, type Page, type TestInfo } from '@playwright/test'
 import { join } from 'node:path'
 import { GRAPH_GESTURE } from '../src/constants/graphNavigation'
-import { open, at, settled, seedVisited } from './helpers'
+import { open, at, settled, seedVisited, travelTo } from './helpers'
 const errorsByPage = new WeakMap<Page, string[]>()
 test.beforeEach(async ({ page }) => {
   const errors: string[] = []
@@ -80,6 +80,16 @@ for (const [x, y, target] of [
     await page.mouse.move(size.width / 2, size.height * 0.65)
     await screenshot(page, info, `diagonal-${x}-before`)
     await page.mouse.wheel(x, y)
+    const state = await page.evaluate(
+      () => JSON.parse(localStorage.getItem('react-world-navigation')!).state,
+    )
+    expect(state.route[1]).toBe(target)
+    expect(
+      Number(
+        await page.locator('.world-stage').getAttribute('data-camera-distance'),
+      ),
+    ).toBe(0)
+    await travelTo(page, target)
     await at(page, target)
     await ready(page)
     await screenshot(page, info, `diagonal-${x}-after`)
@@ -101,7 +111,9 @@ test('QA-02 branch rectangles do not cover the verify reading surface', async ({
   await seedVisited(page, ['verify'])
   await open(page)
   await visit(page, 'verify')
-  const reader = (await page.locator('.graph-reading').boundingBox())!
+  const reader = (await page
+    .locator('.graph-node-active .graph-reading')
+    .boundingBox())!
   const branches = await page.locator('.graph-branch').evaluateAll((buttons) =>
     buttons.map((e) => {
       const r = e.getBoundingClientRect()
@@ -123,7 +135,7 @@ test('QA-02 scrolling over both sides of code reads instructions without selecti
   await open(page)
   for (const side of ['right', 'left'] as const) {
     await visit(page, 'verify')
-    const reader = page.locator('.graph-reading'),
+    const reader = page.locator('.graph-node-active .graph-reading'),
       box = (await reader.boundingBox())!
     await reader.evaluate((element) => {
       element.scrollTop = 0
@@ -244,7 +256,15 @@ for (const [x, target] of [
     const travel = packets.reduce((sum, packet) => sum + packet.x, 0)
     expect(Math.sign(travel)).toBe(Math.sign(x))
     if (Math.abs(travel) >= GRAPH_GESTURE.branchThreshold)
-      await at(page, target)
+      await expect
+        .poll(() =>
+          page.evaluate(
+            () =>
+              JSON.parse(localStorage.getItem('react-world-navigation')!).state
+                .route[1],
+          ),
+        )
+        .toBe(target)
     else {
       await expect(
         page.locator(x > 0 ? '.branch-right' : '.branch-left'),
@@ -272,6 +292,7 @@ test('QA-03 short intent is visible, expires cleanly, and five packets select on
   await expect(branch).not.toHaveAttribute('data-gesture-intent', 'true')
   await at(page, 'node')
   for (let i = 0; i < 5; i++) await page.mouse.wheel(80, 0)
+  await travelTo(page, 'verify')
   await at(page, 'verify')
   await page.waitForTimeout(300)
   await expect(page.locator('[data-gesture-intent]')).toHaveCount(0)
@@ -313,15 +334,18 @@ test('QA-01/03 realistic packet traces preserve one stop, smooth reversal and br
   await open(page)
   await ready(page)
   await realisticTrace(page, 'right')
+  await travelTo(page, 'verify')
   await at(page, 'verify')
   await ready(page)
   await expect(page.locator('[data-gesture-intent]')).toHaveCount(0)
   await page.waitForTimeout(300)
   await realisticTrace(page, 'up')
+  await travelTo(page, 'node', -1)
   await at(page, 'node')
   await ready(page)
   await page.waitForTimeout(300)
   await realisticTrace(page, 'left')
+  await travelTo(page, 'os')
   await at(page, 'os')
   await ready(page)
   const state = await page.evaluate(
@@ -342,13 +366,16 @@ test('QA-01 near-diagonal intent ignores the opposite hovered branch', async ({
   await ready(page)
   await page.locator('[data-edge-id="no"]').hover()
   await page.mouse.wheel(300, 350)
+  await travelTo(page, 'verify')
   await at(page, 'verify')
   await ready(page)
   await page.keyboard.press('ArrowUp')
+  await travelTo(page, 'node', -1)
   await at(page, 'node')
   await ready(page)
   await page.locator('[data-edge-id="yes"]').hover()
   await page.mouse.wheel(-300, 350)
+  await travelTo(page, 'os')
   await at(page, 'os')
 })
 
@@ -371,8 +398,7 @@ test('QA-03 controlled short packets accumulate across 350ms pauses and commit o
       if (i < 2) await new Promise((resolve) => setTimeout(resolve, 350))
     }
   })
-  await at(page, 'verify')
-  await page.waitForTimeout(300)
+  await travelTo(page, 'verify')
   await at(page, 'verify')
   await screenshot(page, info, 'paused-intent-committed-once')
 })

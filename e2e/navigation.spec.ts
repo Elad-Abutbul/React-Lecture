@@ -43,9 +43,9 @@ test('mouse-wheel-only Windows installation reaches commands and learning withou
   await at(page, 'project')
   await branch(page, 'new')
   await at(page, 'create')
-  await expect(page.locator('[data-command="CREATE_REACT"] code')).toHaveText(
-    'npm create vite@latest my-app -- --template react-ts',
-  )
+  await expect(
+    page.locator('.graph-node-active [data-command="CREATE_REACT"] code'),
+  ).toHaveText('npm create vite@latest my-app -- --template react-ts')
   await branch(page, 'installation')
   await at(page, 'create-result')
   await branch(page, 'done')
@@ -68,11 +68,12 @@ test('mouse-wheel-only Windows installation reaches commands and learning withou
   await at(page, 'declarative')
   await expect(page.locator('.graph-node-active')).toContainText('React')
 })
-test('real horizontal and diagonal wheel intent ignores small movement and suppresses momentum', async ({
+test('horizontal and diagonal intent selects the route and subsequent packets control movement', async ({
   page,
 }) => {
   await open(page)
-  await page.mouse.move(600, 300)
+  const brand = (await page.locator('.brand').boundingBox())!
+  await page.mouse.move(brand.x + brand.width / 2, brand.y + brand.height / 2)
   await page.mouse.wheel(35, 0)
   await page.waitForTimeout(280)
   await at(page, 'node')
@@ -87,9 +88,25 @@ test('real horizontal and diagonal wheel intent ignores small movement and suppr
       }),
     ),
   )
-  await at(page, 'verify')
-  await page.waitForTimeout(280)
-  await at(page, 'verify')
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () =>
+          JSON.parse(localStorage.getItem('react-world-navigation')!).state
+            .choices.node,
+      ),
+    )
+    .toBe('yes')
+  await expect
+    .poll(() =>
+      page.locator('.world-stage').getAttribute('data-camera-distance'),
+    )
+    .not.toBe('0')
+  expect(
+    Number(
+      await page.locator('.world-stage').getAttribute('data-camera-distance'),
+    ),
+  ).toBeLessThan(1000)
 })
 test('exact command copying remains a utility and does not navigate', async ({
   page,

@@ -10,6 +10,7 @@ import {
   revisit,
   settled,
   roll,
+  travelTo,
 } from './helpers'
 async function audit(page: Parameters<typeof open>[0]) {
   await expect(
@@ -59,7 +60,7 @@ test('camera targets and persistent world-space paths remain aligned after resiz
   await open(page)
   await revisit(page, 'פותחים את הפרויקט הקיים')
   await at(page, 'existing')
-  await expect(page.locator('.graph-reading')).toBeFocused()
+  await expect(page.locator('.graph-node-active .graph-reading')).toBeFocused()
   const camera = await page.locator('.world-stage').evaluate((element) => ({
     x: Number(element.getAttribute('data-camera-x')),
     y: Number(element.getAttribute('data-camera-y')),
@@ -94,7 +95,9 @@ test('camera targets and persistent world-space paths remain aligned after resiz
   )
   await page.waitForTimeout(100)
   await settled(page)
-  const box = (await page.locator('.graph-reading').boundingBox())!,
+  const box = (await page
+      .locator('.graph-node-active .graph-reading')
+      .boundingBox())!,
     viewport = page.viewportSize()!
   expect(Math.abs(box.x + box.width / 2 - viewport.width / 2)).toBeLessThan(2)
   expect(box.y).toBeGreaterThan(80)
@@ -120,9 +123,9 @@ test('macOS and an existing project use scroll-only instructions and outcome bra
   await branch(page, 'existing')
   await at(page, 'existing')
   await advance(page, 'scripts')
-  await expect(page.locator('[data-command="SCRIPTS"] code')).toHaveText(
-    'npm run',
-  )
+  await expect(
+    page.locator('.graph-node-active [data-command="SCRIPTS"] code'),
+  ).toHaveText('npm run')
   await advance(page, 'scripts-result')
   await branch(page, 'done')
   await at(page, 'existing-run')
@@ -176,11 +179,14 @@ test('desktop and mobile cinematic stops remain readable with visible branch con
     })
   await branch(page, 'yes')
   await at(page, 'verify')
-  await expect(page.locator('.graph-reading')).toBeFocused()
-  const frame = (await page.locator('.graph-reading').boundingBox())!
+  await expect(page.locator('.graph-node-active .graph-reading')).toBeFocused()
+  const frame = (await page
+    .locator('.graph-node-active .graph-reading')
+    .boundingBox())!
   expect(frame.y).toBeGreaterThan(100)
   await roll(page, -1)
   await at(page, 'node')
   await page.mouse.click(size.width * 0.12, size.height * 0.7)
+  await travelTo(page, 'os')
   await at(page, 'os')
 })
