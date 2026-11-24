@@ -16,7 +16,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "preview": "vite preview",
-    "test:workshop": "node scripts/validate-workshop.mjs"
+    "test:workshop": "node scripts/validate-workshop.mjs",
+    "test:course": "node scripts/generate-course-sources.mjs --check && node scripts/validate-course.mjs"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.9",
