@@ -26,6 +26,7 @@ export default defineConfig({
       testMatch: [
         '**/gesture-regression.spec.ts',
         '**/continuous-arrival.spec.ts',
+        '**/course.spec.ts',
         '**/continuous-visual.spec.ts',
         '**/magnetic.spec.ts',
         '**/revisited-decisions.spec.ts',
