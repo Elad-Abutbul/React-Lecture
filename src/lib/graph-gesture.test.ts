@@ -107,7 +107,10 @@ test('horizontal intent exits reading, and reading momentum cannot leak to anoth
     kind: 'navigate',
     direction: 'right',
   })
-  expect(s.sample(0, 400, { stop: 'b', canReadDown: true }).kind).toBe('none')
+  expect(s.sample(0, 400, { stop: 'b', canReadDown: true })).toEqual({
+    kind: 'read',
+    delta: 400,
+  })
   expect(s.sample(0, 40, { stop: 'b', canReadDown: true }, 300)).toEqual({
     kind: 'read',
     delta: 40,
@@ -160,3 +163,56 @@ test.each([1, -1])(
     expect(expired.engine.preview()?.progress).toBe(1 / 3)
   },
 )
+
+test('arrival momentum can read content without becoming a new branch decision', () => {
+  const engine = createGraphGesture()
+  engine.sample({
+    x: 0,
+    y: 240,
+    at: 0,
+    stop: 'before',
+    transitioning: true,
+    branching: false,
+    canReadUp: false,
+    canReadDown: false,
+  })
+  expect(
+    engine.sample({
+      x: 0,
+      y: 50,
+      at: 16,
+      stop: 'after',
+      transitioning: false,
+      branching: true,
+      canReadUp: false,
+      canReadDown: true,
+    }),
+  ).toEqual({ kind: 'read', delta: 50 })
+})
+
+test('a classifier change at arrival cannot turn the same diagonal momentum into a second choice', () => {
+  const engine = createGraphGesture()
+  const sample = (
+    stop: string,
+    at: number,
+    between: boolean,
+    branching: boolean,
+    reading = false,
+  ) =>
+    engine.sample({
+      x: 600,
+      y: 650,
+      at,
+      stop,
+      transitioning: between,
+      branching,
+      canReadDown: reading,
+      canReadUp: false,
+    })
+  sample('windows', 0, true, false)
+  sample('verify', 32, true, false)
+  expect(sample('verify', 64, false, false, true).kind).toBe('read')
+  expect(sample('verify', 96, false, true, true).kind).toBe('none')
+  expect(engine.preview()).toBeNull()
+  expect(sample('verify', 400, false, true).kind).toBe('navigate')
+})

@@ -24,16 +24,14 @@ export const GRAPH_NAV = {
     approachY: 320,
     endY: 500,
   },
-  arrival: { duration: 0.55, stagger: 0.1, pulse: 1.4 },
   branchX: 850,
   ghostScale: 0.4,
-  camera: { duration: 0.85, ease: 'power2.inOut' },
   ignore:
     'input, textarea, select, [contenteditable="true"], [role="dialog"], [role="tablist"], [data-gesture-ignore]',
 } as const
 export const GRAPH_COPY = {
-  scroll: 'גלילה מכוונת: עצירה אחת למטה · עצירה אחת למעלה',
-  branch: 'בחרו ענף: החליקו לכיוונו, או מקמו עליו את הסמן וגללו למטה',
+  scroll: 'גללו כדי לנוע לאורך הנתיב · למעלה חוזרים בהדרגה',
+  branch: 'בחרו ענף בהחלקה לכיוונו או בלחיצה · ואז גללו כדי לנוע לאורכו',
   touch: 'החליקו לכיוון הענף או געו באזור שלו',
   intentRight: 'ממשיכים להחליק ימינה',
   intentLeft: 'ממשיכים להחליק שמאלה',

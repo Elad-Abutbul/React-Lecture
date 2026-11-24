@@ -3,20 +3,20 @@ import { persist, createJSONStorage } from 'zustand/middleware'
 import { GRAPH_NAV } from '@/constants/graphNavigation'
 import { GRAPH_BY_ID } from '@/content/worldGraph'
 import { extendPath, pathTo } from '@/lib/graph-navigation'
+import { createGraphMotion, type GraphMotion } from '@/lib/graph-motion'
+import { GRAPH_MOTION } from '@/constants/graphMotion'
 type GraphState = {
   route: string[]
   cursor: number
   visited: string[]
   choices: Record<string, string>
   traversed: string[]
+  pendingChoices: string[]
 }
 type GraphStore = GraphState & {
+  motion: GraphMotion
+  synchronize: () => void
   revision: number
-  transitioning: boolean
-  beginTransition: () => void
-  arrive: (revision?: number) => void
-  step: (direction: number) => void
-  visit: (index: number) => void
   select: (edgeId: string) => void
   jump: (id: string) => void
   reset: () => void
@@ -38,6 +38,7 @@ function initial(): GraphState {
         visited: route.slice(0, cursor + 1),
         choices: legacy.choices,
         traversed: connections(route, cursor),
+        pendingChoices: [],
       }
     }
   } catch {
@@ -49,6 +50,7 @@ function initial(): GraphState {
     visited: [GRAPH_NAV.start],
     choices: {},
     traversed: [],
+    pendingChoices: [],
   }
 }
 export function sanitizeGraph(raw: unknown): GraphState {
@@ -102,85 +104,124 @@ export function sanitizeGraph(raw: unknown): GraphState {
       ...route.slice(0, cursor + 1),
     ]),
     traversed: unique([...archived, ...connections(route, cursor)]),
+    pendingChoices: unique([
+      ...(Array.isArray(data.pendingChoices)
+        ? data.pendingChoices.filter(
+            (id): id is string =>
+              typeof id === 'string' &&
+              route.includes(id) &&
+              GRAPH_BY_ID[id].edges.length > 1,
+          )
+        : []),
+      ...(GRAPH_BY_ID[route[cursor]].edges.length > 1 && route[cursor + 1]
+        ? [route[cursor]]
+        : []),
+    ]),
   }
 }
+const starting = initial()
+const motion = createGraphMotion(starting.route, starting.cursor)
+let observedPosition = motion.position
 export const useGraphStore = create<GraphStore>()(
   persist(
     (set, get) => ({
-      ...initial(),
-      revision: 0,
-      transitioning: false,
-      beginTransition: () => set({ transitioning: true }),
-      arrive: (revision) =>
-        set((state) =>
-          revision === undefined || revision === state.revision
-            ? { transitioning: false }
-            : state,
-        ),
-      step: (direction) =>
-        set((state) => {
-          if (state.transitioning) return state
-          let cursor = Math.max(
-            0,
-            Math.min(
-              state.route.length - 1,
-              state.cursor + Math.sign(direction),
-            ),
+      ...starting,
+      motion,
+      synchronize: () => {
+        const state = get()
+        const position = motion.position,
+          path = motion.path,
+          cursor = path.nearest(position),
+          reached: string[] = []
+        for (let i = 0; i < path.stops.length; i++) {
+          const stop = path.stops[i]
+          if (
+            Math.abs(stop - position) <= GRAPH_MOTION.arrivalRadius ||
+            (stop > Math.min(position, observedPosition) &&
+              stop < Math.max(position, observedPosition))
           )
-          if (cursor === state.cursor) return state
-          const target = state.route[cursor],
-            traversed =
-              direction > 0
-                ? unique([
-                    ...state.traversed,
-                    `${state.route[state.cursor]}::${target}`,
-                  ])
-                : state.traversed
-          let route = state.route,
-            choices = state.choices
-          // A retry rejoins the existing node rather than indefinitely appending duplicate history.
-          const earlier = route.indexOf(target)
-          if (direction > 0 && earlier < state.cursor) {
-            route = extendPath(route.slice(0, earlier + 1))
-            cursor = earlier
+            reached.push(state.route[i])
+        }
+        const pendingChoices =
+          position < observedPosition
+            ? unique([
+                ...state.pendingChoices,
+                ...state.route.filter(
+                  (id, index) =>
+                    state.visited.includes(id) &&
+                    GRAPH_BY_ID[id].edges.length > 1 &&
+                    path.stops[index] >=
+                      position - GRAPH_MOTION.decisionRadius &&
+                    path.stops[index] <=
+                      observedPosition + GRAPH_MOTION.decisionRadius,
+                ),
+              ])
+            : state.pendingChoices
+        observedPosition = position
+        const visited = unique([...state.visited, ...reached])
+        const traversed = unique([
+          ...state.traversed,
+          ...connections(
+            state.route,
+            Math.abs(path.stops[cursor] - position) <=
+              GRAPH_MOTION.arrivalRadius
+              ? cursor
+              : Math.floor(motion.point.index),
+          ),
+        ])
+        // A completed retry rejoins the existing stop without extending history forever.
+        const id = state.route[cursor],
+          earlier = state.route.indexOf(id)
+        if (
+          earlier < cursor &&
+          Math.abs(path.stops[cursor] - position) <= GRAPH_MOTION.settleDistance
+        ) {
+          const route = extendPath(state.route.slice(0, earlier + 1)),
             choices = { ...state.choices }
-            const valid = new Set(route)
-            for (const id of Object.keys(choices))
-              if (!valid.has(id) || id === target) delete choices[id]
-          }
-          return {
-            cursor,
+          for (const key of Object.keys(choices))
+            if (!route.includes(key) || key === id) delete choices[key]
+          motion.configure(route, earlier)
+          observedPosition = motion.position
+          set({
             route,
+            cursor: earlier,
             choices,
+            visited,
             traversed,
-            visited: unique([...state.visited, target]),
-            transitioning: true,
+            pendingChoices: pendingChoices.filter((id) => route.includes(id)),
             revision: state.revision + 1,
-          }
-        }),
-      visit: (index) =>
-        set((state) => {
-          const cursor = Math.max(0, Math.min(state.route.length - 1, index)),
-            id = state.route[cursor]
-          return { cursor, visited: unique([...state.visited, id]) }
-        }),
+          })
+          return
+        }
+        if (
+          cursor === state.cursor &&
+          visited.length === state.visited.length &&
+          traversed.length === state.traversed.length &&
+          pendingChoices.length === state.pendingChoices.length
+        )
+          return
+        set({ cursor, visited, traversed, pendingChoices })
+      },
+      revision: 0,
       select: (edgeId) =>
         set((state) => {
-          if (state.transitioning) return state
           const node = GRAPH_BY_ID[state.route[state.cursor]],
             edge = node?.edges.find((edge) => edge.id === edgeId)
-          if (!edge) return state
-          const traversed = unique([
-            ...state.traversed,
-            `${node.id}::${edge.target}`,
-          ])
-          if (state.route[state.cursor + 1] === edge.target)
+          if (
+            !edge ||
+            Math.abs(motion.position - motion.path.stops[state.cursor]) >
+              GRAPH_MOTION.decisionRadius
+          )
+            return state
+          if (state.route[state.cursor + 1] === edge.target) {
+            motion.configure(state.route)
+            observedPosition = motion.position
             return {
-              cursor: state.cursor + 1,
-              traversed,
-              transitioning: true,
-              revision: state.revision + 1,
+              pendingChoices: state.pendingChoices.filter(
+                (id) => id !== node.id,
+              ),
             }
+          }
           const route = extendPath([
               ...state.route.slice(0, state.cursor + 1),
               edge.target,
@@ -189,13 +230,14 @@ export const useGraphStore = create<GraphStore>()(
             valid = new Set(route)
           for (const id of Object.keys(choices))
             if (!valid.has(id)) delete choices[id]
+          motion.configure(route)
+          observedPosition = motion.position
           return {
             route,
             choices,
-            traversed,
-            cursor: state.cursor + 1,
-            visited: unique([...state.visited, edge.target]),
-            transitioning: true,
+            pendingChoices: state.pendingChoices.filter(
+              (id) => id !== node.id && valid.has(id),
+            ),
             revision: state.revision + 1,
           }
         }),
@@ -203,9 +245,19 @@ export const useGraphStore = create<GraphStore>()(
         const state = get(),
           index = state.route.indexOf(id)
         if (index >= 0) {
+          motion.configure(state.route, index)
+          observedPosition = motion.position
           set({
             cursor: index,
-            transitioning: true,
+            pendingChoices:
+              GRAPH_BY_ID[id].edges.length > 1
+                ? unique([...state.pendingChoices, id])
+                : state.pendingChoices,
+            visited: unique([...state.visited, id]),
+            traversed: unique([
+              ...state.traversed,
+              ...connections(state.route, index),
+            ]),
             revision: state.revision + 1,
           })
           return
@@ -214,34 +266,49 @@ export const useGraphStore = create<GraphStore>()(
         const prefix = pathTo(id),
           route = extendPath(prefix),
           clean = sanitizeGraph({ ...state, route, cursor: prefix.length - 1 })
-        set({ ...clean, transitioning: true, revision: state.revision + 1 })
+        motion.configure(route, clean.cursor)
+        observedPosition = motion.position
+        set({ ...clean, revision: state.revision + 1 })
       },
-      reset: () =>
+      reset: () => {
+        motion.configure(extendPath([GRAPH_NAV.start]), 0)
+        observedPosition = motion.position
         set((state) => ({
           route: extendPath([GRAPH_NAV.start]),
           cursor: 0,
           visited: [GRAPH_NAV.start],
           choices: {},
           traversed: [],
-          transitioning: false,
+          pendingChoices: [],
           revision: state.revision + 1,
-        })),
+        }))
+      },
     }),
     {
       name: GRAPH_NAV.storage.key,
       version: GRAPH_NAV.storage.version,
       storage: createJSONStorage(() => localStorage),
-      partialize: ({ route, cursor, visited, choices, traversed }) => ({
+      partialize: ({
         route,
         cursor,
         visited,
         choices,
         traversed,
+        pendingChoices,
+      }) => ({
+        route,
+        cursor,
+        visited,
+        choices,
+        traversed,
+        pendingChoices,
       }),
-      merge: (persisted, current) => ({
-        ...current,
-        ...sanitizeGraph(persisted),
-      }),
+      merge: (persisted, current) => {
+        const clean = sanitizeGraph(persisted)
+        motion.configure(clean.route, clean.cursor)
+        observedPosition = motion.position
+        return { ...current, ...clean }
+      },
       migrate: sanitizeGraph,
     },
   ),

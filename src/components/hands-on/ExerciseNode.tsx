@@ -11,7 +11,13 @@ import { CodeSnippet } from './CodeSnippet'
 import { InstructorMode } from './InstructorMode'
 import { WorkshopTaskBoard } from './WorkshopTaskBoard'
 import { Button } from '../ui/button'
-export function ExerciseNode({ id }: { id: string }) {
+export function ExerciseNode({
+  id,
+  active = true,
+}: {
+  id: string
+  active?: boolean
+}) {
   const unit = HANDS_ON_BY_ID[id],
     plan = useHandsOnStore((s) => s.plan),
     hints = useHandsOnStore((s) => s.hints[id] ?? 0),
@@ -25,8 +31,8 @@ export function ExerciseNode({ id }: { id: string }) {
     ),
     [filename, setFilename] = useState('')
   useEffect(() => {
-    useHandsOnStore.getState().visit(id)
-  }, [id])
+    if (active) useHandsOnStore.getState().visit(id)
+  }, [id, active])
   if (!unit) return null
   const planIds: readonly string[] = HANDS_ON.plans[plan]
   const timing = workshopTiming(id, plan),

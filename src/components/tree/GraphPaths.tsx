@@ -1,6 +1,7 @@
 import type { CSSProperties } from 'react'
 import { useGraphStore } from '@/store/graph-store'
 import { WORLD_GRAPH, GRAPH_BY_ID } from '@/content/worldGraph'
+import { graphCurveD } from '@/lib/graph-path'
 import { GRAPH_NAV } from '@/constants/graphNavigation'
 export function GraphPaths({ route }: { route: readonly string[] }) {
   const traversed = useGraphStore((state) => state.traversed)
@@ -18,7 +19,7 @@ export function GraphPaths({ route }: { route: readonly string[] }) {
           const index = route.findIndex(
             (id, i) => id === node.id && route[i + 1] === edge.target,
           )
-          const d = `M ${node.position.x} ${node.position.y} C ${node.position.x} ${(node.position.y + target.y) / 2} ${target.x} ${(node.position.y + target.y) / 2} ${target.x} ${target.y}`
+          const d = graphCurveD(node.position, target)
           return (
             <g key={`${node.id}-${edge.id}`}>
               <path

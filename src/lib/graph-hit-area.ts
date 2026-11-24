@@ -1,3 +1,4 @@
+import { GRAPH_BRANCH_LAYOUT } from '@/constants/graphNavigation'
 export function pointInReading(
   element: HTMLElement | null,
   x: number,
@@ -23,4 +24,14 @@ export function readingOwnsWheel(
     ((event.target instanceof Node && element.contains(event.target)) ||
       pointInReading(element, event.clientX, event.clientY))
   )
+}
+
+export function measureBranchLayout(
+  container: HTMLElement,
+  hits: HTMLElement,
+  reading: HTMLElement,
+) {
+  const bounds = container.getBoundingClientRect(),
+    content = reading.getBoundingClientRect()
+  hits.style.top = `${Math.ceil(Math.max(bounds.height * GRAPH_BRANCH_LAYOUT.topRatio, content.bottom - bounds.top + GRAPH_BRANCH_LAYOUT.readingGap))}px`
 }

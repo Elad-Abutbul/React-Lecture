@@ -32,12 +32,9 @@ export function GraphMenu({
             event.preventDefault()
             if (selected.current) {
               selected.current = false
-              if (!useGraphStore.getState().transitioning)
-                document
-                  .querySelector<HTMLElement>(
-                    '.graph-node-active .graph-reading',
-                  )
-                  ?.focus({ preventScroll: true })
+              document
+                .querySelector<HTMLElement>('.graph-node-active .graph-reading')
+                ?.focus({ preventScroll: true })
             } else document.getElementById('tree-map-trigger')?.focus()
           }}
         >

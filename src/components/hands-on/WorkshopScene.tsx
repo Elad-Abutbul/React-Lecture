@@ -5,11 +5,18 @@ import { ExerciseNode } from './ExerciseNode'
 import { CleanupDemo } from '../demos/CleanupDemo'
 import { CLEANUP_SOLUTION } from '@/content/handsOnSolutions'
 import { CodeSnippet } from './CodeSnippet'
-export function WorkshopScene({ id }: { id: string }) {
+export function WorkshopScene({
+  id,
+  active = true,
+}: {
+  id: string
+  active?: boolean
+}) {
   const plan = id === 'plan-90' ? 90 : 120
   useEffect(() => {
-    if (id.startsWith('plan-')) useHandsOnStore.getState().setPlan(plan)
-  }, [id, plan])
+    if (active && id.startsWith('plan-'))
+      useHandsOnStore.getState().setPlan(plan)
+  }, [id, plan, active])
   if (id === 'cleanup')
     return (
       <>
@@ -25,5 +32,5 @@ export function WorkshopScene({ id }: { id: string }) {
     )
   if (id.startsWith('summary-'))
     return <p className="text-muted">{COPY.local}</p>
-  return <ExerciseNode key={id} id={id} />
+  return <ExerciseNode key={id} id={id} active={active} />
 }

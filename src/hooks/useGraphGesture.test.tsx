@@ -29,15 +29,17 @@ test('accumulates positive sub-two-pixel wheel samples into a RIGHT branch selec
   render(<Controller />)
   for (let i = 0; i < 160; i++) wheel(1.5, 0)
   expect(useGraphStore.getState().route[useGraphStore.getState().cursor]).toBe(
-    'verify',
+    'node',
   )
+  expect(useGraphStore.getState().choices.node).toBe('yes')
 })
 test('accumulates negative sub-two-pixel wheel samples into a LEFT branch selection', () => {
   render(<Controller />)
   for (let i = 0; i < 160; i++) wheel(-1.5, 0)
   expect(useGraphStore.getState().route[useGraphStore.getState().cursor]).toBe(
-    'os',
+    'node',
   )
+  expect(useGraphStore.getState().choices.node).toBe('no')
 })
 test('does not add vertical movement to the horizontal branch threshold', () => {
   render(<Controller />)
@@ -47,7 +49,6 @@ test('does not add vertical movement to the horizontal branch threshold', () => 
 })
 test('a deliberate horizontal gesture is not swallowed by the previous vertical reading lock', () => {
   useGraphStore.getState().jump('verify')
-  useGraphStore.getState().arrive()
   function ReadingController() {
     useGraphGesture()
     return (
@@ -65,8 +66,9 @@ test('a deliberate horizontal gesture is not swallowed by the previous vertical 
   wheel(0, 40)
   wheel(220, 0, 80)
   expect(useGraphStore.getState().route[useGraphStore.getState().cursor]).toBe(
-    'project',
+    'verify',
   )
+  expect(useGraphStore.getState().choices.verify).toBe('done')
 })
 test('StrictMode remount registers one controller and unmount removes every listener', () => {
   const add = vi.spyOn(window, 'addEventListener'),
@@ -102,7 +104,7 @@ test('StrictMode remount registers one controller and unmount removes every list
   add.mockRestore()
   remove.mockRestore()
 })
-test('busy keys cannot navigate or start native scrolling, and ignored controls retain input', () => {
+test('new keys and wheel input stay responsive during movement; utility controls retain input', () => {
   const view = render(
     <>
       <Controller />
@@ -110,55 +112,38 @@ test('busy keys cannot navigate or start native scrolling, and ignored controls 
     </>,
   )
   wheel(240, 0)
-  const revision = useGraphStore.getState().revision
-  const key = new KeyboardEvent('keydown', {
-    key: 'ArrowLeft',
-    bubbles: true,
-    cancelable: true,
-  })
-  fireEvent(window, key)
-  expect(key.defaultPrevented).toBe(true)
-  expect(useGraphStore.getState().revision).toBe(revision)
-  useGraphStore.getState().arrive()
-  fireEvent.keyDown(view.getByRole('textbox'), { key: 'ArrowLeft' })
+  wheel(0, 200)
+  const motion = useGraphStore.getState().motion,
+    before = motion.target
+  fireEvent.keyDown(window, { key: 'ArrowUp' })
+  expect(motion.target).toBeLessThan(before)
+  const target = motion.target
+  fireEvent.keyDown(view.getByRole('textbox'), { key: 'ArrowDown' })
   fireEvent(
     view.getByRole('textbox'),
-    new WheelEvent('wheel', { deltaX: -240, bubbles: true, cancelable: true }),
+    new WheelEvent('wheel', { deltaY: 200, bubbles: true, cancelable: true }),
   )
-  expect(useGraphStore.getState().revision).toBe(revision)
+  expect(motion.target).toBe(target)
 })
-
-test('held navigation keys are consumed and touches begun during flight cannot leak into the next stop', () => {
+test('touch samples move proportionally after selection and touchcancel ends the drag', () => {
   render(<Controller />)
-  wheel(240, 0)
-  const revision = useGraphStore.getState().revision
-  const repeat = new KeyboardEvent('keydown', {
-    key: 'ArrowRight',
-    repeat: true,
-    cancelable: true,
-  })
-  fireEvent(window, repeat)
-  expect(repeat.defaultPrevented).toBe(true)
-  function touch(type: string, x: number) {
+  const touch = (type: string, x: number, y = 300) => {
     const event = new Event(type, { bubbles: true, cancelable: true })
     Object.defineProperty(event, 'touches', {
-      value: [{ clientX: x, clientY: 300 }],
+      value: [{ clientX: x, clientY: y }],
     })
     fireEvent(window, event)
   }
   touch('touchstart', 300)
-  useGraphStore.getState().arrive()
+  touch('touchmove', 100)
+  expect(useGraphStore.getState().choices.node).toBe('yes')
+  expect(useGraphStore.getState().motion.target).toBe(0)
   touch('touchmove', 50)
-  expect(useGraphStore.getState().revision).toBe(revision)
-  touch('touchstart', 300)
-  touch('touchcancel', 300)
-  touch('touchmove', 50)
-  expect(useGraphStore.getState().revision).toBe(revision)
-  touch('touchstart', 300)
-  touch('touchmove', 50)
-  expect(useGraphStore.getState().route[useGraphStore.getState().cursor]).toBe(
-    'project',
-  )
+  expect(useGraphStore.getState().motion.target).toBeGreaterThan(0)
+  const target = useGraphStore.getState().motion.target
+  touch('touchcancel', 50)
+  touch('touchmove', 0)
+  expect(useGraphStore.getState().motion.target).toBe(target)
 })
 
 test.each([
@@ -168,7 +153,6 @@ test.each([
   'QA-02: a stale %s overlay cannot steal wheel input inside the reader',
   (edge, x) => {
     useGraphStore.getState().jump('verify')
-    useGraphStore.getState().arrive()
     function Overlap() {
       useGraphGesture()
       return (
@@ -214,17 +198,37 @@ test.each([
   },
 )
 
-test('QA-01/03: a keyboard return preserves wheel momentum ownership without blocking the opposite branch', () => {
+test('QA-01/03: selecting either branch after a keyboard return does not mix wheel axes', () => {
   render(<Controller />)
   wheel(240, 0)
-  useGraphStore.getState().arrive()
+  expect(useGraphStore.getState().choices.node).toBe('yes')
   fireEvent.keyDown(window, { key: 'ArrowUp' })
-  useGraphStore.getState().arrive()
-  expect(useGraphStore.getState().cursor).toBe(0)
-  wheel(240, 0)
-  expect(useGraphStore.getState().cursor).toBe(0)
   wheel(-300, 350)
-  expect(useGraphStore.getState().route[useGraphStore.getState().cursor]).toBe(
-    'os',
+  expect(useGraphStore.getState().choices.node).toBe('no')
+  expect(useGraphStore.getState().motion.position).toBe(0)
+})
+
+test('zero wheel packets cannot release an idle magnetic stop', () => {
+  render(<Controller />)
+  const motion = useGraphStore.getState().motion
+  motion.tick(0)
+  expect(motion.snapping).toBe(true)
+  wheel(0, 0)
+  expect(motion.snapping).toBe(true)
+})
+
+test('after choosing a focused branch, vertical arrow keys still move the camera', () => {
+  const view = render(
+    <>
+      <Controller />
+      <button onClick={() => useGraphStore.getState().select('yes')}>
+        choose
+      </button>
+    </>,
   )
+  const button = view.getByRole('button')
+  button.focus()
+  fireEvent.click(button)
+  fireEvent.keyDown(button, { key: 'ArrowDown' })
+  expect(useGraphStore.getState().motion.target).toBeGreaterThan(0)
 })

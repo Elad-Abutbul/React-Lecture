@@ -51,6 +51,10 @@ const directionOf = (axis: Axis, value: number): GestureDirection =>
 export function createGraphGesture() {
   let last = -Infinity,
     owner = '',
+    origin = '',
+    originX = 0,
+    originY = 0,
+    allowChoice = true,
     axis: Axis | null = null,
     x = 0,
     y = 0,
@@ -60,7 +64,9 @@ export function createGraphGesture() {
     cross = 0,
     branching = false
   function reset(stop: string) {
-    owner = stop
+    owner = origin = stop
+    originX = originY = 0
+    allowChoice = true
     axis = null
     x = 0
     y = 0
@@ -79,7 +85,7 @@ export function createGraphGesture() {
         return none
       branching = input.branching
       const quiet =
-        mode === 'intent' && axis === 'x' && branching
+        mode === 'intent' && axis === 'x' && branching && owner === origin
           ? GRAPH_GESTURE.intentQuietMs
           : GRAPH_GESTURE.quietMs
       const fresh = input.at - last > quiet
@@ -92,6 +98,14 @@ export function createGraphGesture() {
         y = 0
         reverse = 0
       }
+      if (!originX && !originY) {
+        originX = input.x
+        originY = input.y
+      }
+      allowChoice =
+        owner === origin ||
+        originX * input.x < 0 ||
+        originX * input.x + originY * input.y < 0
       const dominant = graphGestureAxis(input.x, input.y, input.branching)
       if (input.transitioning) {
         mode = 'navigation'
@@ -103,6 +117,20 @@ export function createGraphGesture() {
         return none
       }
       if (mode === 'navigation') {
+        // Reaching readable content transfers vertical input to its reader, while
+        // the same gesture still cannot choose a second branch from momentum.
+        if (
+          dominant === 'y' &&
+          (input.y > 0 ? input.canReadDown : input.canReadUp)
+        ) {
+          mode = 'reading'
+          axis = 'y'
+          sign = Math.sign(input.y)
+          x = 0
+          y = input.y
+          return { kind: 'read', delta: input.y }
+        }
+
         // Same-direction momentum cannot navigate again. An intentional reversal must
         // cross a full threshold after arrival; tiny elastic/bounce deltas do not.
         const value = axis === 'x' ? input.x : input.y
@@ -177,10 +205,17 @@ export function createGraphGesture() {
       )
         return none
       sign = Math.sign(distance)
+      if (
+        input.branching &&
+        !allowChoice &&
+        directionOf(axis, distance) !== 'up'
+      )
+        return none
       return { kind: 'navigate', direction: directionOf(axis, distance) }
     },
     preview(): BranchIntent | null {
-      return branching &&
+      return allowChoice &&
+        branching &&
         mode === 'intent' &&
         axis === 'x' &&
         Math.abs(x) >= GRAPH_GESTURE.axisLock
