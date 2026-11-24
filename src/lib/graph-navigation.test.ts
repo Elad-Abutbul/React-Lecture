@@ -28,11 +28,11 @@ test('branch changes preserve visited history while replacing the active suffix,
   const store = () => useGraphStore.getState()
   store().reset()
   store().select('yes')
-  store().arrive()
+  store().jump('verify')
   store().select('done')
   expect(store().route).toContain('project')
-  store().arrive()
-  store().visit(0)
+  store().jump('project')
+  store().jump('node')
   store().select('no')
   expect(store().route).toEqual(['node', 'os'])
   expect(store().visited).toContain('verify')
@@ -55,14 +55,20 @@ test('repeated retries rejoin the original stop without unbounded history or los
   const store = () => useGraphStore.getState()
   store().reset()
   store().select('yes')
-  store().arrive()
-  for (let i = 0; i < 100; i++) {
+  store().jump('verify')
+  for (let i = 0; i < 10; i++) {
     store().select('error')
-    store().arrive()
-    store().step(1)
-    store().arrive()
-    store().step(1)
-    store().arrive()
+    const motion = store().motion
+    const last = motion.path.stops.at(-1)!
+    // Drive the existing continuous path through each retry stop.
+    for (let n = 0; n < 30 && motion.position < last; n++) {
+      motion.scroll(600, n * 1000)
+      for (let t = 0; t < 1000; t += 16) {
+        motion.tick(n * 1000 + t)
+        store().synchronize()
+      }
+      if (store().route.length === 2) break
+    }
     expect(store().route).toEqual(['node', 'verify'])
   }
   expect(store().visited).toEqual(
@@ -80,18 +86,17 @@ test('migration expands a newly introduced single path rather than leaving a nav
   })
   expect(recovered.route.at(-1)).toBe('existing-run-result')
 })
-test('large step requests and in-flight repeats never skip a logical stop', () => {
+test('selecting a branch only configures a path, without moving or visiting its target', () => {
   const store = () => useGraphStore.getState()
   store().reset()
-  store().jump('existing')
-  store().arrive()
-  store().step(2000)
-  expect(store().route[store().cursor]).toBe('scripts')
-  store().step(1)
-  expect(store().route[store().cursor]).toBe('scripts')
-  store().arrive()
-  store().step(1)
-  expect(store().route[store().cursor]).toBe('scripts-result')
+  const before = store().motion.point
+  store().select('yes')
+  expect(store().cursor).toBe(0)
+  expect(store().motion.point).toEqual(before)
+  expect(store().visited).toEqual(['node'])
+  store().select('no')
+  expect(store().route).toEqual(['node', 'os'])
+  expect(store().motion.position).toBe(0)
 })
 test('every directional edge actually moves the camera in its labelled direction', () => {
   for (const node of WORLD_GRAPH)
@@ -103,17 +108,13 @@ test('every directional edge actually moves the camera in its labelled direction
       )
     }
 })
-test('jumps lock atomically and late arrival cannot unlock a newer transition', () => {
+test('explicit map jumps and reset share the same continuous position without stale animations', () => {
   const store = () => useGraphStore.getState()
   store().reset()
   store().jump('verify')
-  const first = store().revision
-  expect(store().transitioning).toBe(true)
-  store().step(1)
-  expect(store().revision).toBe(first)
+  expect(store().motion.point.x).toBe(GRAPH_BY_ID.verify.position.x)
   store().jump('project')
-  store().arrive(first)
-  expect(store().transitioning).toBe(true)
-  store().arrive(store().revision)
-  expect(store().transitioning).toBe(false)
+  expect(store().motion.point.y).toBe(GRAPH_BY_ID.project.position.y)
+  store().reset()
+  expect(store().motion.position).toBe(0)
 })

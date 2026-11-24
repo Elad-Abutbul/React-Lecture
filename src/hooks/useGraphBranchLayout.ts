@@ -1,10 +1,9 @@
 import { useLayoutEffect, type RefObject } from 'react'
-import { GRAPH_BRANCH_LAYOUT } from '@/constants/graphNavigation'
+import { measureBranchLayout } from '@/lib/graph-hit-area'
 
 export function useGraphBranchLayout(
   aside: RefObject<HTMLElement | null>,
   regions: RefObject<HTMLDivElement | null>,
-  busy: boolean,
 ) {
   useLayoutEffect(() => {
     const container = aside.current,
@@ -14,12 +13,7 @@ export function useGraphBranchLayout(
       )
     if (!container || !hits || !reading) return
     function measure() {
-      const bounds = container!.getBoundingClientRect(),
-        content = reading!.getBoundingClientRect()
-      hits!.style.setProperty(
-        'top',
-        `${Math.ceil(Math.max(bounds.height * GRAPH_BRANCH_LAYOUT.topRatio, content.bottom - bounds.top + GRAPH_BRANCH_LAYOUT.readingGap))}px`,
-      )
+      measureBranchLayout(container!, hits!, reading!)
     }
     measure()
     const frame = requestAnimationFrame(measure),
@@ -30,5 +24,5 @@ export function useGraphBranchLayout(
       cancelAnimationFrame(frame)
       observer.disconnect()
     }
-  }, [aside, regions, busy])
+  }, [aside, regions])
 }

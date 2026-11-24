@@ -22,7 +22,13 @@ const LAB_DEMOS: Record<string, () => React.ReactNode> = {
   state: Step03State,
   effect: Step04Effect,
 }
-export function GraphContent({ node }: { node: WorldNode }) {
+export function GraphContent({
+  node,
+  active = true,
+}: {
+  node: WorldNode
+  active?: boolean
+}) {
   const Demo =
     node.kind === 'lab'
       ? LAB_DEMOS[node.sourceId!]
@@ -34,7 +40,8 @@ export function GraphContent({ node }: { node: WorldNode }) {
   )?.lesson
   const file = FILES.find((file) => file.id === node.sourceId)
   const lab = LAB_STATIONS.find((lab) => lab.id === node.sourceId)
-  if (node.kind === 'workshop') return <WorkshopScene id={node.sourceId!} />
+  if (node.kind === 'workshop')
+    return <WorkshopScene id={node.sourceId!} active={active} />
   return (
     <>
       {node.commandIds?.map((id) => (

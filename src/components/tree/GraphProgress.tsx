@@ -9,14 +9,14 @@ export function GraphProgress({
 }) {
   const route = useGraphStore((s) => s.route),
     cursor = useGraphStore((s) => s.cursor),
-    choices = useGraphStore((s) => s.choices)
-  const entries = route.slice(
-    Math.max(0, cursor - GRAPH_NAV.trailLimit + 1),
-    cursor + 1,
-  )
+    choices = useGraphStore((s) => s.choices),
+    visited = useGraphStore((s) => s.visited)
+  const entries = route
+    .slice(Math.max(0, cursor - GRAPH_NAV.trailLimit + 1), cursor + 1)
+    .filter((id) => visited.includes(id))
   return (
     <>
-      {cursor > 0 && (
+      {visited.length > 1 && (
         <nav className="world-trail" aria-label={GRAPH_COPY.path}>
           <ol>
             {entries.map((id, index) => (

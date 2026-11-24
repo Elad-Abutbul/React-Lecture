@@ -1,534 +1,306 @@
-import {
-  test as base,
-  expect,
-  type Page,
-  type TestInfo,
-} from '@playwright/test'
-import { join } from 'node:path'
-import { open, at, settled, seedVisited, revisit } from './helpers'
-// Browser-injected wheel input covers integration. Synthetic traces below cover
-// high-resolution and momentum regressions; neither proves physical Mac hardware.
-const test = base.extend<{ navigationErrors: void }>({
-  navigationErrors: [
-    async ({ page }, use) => {
-      const errors: string[] = []
-      page.on('pageerror', (error) => errors.push(error.message))
-      page.on('console', (message) => {
-        if (message.type() === 'error') errors.push(message.text())
-      })
-      await page.addInitScript(() => {
-        window.addEventListener('unhandledrejection', (event) => {
-          throw event.reason
-        })
-      })
-      await use()
-      expect(
-        errors,
-        'console errors, unhandled exceptions and rejections',
-      ).toEqual([])
-    },
-    { auto: true },
-  ],
+import { test, expect, type Page } from '@playwright/test'
+import { open, at, travelTo, seedVisited, revisit } from './helpers'
+import { GRAPH_MOTION as C } from '../src/constants/graphMotion'
+const errors = new WeakMap<Page, string[]>()
+test.beforeEach(async ({ page }) => {
+  const list: string[] = []
+  errors.set(page, list)
+  page.on('pageerror', (e) => list.push(e.message))
+  page.on('console', (m) => {
+    if (m.type() === 'error') list.push(m.text())
+  })
 })
-async function capture(page: Page, name: string, info: TestInfo) {
-  await expect(page.locator('.graph-node-active .focus-title')).toHaveCSS(
-    'opacity',
-    '1',
-  )
-  await expect(
-    page.locator('.graph-node-active .graph-node-content'),
-  ).toHaveCSS('opacity', '1')
-  const file = `${info.project.name}-${name}.jpg`
-  const path = process.env.NAVIGATION_SCREENSHOT_DIR
-    ? join(process.env.NAVIGATION_SCREENSHOT_DIR, file)
-    : info.outputPath(file)
-  await page.screenshot({ path, type: 'jpeg', quality: 90 })
-  await info.attach(name, { path, contentType: 'image/jpeg' })
+test.afterEach(async ({ page }) => {
+  expect(errors.get(page)).toEqual([])
+})
+async function camera(page: Page) {
+  return page.locator('.world-stage').evaluate((e) => {
+    const d = (e as HTMLElement).dataset
+    return {
+      x: Number(d.cameraX),
+      y: Number(d.cameraY),
+      distance: Number(d.cameraDistance),
+      target: Number(d.cameraTarget),
+      snap: d.cameraSnap,
+      moving: d.cameraMoving,
+    }
+  })
 }
-async function samples(page: Page, values: [number, number][], interval = 8) {
-  await page.evaluate(
-    async ({ values, interval }) => {
-      for (const [x, y] of values) {
-        window.dispatchEvent(
-          new WheelEvent('wheel', {
-            deltaX: x,
-            deltaY: y,
-            bubbles: true,
-            cancelable: true,
-          }),
-        )
-        if (interval)
-          await new Promise((resolve) => setTimeout(resolve, interval))
-      }
-    },
-    { values, interval },
-  )
-}
-async function freshWheel(page: Page, x: number, y: number) {
-  await page.waitForTimeout(300)
+async function wheel(page: Page, x: number, y: number) {
   const brand = (await page.locator('.brand').boundingBox())!
   await page.mouse.move(brand.x + brand.width / 2, brand.y + brand.height / 2)
   await page.mouse.wheel(x, y)
+  await page.waitForTimeout(40)
 }
-async function startAt(page: Page, route: string[]) {
-  await page.addInitScript((route) => {
-    localStorage.setItem(
-      'react-world-navigation',
-      JSON.stringify({
-        version: 2,
-        state: {
-          route,
-          cursor: route.length - 1,
-          visited: route,
-          choices: {},
-          traversed: [],
-        },
-      }),
-    )
-  }, route)
-  await page.goto('/')
-  await at(page, route.at(-1)!)
-  // Seeded scenarios begin at a readable stop, after camera and arrival reveal.
+async function choose(page: Page, sign = 1) {
+  await wheel(page, sign * 300, 0)
   await expect(
-    page.locator('.graph-node-active .graph-node-content'),
-  ).toHaveCSS('opacity', '1')
+    page.locator(
+      `.world-path[data-source="node"][data-target="${sign > 0 ? 'verify' : 'os'}"] + path`,
+    ),
+  ).toHaveCount(1)
 }
-const existing = ['node', 'verify', 'project', 'existing']
-async function geometry(page: Page) {
-  const stage = page.locator('.world-stage')
-  const camera = await stage.evaluate((element) => ({
-    x: Number(element.getAttribute('data-camera-x')),
-    y: Number(element.getAttribute('data-camera-y')),
-  }))
-  const point = await page
-    .locator('.graph-node-active')
-    .evaluate((element) => ({
-      x: parseFloat((element as HTMLElement).style.left),
-      y: parseFloat((element as HTMLElement).style.top),
-    }))
-  expect(camera).toEqual(point)
-  const viewport = page.viewportSize()!
-  const anchor = await page
-    .locator('.graph-node-active')
-    .evaluate((element) => {
-      const box = element.getBoundingClientRect(),
-        transform = new DOMMatrixReadOnly(getComputedStyle(element).transform)
-      return { x: box.x - transform.m41, y: box.y - transform.m42 }
-    })
-  expect(Math.abs(anchor.x - viewport.width / 2)).toBeLessThan(2)
-  expect(Math.abs(anchor.y - viewport.height / 2)).toBeLessThan(2)
-  expect(
-    await page
-      .locator('.world-viewport')
-      .evaluate((e) => ({ x: e.scrollLeft, y: e.scrollTop })),
-  ).toEqual({ x: 0, y: 0 })
-  const reader = await page.locator('.graph-reading').boundingBox()
-  expect(reader!.y).toBeGreaterThanOrEqual(0)
-  expect(reader!.y + reader!.height).toBeLessThanOrEqual(viewport.height)
-  expect(
-    await page.evaluate(() => ({
-      x: scrollX,
-      y: scrollY,
-      overflow: document.documentElement.scrollWidth > innerWidth,
-    })),
-  ).toEqual({ x: 0, y: 0, overflow: false })
-  expect(
-    await page.locator('path[data-source]').evaluateAll((paths) =>
-      paths.every((path) => {
-        const line = path as SVGPathElement,
-          source = document.querySelector<HTMLElement>(
-            `[data-world-node="${line.dataset.source}"]`,
-          )!,
-          target = document.querySelector<HTMLElement>(
-            `[data-world-node="${line.dataset.target}"]`,
-          )!,
-          start = line.getPointAtLength(0),
-          end = line.getPointAtLength(line.getTotalLength())
-        return (
-          Math.abs(start.x - parseFloat(source.style.left)) < 0.1 &&
-          Math.abs(start.y - parseFloat(source.style.top)) < 0.1 &&
-          Math.abs(end.x - parseFloat(target.style.left)) < 0.1 &&
-          Math.abs(end.y - parseFloat(target.style.top)) < 0.1
+for (const [x, y, edge] of [
+  [300, 0, 'yes'],
+  [-300, 0, 'no'],
+  [650, 650, 'yes'],
+  [-650, 650, 'no'],
+  [300, 350, 'yes'],
+  [-300, 350, 'no'],
+] as const) {
+  test(`signed ${x}/${y} chooses ${edge} in RTL without automatic travel`, async ({
+    page,
+  }) => {
+    await open(page)
+    const before = await camera(page)
+    await wheel(page, x, y)
+    await page.waitForTimeout(1000)
+    const state = await page.evaluate(
+      () => JSON.parse(localStorage.getItem('react-world-navigation')!).state,
+    )
+    expect(state.choices.node).toBe(edge)
+    expect((await camera(page)).distance).toBe(before.distance)
+    await at(page, 'node')
+    expect(await page.locator('html').getAttribute('dir')).toBe('rtl')
+  })
+}
+for (const pixels of [40, 80, 300]) {
+  test(`input ${pixels} moves proportionally between nodes instead of completing a flight`, async ({
+    page,
+  }) => {
+    await open(page)
+    await choose(page)
+    await page.evaluate(() => {
+      const started = performance.now()
+      Reflect.set(window, 'peakCameraDistance', 0)
+      function sample() {
+        const distance = Number(
+          (document.querySelector('.world-stage') as HTMLElement).dataset
+            .cameraDistance,
         )
-      }),
+        Reflect.set(
+          window,
+          'peakCameraDistance',
+          Math.max(Reflect.get(window, 'peakCameraDistance'), distance),
+        )
+        if (performance.now() - started < 1500) requestAnimationFrame(sample)
+      }
+      requestAnimationFrame(sample)
+    })
+    await wheel(page, 0, pixels)
+    await expect
+      .poll(() =>
+        page.evaluate(() => Reflect.get(window, 'peakCameraDistance')),
+      )
+      .toBeGreaterThan(0)
+    const peak = (await page.evaluate(() =>
+      Reflect.get(window, 'peakCameraDistance'),
+    )) as number
+    expect(peak).toBeLessThanOrEqual(pixels * C.pixelsPerWheelUnit + 0.01)
+    if (pixels * C.pixelsPerWheelUnit > C.snapRadius)
+      await expect
+        .poll(async () => (await camera(page)).target)
+        .toBeCloseTo(pixels * C.pixelsPerWheelUnit, 2)
+    expect((await camera(page)).distance).toBeLessThan(1000)
+    await at(page, 'node')
+  })
+}
+test('fractional input accumulates into either physical branch, then its remaining packets move continuously', async ({
+  page,
+}) => {
+  await open(page)
+  await page.evaluate(async () => {
+    for (let i = 0; i < 160; i++) {
+      window.dispatchEvent(
+        new WheelEvent('wheel', {
+          deltaX: 1.5,
+          bubbles: true,
+          cancelable: true,
+        }),
+      )
+      await new Promise((r) => setTimeout(r, 4))
+    }
+  })
+  const state = await page.evaluate(
+    () => JSON.parse(localStorage.getItem('react-world-navigation')!).state,
+  )
+  expect(state.choices.node).toBe('yes')
+  const c = await camera(page)
+  expect(c.target).toBeGreaterThan(0)
+  expect(c.target).toBeLessThan(300)
+})
+test('camera moves diagonally on the same persistent SVG curve and reverses immediately between nodes', async ({
+  page,
+}) => {
+  await open(page)
+  await choose(page)
+  const path = page.locator(
+    '.world-path[data-source="node"][data-target="verify"]',
+  )
+  await path.evaluate((e) => e.setAttribute('data-identity', 'continuous'))
+  const start = await camera(page)
+  await wheel(page, 0, 420)
+  await page.waitForTimeout(100)
+  await expect
+    .poll(async () => {
+      const c = await camera(page)
+      return Math.abs(c.distance - c.target)
+    })
+    .toBeLessThan(0.1)
+  const forward = await camera(page)
+  expect(forward.x).toBeGreaterThan(start.x)
+  expect(forward.y).toBeGreaterThan(start.y)
+  expect(forward.distance).toBeGreaterThan(0)
+  await wheel(page, 0, -12)
+  await expect
+    .poll(async () => (await camera(page)).distance)
+    .toBeLessThan(forward.distance)
+  expect((await camera(page)).distance).toBeGreaterThan(0)
+  await expect(path).toHaveAttribute('data-identity', 'continuous')
+  const beforeResize = await camera(page)
+  await page.setViewportSize({ width: 1000, height: 740 })
+  await page.waitForTimeout(100)
+  expect(
+    Math.abs((await camera(page)).distance - beforeResize.target),
+  ).toBeLessThan(20)
+  expect(
+    await page.evaluate(
+      () =>
+        scrollX === 0 &&
+        scrollY === 0 &&
+        document.documentElement.scrollWidth <= innerWidth,
     ),
   ).toBe(true)
-  return camera
-}
-test('positive wheel selects RIGHT and negative wheel selects LEFT in RTL, with diagonal camera travel', async ({
+})
+test('momentum keeps moving proportionally without selecting another branch or jumping nodes', async ({
+  page,
+}) => {
+  await open(page)
+  await choose(page)
+  await page.evaluate(async () => {
+    for (const deltaY of [2, 6, 14, 28, 40, 32, 20, 10, 4, 1]) {
+      window.dispatchEvent(
+        new WheelEvent('wheel', { deltaY, bubbles: true, cancelable: true }),
+      )
+      await new Promise((r) => setTimeout(r, 16))
+    }
+  })
+  await expect
+    .poll(async () => (await camera(page)).target)
+    .toBeCloseTo(157 * C.pixelsPerWheelUnit)
+  await page.waitForTimeout(800)
+  expect((await camera(page)).distance).toBeCloseTo(
+    157 * C.pixelsPerWheelUnit,
+    1,
+  )
+  await at(page, 'node')
+})
+test('magnet settles only near a node and new input releases it immediately', async ({
+  page,
+}) => {
+  await open(page)
+  await choose(page)
+  await wheel(page, 0, 350)
+  await page.waitForTimeout(1200)
+  const middle = await camera(page)
+  expect(middle.snap).toBe('false')
+  expect(middle.distance).toBeCloseTo(350 * C.pixelsPerWheelUnit, 1)
+  await travelTo(page, 'verify')
+  const arrived = await camera(page)
+  expect(arrived.snap).toBe('true')
+  // Read the current node to the top, then make a small reverse gesture outside it.
+  await wheel(page, 0, -60)
+  await expect
+    .poll(async () => (await camera(page)).distance)
+    .toBeLessThan(arrived.distance)
+  expect((await camera(page)).distance).toBeGreaterThan(arrived.distance - 120)
+})
+test('proximity text effects remain responsive and reverse without replay or flickering', async ({
   page,
 }, info) => {
   await open(page)
-  await expect(page.locator('html')).toHaveAttribute('dir', 'rtl')
-  const origin = await geometry(page)
-  await capture(page, 'right-before', info)
-  await freshWheel(page, 240, 0)
-  await at(page, 'verify')
-  const right = await geometry(page)
-  expect(right.x).toBeGreaterThan(origin.x)
-  expect(right.y).toBeGreaterThan(origin.y)
-  await capture(page, 'right-after', info)
-  await freshWheel(page, 0, -240)
-  await at(page, 'node')
-  await capture(page, 'left-before', info)
-  await freshWheel(page, -240, 0)
-  await at(page, 'os')
-  const left = await geometry(page)
-  expect(left.x).toBeLessThan(origin.x)
-  expect(left.y).toBeGreaterThan(origin.y)
-  await capture(page, 'left-after', info)
-})
-test('vertical DOWN and UP move exactly one stop and settle precisely', async ({
-  page,
-}, info) => {
-  await startAt(page, existing)
-  await capture(page, 'down-before', info)
-  await freshWheel(page, 0, 1200)
-  await at(page, 'scripts')
-  await geometry(page)
-  await capture(page, 'down-after', info)
-  await capture(page, 'up-before', info)
-  await freshWheel(page, 0, -1200)
-  await at(page, 'existing')
-  await geometry(page)
-  await capture(page, 'up-after', info)
-})
-test('positive fractional wheel samples choose RIGHT', async ({ page }) => {
-  await open(page)
-  await samples(
-    page,
-    Array.from({ length: 160 }, () => [1.5, 0]),
+  await choose(page)
+  const reader = page.locator('[data-world-node="node"] .graph-reading')
+  const initial = await reader.elementHandle()
+  await wheel(page, 0, 300)
+  await page.waitForTimeout(150)
+  const before = await reader.evaluate((e) => ({
+    opacity: Number(getComputedStyle(e).opacity),
+    blur: getComputedStyle(e).filter,
+  }))
+  if (info.project.name !== 'reduced-motion')
+    expect(before.opacity).toBeLessThan(1)
+  const position = (await camera(page)).distance
+  await wheel(page, 0, -50)
+  await expect
+    .poll(async () => (await camera(page)).distance)
+    .toBeLessThan(position)
+  await page.waitForTimeout(250)
+  const after = await reader.evaluate((e) => ({
+    opacity: Number(getComputedStyle(e).opacity),
+    animation: getComputedStyle(e.querySelector('h1')!).animationName,
+  }))
+  expect(after.opacity).toBeGreaterThanOrEqual(before.opacity)
+  expect(after.animation).toBe('none')
+  expect(await initial!.evaluate((e) => e.isConnected)).toBe(true)
+  expect(await reader.evaluate((e) => getComputedStyle(e).opacity)).not.toBe(
+    '0',
   )
-  await at(page, 'verify')
 })
-test('negative fractional wheel samples choose LEFT', async ({ page }) => {
-  await open(page)
-  await samples(
-    page,
-    Array.from({ length: 160 }, () => [-1.5, 0]),
-  )
-  await at(page, 'os')
-})
-test('switching axes never combines unrelated travel into a branch', async ({
+test('returning to a decision permits changing branches while preserving visited history', async ({
   page,
 }) => {
   await open(page)
-  await samples(page, [
-    [0, 110],
-    [110, 0],
-  ])
-  await at(page, 'node')
-})
-test('downward diagonals choose physical branches and upward diagonals backtrack', async ({
-  page,
-}) => {
-  await open(page)
-  await samples(page, [
-    [200, 200],
-    [100, 100],
-  ])
-  await at(page, 'verify')
-  await freshWheel(page, 0, -240)
-  await at(page, 'node')
-  await freshWheel(page, -240, 150)
-  await at(page, 'os')
-  await freshWheel(page, -240, -240)
-  await at(page, 'node')
-})
-test('vertical-dominant diagonal follows the selected path instead of switching branch', async ({
-  page,
-}) => {
-  await open(page)
-  await freshWheel(page, 240, 0)
-  await at(page, 'verify')
-  await freshWheel(page, 0, -240)
-  await at(page, 'node')
-  await freshWheel(page, -100, 240)
-  await at(page, 'verify')
-})
-test('rapid wheel bursts during and after flight plus decaying momentum cannot skip nodes', async ({
-  page,
-}) => {
-  await startAt(page, existing)
-  await samples(
-    page,
-    Array.from({ length: 40 }, () => [0, 240]),
-    40,
-  )
-  await samples(
-    page,
-    Array.from({ length: 20 }, (_, i) => [0, 40 - i * 1.9]),
-    20,
-  )
-  await at(page, 'scripts')
-  await freshWheel(page, 0, 240)
-  await at(page, 'scripts-result')
-})
-test('reversal after arrival works without waiting for a quiet interval', async ({
-  page,
-}) => {
-  await startAt(page, existing)
-  await samples(
-    page,
-    Array.from({ length: 24 }, () => [0, 200]),
-    50,
-  )
-  await at(page, 'scripts')
-  await samples(page, [
-    [0, -15],
-    [0, 5],
-  ])
-  await at(page, 'scripts')
-  await samples(page, [[0, -180]])
-  await at(page, 'existing')
-})
-test('backtracking and changing a previous decision replaces its future and preserves visited history', async ({
-  page,
-}) => {
-  await open(page)
-  await freshWheel(page, 240, 0)
-  await at(page, 'verify')
-  await freshWheel(page, 0, -240)
-  await at(page, 'node')
-  await freshWheel(page, -240, 0)
-  await at(page, 'os')
+  await choose(page)
+  await travelTo(page, 'verify')
+  await travelTo(page, 'node', -1)
+  await wheel(page, -300, 350)
   const state = await page.evaluate(
     () => JSON.parse(localStorage.getItem('react-world-navigation')!).state,
   )
   expect(state.route).toEqual(['node', 'os'])
-  expect(state.choices.node).toBe('no')
-  expect(state.visited).toEqual(
-    expect.arrayContaining(['node', 'verify', 'os']),
-  )
-  await geometry(page)
+  expect(state.visited).toContain('verify')
+  expect((await camera(page)).distance).toBe(0)
+  await travelTo(page, 'os')
 })
-test('reading does not swallow horizontal navigation or leak its momentum into the next stop', async ({
-  page,
-}) => {
-  await startAt(page, ['node', 'verify'])
-  await page.locator('.graph-reading').evaluate((element) => {
-    Object.defineProperty(element, 'scrollHeight', {
-      value: 10000,
-      configurable: true,
-    })
-  })
-  await samples(
-    page,
-    [
-      [0, 40],
-      [220, 0],
-    ],
-    50,
-  )
-  await at(page, 'project')
-  await samples(page, [[0, 500]])
-  await at(page, 'project')
-})
-test('keyboard, branch click fallback and touch use the same locked navigation state', async ({
+test('keyboard, branch click and touch select a path without a flight, and further input moves it', async ({
   page,
 }) => {
   await open(page)
   await page.keyboard.press('ArrowRight')
-  await at(page, 'verify')
-  await page.keyboard.press('ArrowUp')
-  await at(page, 'node')
+  expect((await camera(page)).distance).toBe(0)
+  await page.keyboard.press('ArrowDown')
+  await expect
+    .poll(async () => (await camera(page)).distance)
+    .toBeGreaterThan(0)
+  await travelTo(page, 'node', -1)
   await page.locator('[data-edge-id="no"]').click()
-  await at(page, 'os')
-  await page.keyboard.press('ArrowUp')
-  await at(page, 'node')
-  await page.keyboard.press('ArrowLeft')
-  await at(page, 'os')
-  await page.keyboard.press('ArrowUp')
-  await at(page, 'node')
-  await page.evaluate(() => {
-    const dispatch = (type: string, clientX?: number) => {
-      const event = new Event(type, { bubbles: true, cancelable: true })
-      Object.defineProperty(event, 'touches', {
-        value: clientX === undefined ? [] : [{ clientX, clientY: 400 }],
-      })
-      window.dispatchEvent(event)
-    }
-    dispatch('touchstart', 280)
-    dispatch('touchmove', 100)
-    dispatch('touchend')
+  expect((await camera(page)).distance).toBe(0)
+  await page.dispatchEvent('main', 'touchstart', {
+    touches: [{ identifier: 1, clientX: 200, clientY: 400 }],
   })
-  await at(page, 'verify')
-  await geometry(page)
-})
-test('long content remains readable at the stop and needs a separate gesture after the reading boundary', async ({
-  page,
-}, info) => {
-  await seedVisited(page, ['H04'])
-  await open(page)
-  await revisit(page, 'H04 · JSX ראשון')
-  await at(page, 'H04')
-  await page.getByRole('button', { name: 'רמזים ופתרון', exact: true }).click()
-  await page.getByRole('button', { name: 'רמז ראשון', exact: true }).click()
-  await page.getByRole('button', { name: 'רמז שני', exact: true }).click()
-  await page
-    .getByRole('button', { name: 'חשיפת פתרון מלא', exact: true })
-    .click()
-  await expect(
-    page.locator('.graph-node-active .graph-node-content'),
-  ).toHaveCSS('opacity', '1')
-  await page.evaluate(() => document.fonts.ready.then(() => undefined))
-  const reader = page.locator('.graph-reading')
-  await reader.locator('pre').focus()
-  expect(await reader.evaluate((e) => e.scrollHeight > e.clientHeight)).toBe(
-    true,
-  )
-  await reader.evaluate((e) => {
-    e.scrollTop = 0
+  await page.dispatchEvent('main', 'touchmove', {
+    touches: [{ identifier: 1, clientX: 200, clientY: 340 }],
   })
-  await samples(
-    page,
-    [
-      [0, 300],
-      [0, 10000],
-      [0, 10000],
-    ],
-    20,
-  )
-  await at(page, 'H04')
-  expect(
-    await reader.evaluate((e) =>
-      Math.abs(e.scrollHeight - e.clientHeight - e.scrollTop),
-    ),
-  ).toBeLessThan(2)
-  expect(await reader.evaluate((e) => e.scrollWidth <= e.clientWidth + 1)).toBe(
-    true,
-  )
-  await geometry(page)
-  await capture(page, 'long-reading-bottom', info)
-  await freshWheel(page, 0, 240)
-  await at(page, 'H05')
+  await page.dispatchEvent('main', 'touchend', { touches: [] })
+  await expect
+    .poll(async () => (await camera(page)).distance)
+    .toBeGreaterThan(0)
 })
-test('resize during flight cancels the old camera and finishes at the exact target without a stuck lock', async ({
+test('long content reads before departure and cannot be covered by branch hit regions', async ({
   page,
 }) => {
+  await seedVisited(page, ['verify'])
   await open(page)
-  await freshWheel(page, 240, 0)
-  await expect(page.locator('.world-stage')).toHaveAttribute(
-    'data-active-scene',
-    'verify',
-  )
-  await page.setViewportSize({ width: 800, height: 760 })
-  await settled(page)
-  await geometry(page)
-  await freshWheel(page, 0, -240)
-  await at(page, 'node')
-  await geometry(page)
-})
-test('one gesture controller is registered and utility scrolling cannot move the world', async ({
-  page,
-}) => {
-  await page.addInitScript(() => {
-    const add = window.addEventListener.bind(window),
-      remove = window.removeEventListener.bind(window),
-      listeners = new Set<EventListenerOrEventListenerObject>()
-    window.addEventListener = ((
-      type: string,
-      listener: EventListenerOrEventListenerObject,
-      options?: AddEventListenerOptions | boolean,
-    ) => {
-      if (type === 'wheel') listeners.add(listener)
-      add(type, listener, options)
-    }) as typeof window.addEventListener
-    window.removeEventListener = ((
-      type: string,
-      listener: EventListenerOrEventListenerObject,
-      options?: EventListenerOptions | boolean,
-    ) => {
-      if (type === 'wheel') listeners.delete(listener)
-      remove(type, listener, options)
-    }) as typeof window.removeEventListener
-    Object.defineProperty(window, 'navigationWheelListeners', {
-      get: () => listeners.size,
-    })
-  })
-  await open(page)
-  expect(
-    await page.evaluate(() => Reflect.get(window, 'navigationWheelListeners')),
-  ).toBe(1)
-  await page.getByRole('button', { name: 'מפת העץ', exact: true }).click()
-  await page.getByRole('textbox', { name: 'סינון צמתים' }).fill('React')
-  await page
-    .getByRole('textbox', { name: 'סינון צמתים' })
-    .dispatchEvent('wheel', { deltaX: 500, deltaY: 500 })
-  await page.keyboard.press('Escape')
-  await at(page, 'node')
-  await geometry(page)
-})
-
-test('camera deadlines do not inherit GSAP global lag compensation on slow frames', async ({
-  page,
-}) => {
-  await page.addInitScript(() => {
-    window.requestAnimationFrame = (callback) =>
-      window.setTimeout(() => callback(performance.now()), 650)
-    window.cancelAnimationFrame = (id) => clearTimeout(id)
-  })
-  await open(page)
-  await freshWheel(page, 240, 0)
+  await revisit(page, 'בודקים את ההתקנה ידנית')
+  const reading = page.locator('.graph-node-active .graph-reading'),
+    before = await camera(page)
+  const box = (await reading.boundingBox())!
+  await page.mouse.move(box.x + box.width * 0.75, box.y + box.height - 15)
+  await page.mouse.wheel(0, 300)
+  await expect
+    .poll(() => reading.evaluate((e) => e.scrollTop))
+    .toBeGreaterThan(0)
+  expect((await camera(page)).distance).toBe(before.distance)
   await at(page, 'verify')
-  await geometry(page)
-  await freshWheel(page, 0, -240)
-  await at(page, 'node')
-})
-
-test('camera moves monotonically toward its diagonal target while the same SVG connection stays mounted', async ({
-  page,
-}, info) => {
-  await open(page)
-  const line = page.locator('path[data-source="node"][data-target="verify"]')
-  const connection = await line.getAttribute('d')
-  const origin = await geometry(page)
-  const target = await page
-    .locator('[data-world-node="verify"]')
-    .evaluate((element) => ({
-      x: parseFloat((element as HTMLElement).style.left),
-      y: parseFloat((element as HTMLElement).style.top),
-    }))
-  await freshWheel(page, 240, 0)
-  const positions = await page.evaluate(async () => {
-    const positions: {
-      x: number
-      y: number
-      connected: boolean
-      path: string | null
-    }[] = []
-    for (let i = 0; i < 8; i++) {
-      const stage = document.querySelector('.world-stage')!,
-        path = document.querySelector(
-          'path[data-source="node"][data-target="verify"]',
-        )!
-      positions.push({
-        x: Number(stage.getAttribute('data-camera-x')),
-        y: Number(stage.getAttribute('data-camera-y')),
-        connected: path.isConnected,
-        path: path.getAttribute('d'),
-      })
-      await new Promise((resolve) => setTimeout(resolve, 100))
-    }
-    return positions
-  })
-  if (info.project.use.reducedMotion !== 'reduce')
-    expect(
-      positions.some(
-        (p) =>
-          p.x > origin.x && p.x < target.x && p.y > origin.y && p.y < target.y,
-      ),
-    ).toBe(true)
-  let previous = origin
-  for (const position of positions) {
-    expect(position.x).toBeGreaterThanOrEqual(previous.x)
-    expect(position.y).toBeGreaterThanOrEqual(previous.y)
-    expect(position.x).toBeLessThanOrEqual(target.x)
-    expect(position.y).toBeLessThanOrEqual(target.y)
-    expect(position.connected).toBe(true)
-    expect(position.path).toBe(connection)
-    previous = position
-  }
-  await at(page, 'verify')
-  await geometry(page)
 })

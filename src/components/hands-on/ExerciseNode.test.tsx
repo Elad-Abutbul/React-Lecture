@@ -85,3 +85,11 @@ test('explicit instructor mode offers direct solution and question tools without
   expect(screen.getByRole('checkbox', { name: COPY.selfCheck })).toBeVisible()
   expect(useHandsOnStore.getState().checked).toEqual([])
 })
+
+test('pre-rendering an upcoming station does not record a workshop visit', () => {
+  useHandsOnStore.getState().reset()
+  const view = render(<ExerciseNode id="H02" active={false} />)
+  expect(useHandsOnStore.getState().visited).not.toContain('H02')
+  view.rerender(<ExerciseNode id="H02" active />)
+  expect(useHandsOnStore.getState().visited).toContain('H02')
+})

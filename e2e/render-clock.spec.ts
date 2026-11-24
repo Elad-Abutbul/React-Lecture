@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test'
 import { join } from 'node:path'
-import { open, at } from './helpers'
+import { open, at, travelTo } from './helpers'
 // Enable the existing 3D scene on a software-backed WebGL context for this test.
 // This checks real Canvas initialization and rendering, not physical GPU performance.
 test('OBS-01 fresh 3D initialization renders continuing frames without a deprecated Clock warning', async ({
@@ -66,9 +66,11 @@ test('OBS-01 fresh 3D initialization renders continuing frames without a depreca
   const brand = (await page.locator('.brand').boundingBox())!
   await page.mouse.move(brand.x + brand.width / 2, brand.y + brand.height / 2)
   await page.mouse.wheel(650, 650)
+  await travelTo(page, 'verify')
   await at(page, 'verify')
   await page.waitForTimeout(300)
   await page.mouse.wheel(0, -650)
+  await travelTo(page, 'node', -1)
   await at(page, 'node')
   expect(clockWarnings).toEqual([])
   expect(errors).toEqual([])

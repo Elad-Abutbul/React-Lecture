@@ -2,8 +2,8 @@ import { test, expect } from '@playwright/test'
 import {
   open,
   at,
-  branch,
   roll,
+  branch,
   advance,
   settled,
   seedVisited,
@@ -28,9 +28,9 @@ test('create-project branches into the workshop, visits two stations, backtracks
   await branch(page, 'plan-120')
   await at(page, 'workshop-120')
   await advance(page, 'H01')
-  await expect(page.locator('[data-command="NODE_VERSION"] code')).toHaveText(
-    'node -v',
-  )
+  await expect(
+    page.locator('.graph-node-active [data-command="NODE_VERSION"] code'),
+  ).toHaveText('node -v')
   await page.getByRole('button', { name: 'בדיקה עצמית', exact: true }).click()
   await page
     .getByRole('checkbox', { name: 'בדקתי את התוצאה במחשב שלי' })
@@ -78,7 +78,9 @@ test('solutions stay hidden behind hints and copying returns the complete source
   const download = page.waitForEvent('download')
   await page.getByRole('button', { name: 'הורדת הקובץ', exact: true }).click()
   expect((await download).suggestedFilename()).toBe('App.tsx')
-  await expect(page.locator('.workshop-code pre')).toHaveAttribute('dir', 'ltr')
+  await expect(
+    page.locator('.graph-node-active .workshop-code pre'),
+  ).toHaveAttribute('dir', 'ltr')
 })
 test('the coding task is a world node and its live task list survives refresh', async ({
   page,
@@ -106,13 +108,15 @@ test('long content is read within its stop before the next deliberate gesture ad
   await open(page)
   await revisit(page, 'H10 · Effect ושמירה')
   await at(page, 'H10')
-  const reader = page.locator('.graph-reading')
+  const reader = page.locator('.graph-node-active .graph-reading')
   const before = await reader.evaluate((e) => ({
     height: e.clientHeight,
     content: e.scrollHeight,
   }))
   if (before.content > before.height + 1) {
-    await roll(page)
+    const box = (await reader.boundingBox())!
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2)
+    await page.mouse.wheel(0, 600)
     await at(page, 'H10')
     expect(await reader.evaluate((e) => e.scrollTop)).toBeGreaterThan(0)
   }

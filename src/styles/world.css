@@ -938,13 +938,13 @@
   border-radius: 2rem;
   background: radial-gradient(ellipse, #050b17e8 35%, #050b1700 75%);
 }
-.graph-node-active .focus-title {
+.graph-node-present .focus-title {
   font-size: clamp(2rem, 4.5vw, 4.5rem);
 }
-.graph-node-active.graph-decision {
+.graph-node-present.graph-decision {
   transform: translate(-50%, -68%);
 }
-.graph-node-active.graph-decision .focus-title {
+.graph-node-present.graph-decision .focus-title {
   text-align: center;
   font-size: clamp(2rem, 4.5vw, 4.25rem);
 }
@@ -1119,13 +1119,13 @@
   .graph-node article {
     padding: 0.5rem;
   }
-  .graph-node-active .focus-title {
+  .graph-node-present .focus-title {
     font-size: 2rem;
   }
-  .graph-node-active.graph-decision {
+  .graph-node-present.graph-decision {
     transform: translate(-50%, -76%);
   }
-  .graph-node-active.graph-decision .focus-title {
+  .graph-node-present.graph-decision .focus-title {
     font-size: 2.15rem;
   }
   .graph-node .focus-description {
@@ -1168,8 +1168,8 @@
   }
 }
 @media (max-height: 650px) {
-  .graph-node-active .focus-title,
-  .graph-node-active.graph-decision .focus-title {
+  .graph-node-present .focus-title,
+  .graph-node-present.graph-decision .focus-title {
     font-size: 1.75rem;
   }
   .graph-node .focus-description {
@@ -1203,32 +1203,13 @@ body:has(.unified-world) {
   scrollbar-color: #61dafb70 #07111c;
   scroll-padding-block: 1rem;
 }
-.graph-node-active.graph-decision {
+.graph-node-present.graph-decision {
   transform: translate(-50%, -87%);
 }
-.graph-node-active.graph-decision .graph-reading {
+.graph-node-present.graph-decision .graph-reading {
   max-height: calc(50dvh - 3rem);
 }
-.world-stage[data-camera-busy='true'] .graph-node-active {
-  opacity: 0.65;
-}
-.world-stage[data-camera-busy='false'] .graph-node-active {
-  opacity: 1;
-  transition: opacity 0.3s;
-}
-.world-stage[data-camera-busy='false'] .graph-node-active .focus-title {
-  animation: node-arrive 0.55s ease-out both;
-}
-.world-stage[data-camera-busy='false'] .graph-node-active .focus-description {
-  animation: node-arrive 0.55s 0.1s ease-out both;
-}
-.world-stage[data-camera-busy='false'] .graph-node-active .graph-node-content {
-  animation: node-arrive 0.55s 0.18s ease-out both;
-}
-.world-stage[data-camera-busy='false'] .world-path-selected {
-  animation: arrival-glow 1.4s ease-out;
-}
-.graph-node-active article {
+.graph-node-present article {
   box-shadow: 0 0 80px #03081390;
 }
 .graph-edge-left {
@@ -1242,44 +1223,15 @@ body:has(.unified-world) {
   stroke-width: 2;
   filter: drop-shadow(0 0 5px #61dafb30);
 }
-@keyframes node-arrive {
-  from {
-    opacity: 0;
-    translate: 0 10px;
-  }
-  to {
-    opacity: 1;
-    translate: 0 0;
-  }
-}
-@keyframes arrival-glow {
-  0% {
-    filter: drop-shadow(0 0 15px #61dafb);
-  }
-  100% {
-    filter: drop-shadow(0 0 6px #61dafb60);
-  }
-}
 @media (max-width: 640px) {
   .graph-reading {
     max-height: calc(100dvh - 15rem);
   }
-  .graph-node-active.graph-decision .graph-reading {
+  .graph-node-present.graph-decision .graph-reading {
     max-height: calc(52dvh - 2.5rem);
   }
-  .graph-node-active.graph-decision {
+  .graph-node-present.graph-decision {
     transform: translate(-50%, -85%);
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .world-stage[data-camera-busy='false'] .graph-node-active .focus-title,
-  .world-stage[data-camera-busy='false'] .graph-node-active .focus-description,
-  .world-stage[data-camera-busy='false'] .graph-node-active .graph-node-content,
-  .world-stage[data-camera-busy='false'] .world-path-selected {
-    animation: none;
-  }
-  .world-stage[data-camera-busy='false'] .graph-node-active {
-    transition: none;
   }
 }
 .graph-map-search {
@@ -1368,7 +1320,7 @@ body:has(.unified-world) {
   min-height: 2.75rem;
 }
 /* Keep the reading frame below the trail; projected branch strokes never fill. */
-.graph-node-active.graph-decision .graph-reading {
+.graph-node-present.graph-decision .graph-reading {
   max-height: calc(50dvh - 7rem);
 }
 .branch-line {
@@ -1389,7 +1341,7 @@ body:has(.unified-world) {
   }
 }
 @media (max-width: 640px) {
-  .graph-node-active.graph-decision .graph-reading {
+  .graph-node-present.graph-decision .graph-reading {
     max-height: calc(50dvh - 6.5rem);
   }
 }
@@ -1402,7 +1354,7 @@ body:has(.unified-world) {
   filter: hue-rotate(var(--topic-hue, 0deg));
   transition: filter 1.5s;
 }
-.unified-world:has(.world-stage[data-camera-busy='true']) .graph-branches {
+.graph-branches {
   opacity: 0;
 }
 .graph-branches {
@@ -1432,19 +1384,29 @@ body:has(.unified-world) {
 .graph-node-distant {
   transform: translate(-50%, -50%) scale(var(--ghost-scale, 0.4));
 }
-.world-stage[data-camera-busy='false'] .graph-node-active .focus-title {
-  animation-duration: var(--arrival-duration, 0.55s);
+.world-path-selected {
+  filter: drop-shadow(0 0 var(--path-glow, 5px) #61dafb70);
 }
-.world-stage[data-camera-busy='false'] .graph-node-active .focus-description {
-  animation-duration: var(--arrival-duration, 0.55s);
-  animation-delay: var(--arrival-stagger, 0.1s);
+/* Arrival is a reversible proximity signal; it never owns input or camera time. */
+.graph-node-present .graph-reading {
+  opacity: var(--node-opacity, 1);
+  transform: translateY(var(--node-shift, 0px)) scale(var(--node-scale, 1));
+  filter: blur(var(--node-blur, 0px));
+  box-shadow:
+    0 0 80px #03081390,
+    0 0 calc(var(--node-focus, 0) * 25px) #61dafb09;
 }
-.world-stage[data-camera-busy='false'] .graph-node-active .graph-node-content {
-  animation-duration: var(--arrival-duration, 0.55s);
-  animation-delay: calc(var(--arrival-stagger, 0.1s) * 1.8);
+.graph-node-present .focus-title,
+.graph-node-present .focus-description,
+.graph-node-present .graph-node-content {
+  animation: none;
 }
-.world-stage[data-camera-busy='false'] .world-path-selected {
-  animation-duration: var(--path-pulse, 1.4s);
+@media (prefers-reduced-motion: reduce) {
+  .graph-node-present .graph-reading {
+    transform: none;
+    filter: none;
+    opacity: 1;
+  }
 }
 
 /* Intent feedback decorates the existing branch; it never changes its hit box. */
@@ -1497,4 +1459,8 @@ body:has(.unified-world) {
   .graph-intent-feedback {
     transition: none;
   }
+}
+
+.graph-branch[data-previous-choice='true'] {
+  box-shadow: inset 0 0 0 1px #61dafb20;
 }

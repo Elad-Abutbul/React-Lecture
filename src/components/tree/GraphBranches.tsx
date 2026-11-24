@@ -7,10 +7,10 @@ import { GRAPH_BY_ID } from '@/content/worldGraph'
 import { useGraphStore } from '@/store/graph-store'
 export function GraphBranches({ node }: { node: WorldNode }) {
   const projection = GRAPH_NAV.projection
-  const busy = useGraphStore((state) => state.transitioning)
+  const previousChoice = useGraphStore((state) => state.choices[node.id])
   const aside = useRef<HTMLElement>(null),
     regions = useRef<HTMLDivElement>(null)
-  useGraphBranchLayout(aside, regions, busy)
+  useGraphBranchLayout(aside, regions)
   if (node.edges.length < 2) return null
   const edges = [...node.edges].sort((a, b) =>
     a.direction === b.direction ? 0 : a.direction === 'left' ? -1 : 1,
@@ -20,7 +20,6 @@ export function GraphBranches({ node }: { node: WorldNode }) {
       ref={aside}
       className={`graph-branches graph-branches-${edges.length}`}
       aria-label={GRAPH_COPY.branches}
-      aria-hidden={busy}
     >
       <span className="sr-only graph-intent-status" role="status" />
       <svg
@@ -42,10 +41,13 @@ export function GraphBranches({ node }: { node: WorldNode }) {
         {edges.map((edge) => (
           <button
             type="button"
-            disabled={busy}
             key={edge.id}
             data-edge-id={edge.id}
+            data-edge-target={edge.target}
             data-direction={edge.direction}
+            data-previous-choice={
+              previousChoice === edge.id ? 'true' : undefined
+            }
             className={`graph-branch branch-${edge.direction}`}
             onClick={(event) => {
               const reading = document.querySelector<HTMLElement>(

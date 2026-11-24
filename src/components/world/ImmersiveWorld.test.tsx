@@ -1,5 +1,5 @@
 import { beforeEach, test, expect, vi } from 'vitest'
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen, fireEvent, act } from '@testing-library/react'
 import { ImmersiveWorld } from './ImmersiveWorld'
 import { useGraphStore } from '@/store/graph-store'
 vi.mock('@/hooks/useGraphCamera', () => ({ useGraphCamera: () => undefined }))
@@ -12,7 +12,7 @@ test('decisions use the same state machine without blocking warnings', () => {
   fireEvent.keyDown(document.body, { key: 'ArrowRight' })
   expect(useGraphStore.getState().route).toEqual(['node', 'verify'])
   expect(
-    screen.getByRole('heading', { name: 'בודקים את ההתקנה ידנית' }),
+    screen.getByRole('heading', { name: 'יש לך Node.js מותקן?' }),
   ).toBeVisible()
   expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
   expect(
@@ -43,7 +43,35 @@ test('short horizontal intent highlights its branch without changing the route',
     new WheelEvent('wheel', { deltaX: 80, bubbles: true, cancelable: true }),
   )
   expect(useGraphStore.getState().route[useGraphStore.getState().cursor]).toBe(
-    'verify',
+    'node',
   )
+  expect(useGraphStore.getState().choices.node).toBe('yes')
   expect(view.container.querySelector('[data-gesture-intent]')).toBeNull()
+})
+
+test('decision definitions keep their full original content when revisited, independently of the trail', () => {
+  const view = render(<ImmersiveWorld />)
+  const reader = view.container.querySelector(
+    '[data-world-node="node"] .graph-reading',
+  )
+  fireEvent.keyDown(window, { key: 'ArrowRight' })
+  act(() => useGraphStore.getState().jump('existing'))
+  expect(
+    view.container.querySelector('[data-world-node="node"] .graph-reading'),
+  ).toBe(reader)
+  act(() => useGraphStore.getState().jump('node'))
+  expect(
+    screen.getByRole('heading', { name: 'יש לך Node.js מותקן?' }),
+  ).toBeVisible()
+  expect(
+    screen.getByRole('button', { name: /^כן · בדיקת גרסאות/ }),
+  ).toBeVisible()
+  expect(
+    screen.getByRole('button', { name: /^לא · התקנת Node.js/ }),
+  ).toBeVisible()
+  expect(view.container.querySelector('.graph-ghost')).toBeNull()
+  expect(useGraphStore.getState().pendingChoices).toContain('node')
+  fireEvent.click(view.container.querySelector('[data-edge-id="no"]')!)
+  expect(useGraphStore.getState().choices.node).toBe('no')
+  expect(useGraphStore.getState().pendingChoices).not.toContain('node')
 })

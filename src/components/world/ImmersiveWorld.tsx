@@ -20,7 +20,6 @@ export function ImmersiveWorld() {
   const route = useGraphStore((s) => s.route),
     cursor = useGraphStore((s) => s.cursor),
     visited = useGraphStore((s) => s.visited)
-  const transitioning = useGraphStore((state) => state.transitioning)
   const node = GRAPH_BY_ID[route[cursor]]
   const [menuOpen, setMenuOpen] = useState(false),
     [announcement, setAnnouncement] = useState('')
@@ -29,24 +28,22 @@ export function ImmersiveWorld() {
   const viewport = useWorldViewport()
   useGraphGesture()
   useGraphCamera(stage, progress, viewport.width, viewport.height)
-  const near = new Set(
-    [node.id, ...node.edges.map((e) => e.target), route[cursor - 1]].filter(
-      Boolean,
+  // Original decision content stays mounted independently of visit history.
+  const present = new Set([
+    ...route.slice(Math.max(0, cursor - 1), cursor + 2),
+    ...WORLD_GRAPH.filter((scene) => scene.edges.length > 1).map(
+      (scene) => scene.id,
     ),
-  )
+  ])
   return (
     <>
       <main
         id="main"
         className={`world-viewport unified-world topic-${node.kind}`}
         aria-label={WORLD_COPY.world}
-        aria-busy={transitioning}
         style={
           {
             '--topic-hue': `${ATMOSPHERE.topicHue[node.sourceId ?? node.id] ?? 0}deg`,
-            '--arrival-duration': `${GRAPH_NAV.arrival.duration}s`,
-            '--arrival-stagger': `${GRAPH_NAV.arrival.stagger}s`,
-            '--path-pulse': `${GRAPH_NAV.arrival.pulse}s`,
             '--ghost-scale': GRAPH_NAV.ghostScale,
           } as CSSProperties
         }
@@ -94,13 +91,13 @@ export function ImmersiveWorld() {
           {WORLD_GRAPH.map((scene) => (
             <section
               key={scene.id}
-              className={`graph-node ${scene.id === node.id ? 'graph-node-active' : 'graph-node-distant'} ${scene.edges.length > 1 ? 'graph-decision' : ''}`}
+              className={`graph-node ${present.has(scene.id) ? 'graph-node-present' : 'graph-node-distant'} ${scene.id === node.id ? 'graph-node-active' : ''} ${scene.edges.length > 1 ? 'graph-decision' : ''}`}
               style={{ left: scene.position.x, top: scene.position.y }}
               aria-hidden={scene.id !== node.id}
               inert={scene.id !== node.id}
               data-world-node={scene.id}
             >
-              {scene.id === node.id ? (
+              {present.has(scene.id) ? (
                 <article
                   className="graph-reading"
                   tabIndex={0}
@@ -114,14 +111,15 @@ export function ImmersiveWorld() {
                     <p className="focus-description">{scene.description}</p>
                   )}
                   <div className="graph-node-content">
-                    <GraphContent key={scene.id} node={scene} />
+                    <GraphContent
+                      key={scene.id}
+                      node={scene}
+                      active={
+                        scene.id === node.id && visited.includes(scene.id)
+                      }
+                    />
                   </div>
                 </article>
-              ) : near.has(scene.id) || visited.includes(scene.id) ? (
-                <div className="graph-ghost">
-                  <Atom aria-hidden="true" />
-                  <p>{scene.title}</p>
-                </div>
               ) : (
                 <span className="graph-star" />
               )}

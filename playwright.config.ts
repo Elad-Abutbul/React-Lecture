@@ -25,6 +25,10 @@ export default defineConfig({
       name: 'webkit',
       testMatch: [
         '**/gesture-regression.spec.ts',
+        '**/continuous-arrival.spec.ts',
+        '**/continuous-visual.spec.ts',
+        '**/magnetic.spec.ts',
+        '**/revisited-decisions.spec.ts',
         '**/qa-report.spec.ts',
         '**/render-clock.spec.ts',
       ],
